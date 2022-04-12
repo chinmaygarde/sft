@@ -1,0 +1,34 @@
+{
+  "build_systems": [
+    {
+      "name": "SFT Build All",
+      "shell_cmd": "make && ./sft",
+      "working_dir": "${project_path}/build",
+      "file_regex": "(.*):([\\d]+):([\\d]+)?:? ?((?:error|warning|note): ?.*)",
+      "shell": true,
+    }
+  ],
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings":
+  {
+    "LSP":
+    {
+      "clangd":
+      {
+        "enabled": true,
+        "command": [
+          "clangd",
+          "--compile-commands-dir=build",
+          "--clang-tidy",
+          "-header-insertion=never",
+          "-j=36",
+          "--background-index=true"
+        ],
+      }
+    }
+  },
+}
