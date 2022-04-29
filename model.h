@@ -35,8 +35,6 @@ class Model {
     if (!IsValid()) {
       return;
     }
-    for (const auto& shape : shapes_) {
-    }
   }
 
  private:

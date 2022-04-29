@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdlib>
 #include "geom.h"
 
@@ -22,7 +23,7 @@ class Image {
 
   size_t GetBytesPerPixel() const { return sizeof(uint32_t); }
 
-  bool Set(int32_t x, int32_t y, Color color) {
+  bool Set(Scalar x, Scalar y, Color color) {
     if (!allocation_ || x < 0 || y < 0 || x >= width || y >= height) {
       return false;
     }
@@ -40,12 +41,22 @@ class Image {
     }
   }
 
+  static constexpr Scalar Lerp(Scalar min, Scalar max, double factor) {
+    return min + ((max - min) * factor);
+  }
+
   void DrawLine(Point p1, Point p2, Color color) {
-    for (double i = 0.0; i <= 1.0; i += 0.01) {
-      auto x = p1.x + ((p2.x - p1.x) * i);
-      auto y = p1.y + ((p2.y - p1.y) * i);
-      Set(x, y, color);
+    const auto steps = std::max(std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
+    for (uint32_t i = 0; i < steps; i++) {
+      Set(Lerp(p1.x, p2.x, static_cast<double>(i) / steps),
+          Lerp(p1.y, p2.y, static_cast<double>(i) / steps), color);
     }
+  }
+
+  void DrawTriangle(Point p1, Point p2, Point p3, Color color) {
+    DrawLine(p1, p2, color);
+    DrawLine(p2, p3, color);
+    DrawLine(p3, p1, color);
   }
 
  private:

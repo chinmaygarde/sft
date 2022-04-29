@@ -10,7 +10,7 @@ namespace sft {
 
 class Renderer {
  public:
-  Renderer() : image_(16, 16) {
+  Renderer() : image_(800, 800) {
     if (!image_.GetPixels()) {
       return;
     }
@@ -87,7 +87,12 @@ class Renderer {
 
   bool Update() {
     image_.Clear(kColorWhite);
-    model_->RenderTo(image_);
+
+    image_.DrawLine({10, 10}, {500, 500}, kColorRed);
+    image_.DrawLine({10, 500}, {500, 10}, kColorGreen);
+    image_.DrawTriangle({200, 200}, {300, 100}, {300, 300}, kColorBlack);
+
+    // model_->RenderTo(image_);
     return true;
   }
 

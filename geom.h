@@ -4,6 +4,8 @@
 
 namespace sft {
 
+using Scalar = int32_t;
+
 struct Color {
   const uint32_t color = 0u;
 
@@ -20,8 +22,13 @@ constexpr Color kColorWhite = {255, 255, 255, 255};
 constexpr Color kColorBlack = {0, 0, 0, 255};
 
 struct Point {
-  int32_t x = 0;
-  int32_t y = 0;
+  Scalar x = 0;
+  Scalar y = 0;
+};
+
+struct Size {
+  Scalar width = 0;
+  Scalar height = 0;
 };
 
 }  // namespace sft
