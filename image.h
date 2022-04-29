@@ -47,22 +47,49 @@ class Image {
 
   void DrawLine(Point p1, Point p2, Color color) {
     const auto steps = std::max(std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
-    for (uint32_t i = 0; i < steps; i++) {
+    for (auto i = 0; i < steps; i++) {
       Set(Lerp(p1.x, p2.x, static_cast<double>(i) / steps),
           Lerp(p1.y, p2.y, static_cast<double>(i) / steps), color);
     }
   }
 
   void DrawTriangle(Point p1, Point p2, Point p3, Color color) {
-    DrawLine(p1, p2, color);
-    DrawLine(p2, p3, color);
-    DrawLine(p3, p1, color);
+    const auto bounding_box = GetBoundingBox(p1, p2, p3);
+    for (auto y = 0; y < bounding_box.size.height; y++) {
+      for (auto x = 0; x < bounding_box.size.width; x++) {
+        const auto p =
+            Point{x + bounding_box.origin.x, y + bounding_box.origin.y};
+        const auto barycentric_coords =
+            GetBaryCentricCoordinates(p, p1, p2, p3);
+        if (barycentric_coords.x >= 0.0 && barycentric_coords.y >= 0.0 &&
+            barycentric_coords.z >= 0.0) {
+          Set(p.x, p.y, color);
+        }
+      }
+    }
   }
 
  private:
   void* allocation_ = nullptr;
   const size_t width;
   const size_t height;
+
+  static Rect GetBoundingBox(Point p1, Point p2, Point p3) {
+    const auto min =
+        Point{std::min({p1.x, p2.x, p3.x}), std::min({p1.y, p2.y, p3.y})};
+    const auto max =
+        Point{std::max({p1.x, p2.x, p3.x}), std::max({p1.y, p2.y, p3.y})};
+    return Rect{{min.x, min.y}, {max.x - min.x, max.y - min.y}};
+  }
+
+  static Vec3F GetBaryCentricCoordinates(Point p, Point a, Point b, Point c) {
+    Point v0 = b - a, v1 = c - a, v2 = p - a;
+    ScalarF one_over_den = 1.0f / (v0.x * v1.y - v1.x * v0.y);
+    ScalarF v = (v2.x * v1.y - v1.x * v2.y) * one_over_den;
+    ScalarF w = (v0.x * v2.y - v2.x * v0.y) * one_over_den;
+    ScalarF u = 1.0f - v - w;
+    return {u, v, w};
+  }
 
   Image(const Image&) = delete;
   Image& operator=(const Image&) = delete;
