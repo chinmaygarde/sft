@@ -1,6 +1,8 @@
 #pragma once
 
 #include <tiny_obj_loader.h>
+#include <chrono>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include "geom.h"
@@ -50,7 +52,7 @@ class Model {
           tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
           tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
 
-          vertices_.push_back({vx, vy, vz});
+          vertices_.push_back({vx, vy, vz, 1.0});
         }
         index_offset += fv;
       }
@@ -66,21 +68,47 @@ class Model {
       return;
     }
 
+    const auto elapsed_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::high_resolution_clock::now() - start_time_);
+
+    auto rotation_degrees = glm::radians(180.f * elapsed_ms.count() / 1000.f);
+    rotation_degrees = 0.0;
+
+    auto scale_factor =
+        (std::sin(glm::radians(((elapsed_ms.count() % 1000) / 1000.f) * 360)) *
+         2.0) +
+        3.0;
+    scale_factor = 3.0;
+
+    const auto flip =
+        glm::rotate(glm::identity<glm::mat4>(), glm::radians(180.f),
+                    glm::vec3(1.f, 0.f, 0.f));
+    const auto translate = glm::translate(glm::identity<glm::mat4>(),
+                                          glm::vec3(400.f, 500.f, 0.0f));
+    const auto rotate = glm::rotate(glm::identity<glm::mat4>(),
+                                    rotation_degrees, glm::vec3(0.f, 1.f, 0.f));
+    const auto scale =
+        glm::scale(glm::identity<glm::mat4>(),
+                   glm::vec3(scale_factor, scale_factor, scale_factor));
+    const auto mvp = translate * flip * rotate * scale;
     for (size_t i = 0, count = vertices_.size(); i < count; i += 3) {
       if (i + 2 >= count) {
         return;
       }
-      image.DrawTriangle(vertices_[i + 0],  //
-                         vertices_[i + 1],  //
-                         vertices_[i + 2],  //
-                         Color::Random()    //
+      image.DrawTriangle(mvp * vertices_[i + 0],  //
+                         mvp * vertices_[i + 1],  //
+                         mvp * vertices_[i + 2],  //
+                         Color::Random()          //
       );
     }
   }
 
  private:
-  std::vector<glm::vec3> vertices_;
+  std::vector<glm::vec4> vertices_;
   bool is_valid_ = false;
+  const std::chrono::high_resolution_clock::time_point start_time_ =
+      std::chrono::high_resolution_clock::now();
 
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;

@@ -9,13 +9,17 @@ namespace sft {
 class Image {
  public:
   Image(size_t p_width, size_t p_height)
-      : allocation_(std::calloc(p_width * p_height * 4, sizeof(uint8_t))),
+      : color_buffer_(std::calloc(p_width * p_height * 4, sizeof(uint8_t))),
+        depth_buffer_(std::calloc(p_width * p_height, sizeof(uint8_t))),
         width(p_width),
         height(p_height) {}
 
-  ~Image() = default;
+  ~Image() {
+    std::free(depth_buffer_);
+    std::free(color_buffer_);
+  }
 
-  void* GetPixels() const { return allocation_; }
+  void* GetPixels() const { return color_buffer_; }
 
   size_t GetWidth() const { return width; }
 
@@ -24,11 +28,11 @@ class Image {
   size_t GetBytesPerPixel() const { return sizeof(uint32_t); }
 
   bool Set(Scalar x, Scalar y, Color color) {
-    if (!allocation_ || x < 0 || y < 0 || x >= width || y >= height) {
+    if (!color_buffer_ || x < 0 || y < 0 || x >= width || y >= height) {
       return false;
     }
 
-    auto ptr = reinterpret_cast<uint32_t*>(allocation_) + ((width * y) + x);
+    auto ptr = reinterpret_cast<uint32_t*>(color_buffer_) + ((width * y) + x);
     *ptr = color;
     return true;
   }
@@ -70,7 +74,8 @@ class Image {
   }
 
  private:
-  void* allocation_ = nullptr;
+  void* color_buffer_ = nullptr;
+  void* depth_buffer_ = nullptr;
   const size_t width;
   const size_t height;
 
