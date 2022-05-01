@@ -45,7 +45,7 @@ class Image {
     return min + ((max - min) * factor);
   }
 
-  void DrawLine(Point p1, Point p2, Color color) {
+  void DrawLine(glm::ivec2 p1, glm::ivec2 p2, Color color) {
     const auto steps = std::max(std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
     for (auto i = 0; i < steps; i++) {
       Set(Lerp(p1.x, p2.x, static_cast<double>(i) / steps),
@@ -53,12 +53,12 @@ class Image {
     }
   }
 
-  void DrawTriangle(Point p1, Point p2, Point p3, Color color) {
+  void DrawTriangle(glm::ivec2 p1, glm::ivec2 p2, glm::ivec2 p3, Color color) {
     const auto bounding_box = GetBoundingBox(p1, p2, p3);
     for (auto y = 0; y < bounding_box.size.height; y++) {
       for (auto x = 0; x < bounding_box.size.width; x++) {
         const auto p =
-            Point{x + bounding_box.origin.x, y + bounding_box.origin.y};
+            glm::ivec2{x + bounding_box.origin.x, y + bounding_box.origin.y};
         const auto barycentric_coords =
             GetBaryCentricCoordinates(p, p1, p2, p3);
         if (barycentric_coords.x >= 0.0 && barycentric_coords.y >= 0.0 &&
@@ -74,16 +74,19 @@ class Image {
   const size_t width;
   const size_t height;
 
-  static Rect GetBoundingBox(Point p1, Point p2, Point p3) {
+  static Rect GetBoundingBox(glm::ivec2 p1, glm::ivec2 p2, glm::ivec2 p3) {
     const auto min =
-        Point{std::min({p1.x, p2.x, p3.x}), std::min({p1.y, p2.y, p3.y})};
+        glm::ivec2{std::min({p1.x, p2.x, p3.x}), std::min({p1.y, p2.y, p3.y})};
     const auto max =
-        Point{std::max({p1.x, p2.x, p3.x}), std::max({p1.y, p2.y, p3.y})};
+        glm::ivec2{std::max({p1.x, p2.x, p3.x}), std::max({p1.y, p2.y, p3.y})};
     return Rect{{min.x, min.y}, {max.x - min.x, max.y - min.y}};
   }
 
-  static Vec3F GetBaryCentricCoordinates(Point p, Point a, Point b, Point c) {
-    Point v0 = b - a, v1 = c - a, v2 = p - a;
+  static glm::vec3 GetBaryCentricCoordinates(glm::ivec2 p,
+                                             glm::ivec2 a,
+                                             glm::ivec2 b,
+                                             glm::ivec2 c) {
+    glm::ivec2 v0 = b - a, v1 = c - a, v2 = p - a;
     ScalarF one_over_den = 1.0f / (v0.x * v1.y - v1.x * v0.y);
     ScalarF v = (v2.x * v1.y - v1.x * v2.y) * one_over_den;
     ScalarF w = (v0.x * v2.y - v2.x * v0.y) * one_over_den;

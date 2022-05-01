@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace sft {
 
@@ -29,33 +31,13 @@ constexpr Color kColorBlue = {0, 0, 255, 255};
 constexpr Color kColorWhite = {255, 255, 255, 255};
 constexpr Color kColorBlack = {0, 0, 0, 255};
 
-struct Vec3F {
-  ScalarF x = 0;
-  ScalarF y = 0;
-  ScalarF z = 0;
-};
-
-struct Point {
-  Scalar x = 0;
-  Scalar y = 0;
-
-  Point(Scalar p_x, Scalar p_y) : x(p_x), y(p_y) {}
-
-  Point(const Vec3F& v) : x(v.x), y(v.y) {}
-
-  Point operator+(const Point& o) const { return {x + o.x, y + o.y}; }
-  Point operator-(const Point& o) const { return {x - o.x, y - o.y}; }
-};
-
-using Vec2 = Point;
-
 struct Size {
   Scalar width = 0;
   Scalar height = 0;
 };
 
 struct Rect {
-  Point origin;
+  glm::vec2 origin;
   Size size;
 };
 

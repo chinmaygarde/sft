@@ -3,6 +3,7 @@
 #include <tiny_obj_loader.h>
 #include <iostream>
 #include <string>
+#include "geom.h"
 #include "image.h"
 
 namespace sft {
@@ -49,7 +50,7 @@ class Model {
           tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
           tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
 
-          vertices_.push_back(Vec3F{vx, vy, vz});
+          vertices_.push_back({vx, vy, vz});
         }
         index_offset += fv;
       }
@@ -78,7 +79,7 @@ class Model {
   }
 
  private:
-  std::vector<Vec3F> vertices_;
+  std::vector<glm::vec3> vertices_;
   bool is_valid_ = false;
 
   Model(const Model&) = delete;

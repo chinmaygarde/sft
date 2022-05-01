@@ -10,6 +10,7 @@ add_subdirectory(third_party/tinyobjloader)
 add_subdirectory(third_party/googletest)
 set(GOOGLETEST_PATH "third_party/googletest")
 add_subdirectory(third_party/googlebenchmark)
+add_subdirectory(third_party/glm)
 
 add_library(sft_lib
   geom.h
@@ -22,7 +23,7 @@ add_library(sft_lib
   renderer.cc
 )
 
-target_link_libraries(sft_lib SDL2 tinyobjloader)
+target_link_libraries(sft_lib SDL2 tinyobjloader glm)
 
 add_executable(sft main.cc)
 
