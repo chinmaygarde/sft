@@ -10,7 +10,7 @@
   ],
   "folders": [
     {
-      "path": "."
+      "path": ".",
     }
   ],
   "settings":
@@ -28,7 +28,18 @@
           "-j=36",
           "--background-index=true"
         ],
-      }
-    }
+      },
+    },
   },
+  "debugger_configurations":
+  [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug SFT",
+      "program": "${folder}/build/sft",
+      "args": [],
+      "cwd": "${folder}"
+    },
+	],
 }

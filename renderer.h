@@ -87,13 +87,7 @@ class Renderer {
 
   bool Update() {
     image_.Clear(kColorWhite);
-
-    image_.DrawLine({10, 10}, {500, 500}, kColorRed);
-    image_.DrawLine({10, 500}, {500, 10}, kColorGreen);
-
-    image_.DrawTriangle({200, 200}, {300, 100}, {300, 300}, kColorBlack);
-
-    // model_->RenderTo(image_);
+    model_->RenderTo(image_);
     return true;
   }
 
