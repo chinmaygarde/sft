@@ -8,7 +8,7 @@ static void DrawTriangle(benchmark::State& state) {
   auto image = Image{1280, 1280};
   for (auto _ : state) {
     image.DrawTriangle({10, 10}, {10, 800}, {800, 800}, kColorBlack);
-    image.DrawLine({10, 10}, {800, 800}, kColorGreen);
+    image.DrawLine({10, 10, 0}, {800, 800, 0}, kColorGreen);
   }
 }
 
