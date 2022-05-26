@@ -11,7 +11,7 @@ build/sft: build/build.ninja
 
 build/build.ninja:
 	mkdir -p build
-	cmake -G Ninja -B build
+	cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release
 
 clean:
 	rm -rf build
