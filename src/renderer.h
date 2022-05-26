@@ -36,7 +36,7 @@ class Renderer {
       return;
     }
 
-    model_ = std::make_unique<Model>("../assets/teapot/teapot.obj");
+    model_ = std::make_unique<Model>("assets/teapot/teapot.obj");
     if (!model_->IsValid()) {
       return;
     }
