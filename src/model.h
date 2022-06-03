@@ -68,18 +68,16 @@ class Model {
       return;
     }
 
-    const auto elapsed_ms =
+    const auto elapsed_time =
         std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::high_resolution_clock::now() - start_time_);
+            (std::chrono::high_resolution_clock::now() - start_time_) / 2.0);
 
-    auto rotation_degrees = glm::radians(180.f * elapsed_ms.count() / 1000.f);
-    rotation_degrees = 0.0;
+    auto rotation_degrees = glm::radians(180.f * elapsed_time.count() / 1000.f);
 
-    auto scale_factor =
-        (std::sin(glm::radians(((elapsed_ms.count() % 1000) / 1000.f) * 360)) *
-         2.0) +
-        3.0;
-    scale_factor = 3.0;
+    auto scale_factor = (std::sin(glm::radians(
+                             ((elapsed_time.count() % 1000) / 1000.f) * 360)) *
+                         2.0) +
+                        3.0;
 
     const auto flip =
         glm::rotate(glm::identity<glm::mat4>(), glm::radians(180.f),
