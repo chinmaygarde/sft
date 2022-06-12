@@ -48,8 +48,8 @@ constexpr Color kColorWhite = {255, 255, 255, 255};
 constexpr Color kColorBlack = {0, 0, 0, 255};
 
 struct Size {
-  Scalar width = 0;
-  Scalar height = 0;
+  ScalarF width = 0.0;
+  ScalarF height = 0.0;
 };
 
 struct Rect {
