@@ -21,6 +21,8 @@ add_library(sft_lib
   src/model.cc
   src/renderer.h
   src/renderer.cc
+  src/sdl_utils.h
+  src/sdl_utils.cc
 )
 
 target_link_libraries(sft_lib SDL2 tinyobjloader glm)
@@ -28,7 +30,3 @@ target_link_libraries(sft_lib SDL2 tinyobjloader glm)
 add_executable(sft src/main.cc)
 
 target_link_libraries(sft sft_lib)
-
-add_executable(sft_benchmark src/benchmark.cc)
-
-target_link_libraries(sft_benchmark sft_lib benchmark::benchmark)

@@ -76,14 +76,14 @@ class Model {
 
     auto scale_factor = (std::sin(glm::radians(
                              ((elapsed_time.count() % 1000) / 1000.f) * 360)) *
-                         2.0) +
-                        3.0;
+                         1.0) +
+                        2.0;
 
     const auto flip =
         glm::rotate(glm::identity<glm::mat4>(), glm::radians(180.f),
                     glm::vec3(1.f, 0.f, 0.f));
     const auto translate = glm::translate(glm::identity<glm::mat4>(),
-                                          glm::vec3(400.f, 500.f, 0.0f));
+                                          glm::vec3(200.f, 300.f, 0.0f));
     const auto rotate = glm::rotate(glm::identity<glm::mat4>(),
                                     rotation_degrees, glm::vec3(0.f, 1.f, 0.f));
     const auto scale =

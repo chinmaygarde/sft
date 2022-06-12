@@ -5,28 +5,26 @@
 #include "geom.h"
 #include "image.h"
 #include "model.h"
+#include "sdl_utils.h"
 
 namespace sft {
 
 class Renderer {
  public:
-  Renderer() : image_(800, 800) {
-    if (!image_.GetPixels()) {
-      return;
-    }
-    surface_ = ::SDL_CreateRGBSurfaceFrom(
-        image_.GetPixels(),                             //
-        image_.GetWidth(),                              //
-        image_.GetHeight(),                             //
-        image_.GetBytesPerPixel() * 8u,                 //
-        image_.GetWidth() * image_.GetBytesPerPixel(),  //
-        0, 0, 0, 0);
-    if (!surface_) {
+  Renderer() {
+    render_surface_size_ = {400, 400};
+    window_size_ = render_surface_size_;
+    window_size_.x *= 2.0;
+
+    image_ = std::make_unique<Image>(render_surface_size_);
+
+    if (!image_ || !image_->GetPixels()) {
       return;
     }
 
-    window_ = ::SDL_CreateWindow("SFT", SDL_WINDOWPOS_CENTERED,
-                                 SDL_WINDOWPOS_CENTERED, 800, 800, 0);
+    window_ = ::SDL_CreateWindow("SFT Sandbox (Press \"q\" or ESC to quit)",
+                                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                 window_size_.x, window_size_.y, 0);
     if (!window_) {
       return;
     }
@@ -45,9 +43,6 @@ class Renderer {
   }
 
   ~Renderer() {
-    if (surface_) {
-      ::SDL_FreeSurface(surface_);
-    }
     if (window_) {
       ::SDL_DestroyWindow(window_);
     }
@@ -65,36 +60,49 @@ class Renderer {
       return false;
     }
 
-    auto texture_deleter = [](SDL_Texture* tex) {
-      if (tex) {
-        ::SDL_DestroyTexture(tex);
-      }
-    };
-    std::unique_ptr<SDL_Texture, decltype(texture_deleter)> texture(
-        ::SDL_CreateTextureFromSurface(renderer_, surface_), texture_deleter);
-    if (!texture) {
+    SDLTextureNoCopyCaster color_attachment(renderer_,                  //
+                                            image_->GetPixels(),        //
+                                            image_->GetWidth(),         //
+                                            image_->GetHeight(),        //
+                                            image_->GetBytesPerPixel()  //
+
+    );
+    SDLTextureNoCopyCaster depth_attachment(renderer_,                       //
+                                            image_->GetDepthPixels(),        //
+                                            image_->GetWidth(),              //
+                                            image_->GetHeight(),             //
+                                            image_->GetDepthBytesPerPixel()  //
+
+    );
+    SDL_Rect dest = {};
+    dest.x = 0;
+    dest.y = 0;
+    dest.w = image_->GetWidth();
+    dest.h = image_->GetHeight();
+    if (::SDL_RenderCopy(renderer_, color_attachment, nullptr, &dest) != 0) {
       return false;
     }
-
-    if (::SDL_RenderCopy(renderer_, texture.get(), nullptr, nullptr) != 0) {
+    dest.x += dest.w;
+    if (::SDL_RenderCopy(renderer_, depth_attachment, nullptr, &dest) != 0) {
       return false;
     }
-
     ::SDL_RenderPresent(renderer_);
-
     return true;
   }
 
   bool Update() {
-    image_.Clear(kColorWhite);
-    model_->RenderTo(image_);
-    image_.DrawLine({100, 100, 0}, {800, 800, 0}, kColorBlue);
+    image_->Clear(kColorWhite);
+    model_->RenderTo(*image_);
+    image_->DrawLine({0, 0, 0},
+                     {render_surface_size_.x, render_surface_size_.y, 0},
+                     kColorBlue);
     return true;
   }
 
  private:
-  Image image_;
-  SDL_Surface* surface_ = nullptr;
+  std::unique_ptr<Image> image_;
+  glm::ivec2 render_surface_size_;
+  glm::ivec2 window_size_;
   SDL_Window* window_ = nullptr;
   SDL_Renderer* renderer_ = nullptr;
   std::unique_ptr<Model> model_;

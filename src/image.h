@@ -9,11 +9,11 @@ namespace sft {
 
 class Image {
  public:
-  Image(size_t p_width, size_t p_height)
-      : color_buffer_(std::calloc(p_width * p_height * 4, sizeof(uint8_t))),
-        depth_buffer_(std::calloc(p_width * p_height, sizeof(uint8_t))),
-        width(p_width),
-        height(p_height) {}
+  Image(glm::ivec2 size)
+      : color_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
+        depth_buffer_(std::calloc(size.x * size.y, sizeof(uint8_t))),
+        width(size.x),
+        height(size.y) {}
 
   ~Image() {
     std::free(depth_buffer_);
@@ -22,11 +22,15 @@ class Image {
 
   void* GetPixels() const { return color_buffer_; }
 
+  void* GetDepthPixels() const { return depth_buffer_; }
+
   size_t GetWidth() const { return width; }
 
   size_t GetHeight() const { return height; }
 
   size_t GetBytesPerPixel() const { return sizeof(uint32_t); }
+
+  size_t GetDepthBytesPerPixel() const { return sizeof(uint8_t); }
 
   bool Set(glm::vec2 pos, Color color) {
     return Set({pos.x, pos.y, 0.0}, color);
