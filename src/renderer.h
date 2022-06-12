@@ -88,6 +88,7 @@ class Renderer {
   bool Update() {
     image_.Clear(kColorWhite);
     model_->RenderTo(image_);
+    image_.DrawLine({100, 100, 0}, {800, 800, 0}, kColorBlue);
     return true;
   }
 

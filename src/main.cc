@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <memory>
+
 #include "geom.h"
 #include "image.h"
 #include "renderer.h"
@@ -20,6 +21,15 @@ bool Main(int argc, char const* argv[]) {
     ::SDL_Event event;
     if (::SDL_PollEvent(&event) == 1) {
       switch (event.type) {
+        case SDL_KEYUP:
+          switch (event.key.keysym.sym) {
+            case SDL_KeyCode::SDLK_q:
+            case SDL_KeyCode::SDLK_ESCAPE:
+              is_running = false;
+              break;
+            default:
+              break;
+          }
         case SDL_QUIT:
           is_running = false;
           break;
