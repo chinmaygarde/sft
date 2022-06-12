@@ -11,7 +11,7 @@ class Image {
  public:
   Image(glm::ivec2 size)
       : color_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
-        depth_buffer_(std::calloc(size.x * size.y, sizeof(uint8_t))),
+        depth_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
         width(size.x),
         height(size.y) {}
 
@@ -30,7 +30,7 @@ class Image {
 
   size_t GetBytesPerPixel() const { return sizeof(uint32_t); }
 
-  size_t GetDepthBytesPerPixel() const { return sizeof(uint8_t); }
+  size_t GetDepthBytesPerPixel() const { return sizeof(uint32_t); }
 
   bool Set(glm::vec2 pos, Color color) {
     return Set({pos.x, pos.y, 0.0}, color);
@@ -42,20 +42,14 @@ class Image {
       return false;
     }
 
-    if (!PassesDepthTest(pos)) {
-      return true;
-    }
+    glm::ivec3 ipos = pos;
 
-    auto color_ptr =
-        reinterpret_cast<uint32_t*>(color_buffer_) +
-        ((width * static_cast<uint32_t>(pos.y)) + static_cast<uint32_t>(pos.x));
+    const auto offset = width * ipos.y + ipos.x;
+
+    auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
+    auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;
     *color_ptr = color;
-    auto depth_ptr =
-        reinterpret_cast<uint8_t*>(depth_buffer_) +
-        ((width * static_cast<uint32_t>(pos.y)) + static_cast<uint32_t>(pos.x));
-    // Clamp to visible z space is writing.
-    *depth_ptr = static_cast<uint8_t>(std::clamp<float>(pos.z, 0.0, 1.0) * 255);
-
+    *depth_ptr = Color::Gray(pos.z);
     return true;
   }
 
@@ -81,7 +75,7 @@ class Image {
   void Clear(Color color) {
     for (size_t j = 0; j < height; j++) {
       for (size_t i = 0; i < width; i++) {
-        Set({i, j}, color);
+        Set({i, j, 0}, color);
       }
     }
   }
@@ -93,14 +87,7 @@ class Image {
   void DrawLine(glm::vec3 p1, glm::vec3 p2, Color color) {
     const auto steps = std::max(std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
     for (auto i = 0; i < steps; i++) {
-      const auto factor = static_cast<double>(i) / steps;
-      Set(
-          {
-              Lerp(p1.x, p2.x, factor),  // x
-              Lerp(p1.y, p2.y, factor),  // y
-              Lerp(p1.z, p2.z, factor)   // z
-          },
-          color);
+      Set(glm::mix(p1, p2, i / steps), color);
     }
   }
 

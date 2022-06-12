@@ -92,9 +92,9 @@ class Renderer {
 
   bool Update() {
     image_->Clear(kColorWhite);
-    model_->RenderTo(*image_);
+    // model_->RenderTo(*image_);
     image_->DrawLine({0, 0, 0},
-                     {render_surface_size_.x, render_surface_size_.y, 0},
+                     {render_surface_size_.x, render_surface_size_.y, 1.0},
                      kColorBlue);
     return true;
   }

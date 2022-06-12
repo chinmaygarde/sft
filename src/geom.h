@@ -24,6 +24,11 @@ struct Color {
                  static_cast<uint8_t>(std::rand() % 255),
                  static_cast<uint8_t>(std::rand() % 255), 255};
   }
+
+  static Color Gray(ScalarF gray) {
+    const uint8_t g = 255 * glm::clamp<ScalarF>(gray, 0.0, 1.0);
+    return Color{g, g, g, 255};
+  }
 };
 
 constexpr Color kColorRed = {255, 0, 0, 255};

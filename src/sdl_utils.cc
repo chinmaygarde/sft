@@ -12,7 +12,10 @@ SDLTextureNoCopyCaster::SDLTextureNoCopyCaster(SDL_Renderer* renderer,
                                             height,                   //
                                             bytes_per_pixel * 8,      //
                                             width * bytes_per_pixel,  //
-                                            0, 0, 0, 0                // masks
+                                            0,                        // r mask
+                                            0,                        // g mask
+                                            0,                        // b mask
+                                            0                         // a mask
   );
   if (surface == NULL) {
     return;
