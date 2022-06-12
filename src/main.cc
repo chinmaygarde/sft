@@ -30,6 +30,7 @@ bool Main(int argc, char const* argv[]) {
             default:
               break;
           }
+          break;
         case SDL_QUIT:
           is_running = false;
           break;

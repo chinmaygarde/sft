@@ -17,7 +17,17 @@ struct Color {
   constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
       : color(a << 24 | r << 16 | g << 8 | b << 0) {}
 
+  constexpr Color(uint32_t p_color) : color(p_color) {}
+
   constexpr operator uint32_t() const { return color; }
+
+  constexpr uint8_t GetRed() const { return color >> 16; }
+
+  constexpr uint8_t GetGreen() const { return color >> 8; }
+
+  constexpr uint8_t GetBlue() const { return color >> 0; }
+
+  constexpr uint8_t GetAlpha() const { return color >> 24; }
 
   static Color Random() {
     return Color{static_cast<uint8_t>(std::rand() % 255),

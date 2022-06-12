@@ -22,7 +22,14 @@ class Renderer {
       return;
     }
 
-    window_ = ::SDL_CreateWindow("SFT Sandbox (Press \"q\" or ESC to quit)",
+#ifndef NDEBUG
+#define SFT_DEBUG_TITLE "Debug Build"
+#else
+#define SFT_DEBUG_TITLE "Release Build"
+#endif
+
+    window_ = ::SDL_CreateWindow("SFT Sandbox (" SFT_DEBUG_TITLE
+                                 ") (Press \"q\" or ESC to quit)",
                                  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                  window_size_.x, window_size_.y, 0);
     if (!window_) {
@@ -91,8 +98,18 @@ class Renderer {
   }
 
   bool Update() {
+    image_->SetDepthTestsEnabled(false);
     image_->Clear(kColorWhite);
-    // model_->RenderTo(*image_);
+    image_->SetDepthTestsEnabled(true);
+    model_->RenderTo(*image_);
+    image_->DrawTriangle({0, 400, 0},    //
+                         {400, 400, 0},  //
+                         {200, 0, 1},    //
+                         kColorRed);
+    image_->DrawTriangle({0, 0, 0},      //
+                         {400, 0, 0},    //
+                         {200, 400, 1},  //
+                         kColorGreen);
     image_->DrawLine({0, 0, 0},
                      {render_surface_size_.x, render_surface_size_.y, 1.0},
                      kColorBlue);

@@ -32,9 +32,7 @@ class Image {
 
   size_t GetDepthBytesPerPixel() const { return sizeof(uint32_t); }
 
-  bool Set(glm::vec2 pos, Color color) {
-    return Set({pos.x, pos.y, 0.0}, color);
-  }
+  void SetDepthTestsEnabled(bool enabled) { depth_test_enabled_ = enabled; }
 
   bool Set(glm::vec3 pos, Color color) {
     if (!color_buffer_ || !depth_buffer_ || pos.x < 0 || pos.y < 0 ||
@@ -48,27 +46,18 @@ class Image {
 
     auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
     auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;
+
+    auto new_depth = Color::Gray(pos.z);
+
+    if (depth_test_enabled_) {
+      const auto old_depth = Color(depth_ptr[0]);
+      if (new_depth.GetRed() < old_depth.GetRed()) {
+        return true;
+      }
+    }
+
     *color_ptr = color;
-    *depth_ptr = Color::Gray(pos.z);
-    return true;
-  }
-
-  bool PassesDepthTest(glm::vec3 pos) const {
-    if (!color_buffer_ || !depth_buffer_ || pos.x < 0 || pos.y < 0 ||
-        pos.x >= width || pos.y >= height) {
-      return false;
-    }
-
-    auto depth_ptr =
-        reinterpret_cast<uint8_t*>(depth_buffer_) +
-        ((width * static_cast<uint32_t>(pos.y)) + static_cast<uint32_t>(pos.x));
-    const uint8_t current_depth_value = *depth_ptr;
-    const uint8_t test_depth_value =
-        static_cast<uint8_t>(std::clamp<float>(pos.z, 0.0, 1.0) * 255);
-    if (test_depth_value > current_depth_value) {
-      std::cout << "Depth fail" << std::endl;
-      return false;
-    }
+    *depth_ptr = new_depth;
     return true;
   }
 
@@ -80,10 +69,6 @@ class Image {
     }
   }
 
-  static constexpr Scalar Lerp(Scalar min, Scalar max, double factor) {
-    return min + ((max - min) * factor);
-  }
-
   void DrawLine(glm::vec3 p1, glm::vec3 p2, Color color) {
     const auto steps = std::max(std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
     for (auto i = 0; i < steps; i++) {
@@ -91,17 +76,16 @@ class Image {
     }
   }
 
-  void DrawTriangle(glm::ivec2 p1, glm::ivec2 p2, glm::ivec2 p3, Color color) {
+  void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color) {
     const auto bounding_box = GetBoundingBox(p1, p2, p3);
     for (auto y = 0; y < bounding_box.size.height; y++) {
       for (auto x = 0; x < bounding_box.size.width; x++) {
         const auto p =
             glm::ivec2{x + bounding_box.origin.x, y + bounding_box.origin.y};
-        const auto barycentric_coords =
-            GetBaryCentricCoordinates(p, p1, p2, p3);
-        if (barycentric_coords.x >= 0.0 && barycentric_coords.y >= 0.0 &&
-            barycentric_coords.z >= 0.0) {
-          Set({p.x, p.y}, color);
+        const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
+        if (bary.x >= 0.0 && bary.y >= 0.0 && bary.z >= 0.0) {
+          const auto bary_pos = (bary.x * p1 + bary.y * p2 + bary.z * p3);
+          Set({p.x, p.y, bary_pos.z}, color);
         }
       }
     }
@@ -112,8 +96,9 @@ class Image {
   void* depth_buffer_ = nullptr;
   const size_t width;
   const size_t height;
+  bool depth_test_enabled_ = true;
 
-  static Rect GetBoundingBox(glm::ivec2 p1, glm::ivec2 p2, glm::ivec2 p3) {
+  static Rect GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
     const auto min =
         glm::ivec2{std::min({p1.x, p2.x, p3.x}), std::min({p1.y, p2.y, p3.y})};
     const auto max =
