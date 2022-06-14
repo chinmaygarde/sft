@@ -13,16 +13,16 @@ add_subdirectory(third_party/googlebenchmark)
 add_subdirectory(third_party/glm)
 
 add_library(sft_lib
-  src/geom.h
   src/geom.cc
-  src/image.h
-  src/image.cc
-  src/model.h
+  src/geom.h
   src/model.cc
-  src/renderer.h
+  src/model.h
+  src/rasterizer.cc
+  src/rasterizer.h
   src/renderer.cc
-  src/sdl_utils.h
+  src/renderer.h
   src/sdl_utils.cc
+  src/sdl_utils.h
 )
 
 target_link_libraries(sft_lib SDL2 tinyobjloader glm)

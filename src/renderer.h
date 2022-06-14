@@ -3,8 +3,8 @@
 #include <SDL.h>
 #include <memory>
 #include "geom.h"
-#include "image.h"
 #include "model.h"
+#include "rasterizer.h"
 #include "sdl_utils.h"
 
 namespace sft {
@@ -20,7 +20,7 @@ class Renderer {
   bool Update();
 
  private:
-  std::unique_ptr<Image> image_;
+  std::unique_ptr<Rasterizer> rasterizer_;
   glm::ivec2 render_surface_size_;
   glm::ivec2 window_size_;
   SDL_Window* window_ = nullptr;

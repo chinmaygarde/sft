@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include "geom.h"
-#include "image.h"
+#include "rasterizer.h"
 
 namespace sft {
 
@@ -18,7 +18,7 @@ class Model {
 
   bool IsValid() const;
 
-  void RenderTo(Image& image);
+  void RenderTo(Rasterizer& image);
 
  private:
   std::vector<glm::vec4> vertices_;

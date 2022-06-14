@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "geom.h"
-#include "image.h"
+#include "rasterizer.h"
 #include "renderer.h"
 
 namespace sft {

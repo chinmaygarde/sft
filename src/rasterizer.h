@@ -7,19 +7,17 @@
 
 namespace sft {
 
-class Image {
+class Rasterizer {
  public:
-  Image(glm::ivec2 size);
+  Rasterizer(glm::ivec2 size);
 
-  ~Image();
+  ~Rasterizer();
 
   void* GetPixels() const;
 
   void* GetDepthPixels() const;
 
-  size_t GetWidth() const;
-
-  size_t GetHeight() const;
+  glm::ivec2 GetSize() const;
 
   size_t GetBytesPerPixel() const;
 
@@ -38,8 +36,7 @@ class Image {
  private:
   void* color_buffer_ = nullptr;
   void* depth_buffer_ = nullptr;
-  const size_t width;
-  const size_t height;
+  const glm::ivec2 size_;
   bool depth_test_enabled_ = true;
 
   static Rect GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
@@ -49,8 +46,8 @@ class Image {
                                              glm::vec2 b,
                                              glm::vec2 c);
 
-  Image(const Image&) = delete;
-  Image& operator=(const Image&) = delete;
+  Rasterizer(const Rasterizer&) = delete;
+  Rasterizer& operator=(const Rasterizer&) = delete;
 };
 
 }  // namespace sft

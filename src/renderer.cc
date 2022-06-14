@@ -7,9 +7,9 @@ Renderer::Renderer() {
   window_size_ = render_surface_size_;
   window_size_.x *= 2.0;
 
-  image_ = std::make_unique<Image>(render_surface_size_);
+  rasterizer_ = std::make_unique<Rasterizer>(render_surface_size_);
 
-  if (!image_ || !image_->GetPixels()) {
+  if (!rasterizer_ || !rasterizer_->GetPixels()) {
     return;
   }
 
@@ -58,25 +58,28 @@ bool Renderer::Render() {
     return false;
   }
 
-  SDLTextureNoCopyCaster color_attachment(renderer_,                  //
-                                          image_->GetPixels(),        //
-                                          image_->GetWidth(),         //
-                                          image_->GetHeight(),        //
-                                          image_->GetBytesPerPixel()  //
+  const auto size = rasterizer_->GetSize();
+
+  SDLTextureNoCopyCaster color_attachment(renderer_,                       //
+                                          rasterizer_->GetPixels(),        //
+                                          size.x,                          //
+                                          size.y,                          //
+                                          rasterizer_->GetBytesPerPixel()  //
 
   );
-  SDLTextureNoCopyCaster depth_attachment(renderer_,                       //
-                                          image_->GetDepthPixels(),        //
-                                          image_->GetWidth(),              //
-                                          image_->GetHeight(),             //
-                                          image_->GetDepthBytesPerPixel()  //
+  SDLTextureNoCopyCaster depth_attachment(
+      renderer_,                            //
+      rasterizer_->GetDepthPixels(),        //
+      size.x,                               //
+      size.y,                               //
+      rasterizer_->GetDepthBytesPerPixel()  //
 
   );
   SDL_Rect dest = {};
   dest.x = 0;
   dest.y = 0;
-  dest.w = image_->GetWidth();
-  dest.h = image_->GetHeight();
+  dest.w = size.x;
+  dest.h = size.y;
   if (::SDL_RenderCopy(renderer_, color_attachment, nullptr, &dest) != 0) {
     return false;
   }
@@ -89,23 +92,23 @@ bool Renderer::Render() {
 }
 
 bool Renderer::Update() {
-  image_->SetDepthTestsEnabled(false);
-  image_->Clear(kColorGreen);
-  image_->SetDepthTestsEnabled(true);
+  rasterizer_->SetDepthTestsEnabled(false);
+  rasterizer_->Clear(kColorGreen);
+  rasterizer_->SetDepthTestsEnabled(true);
 
-  image_->DrawTriangle({render_surface_size_, 0},             //
-                       {render_surface_size_, 0},             //
-                       {render_surface_size_.x / 2.0, 0, 1},  //
-                       kColorRed);
-  image_->DrawTriangle(
+  rasterizer_->DrawTriangle({render_surface_size_, 0},             //
+                            {render_surface_size_, 0},             //
+                            {render_surface_size_.x / 2.0, 0, 1},  //
+                            kColorRed);
+  rasterizer_->DrawTriangle(
       {0, 0, 0},                                                  //
       {render_surface_size_.x, 0, 0},                             //
       {render_surface_size_.x / 2.0, render_surface_size_.y, 1},  //
       kColorGreen);
-  model_->RenderTo(*image_);
-  image_->DrawLine({0, 0, 0},
-                   {render_surface_size_.x, render_surface_size_.y, 1.0},
-                   kColorBlue);
+  model_->RenderTo(*rasterizer_);
+  rasterizer_->DrawLine({0, 0, 0},
+                        {render_surface_size_.x, render_surface_size_.y, 1.0},
+                        kColorBlue);
   return true;
 }
 

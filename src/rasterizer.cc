@@ -1,55 +1,50 @@
-#include "image.h"
+#include "rasterizer.h"
 
 namespace sft {
 
-Image::Image(glm::ivec2 size)
+Rasterizer::Rasterizer(glm::ivec2 size)
     : color_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
       depth_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
-      width(size.x),
-      height(size.y) {}
+      size_(size) {}
 
-Image::~Image() {
+Rasterizer::~Rasterizer() {
   std::free(depth_buffer_);
   std::free(color_buffer_);
 }
 
-void* Image::GetPixels() const {
+void* Rasterizer::GetPixels() const {
   return color_buffer_;
 }
 
-void* Image::GetDepthPixels() const {
+void* Rasterizer::GetDepthPixels() const {
   return depth_buffer_;
 }
 
-size_t Image::GetWidth() const {
-  return width;
+glm::ivec2 Rasterizer::GetSize() const {
+  return size_;
 }
 
-size_t Image::GetHeight() const {
-  return height;
-}
-
-size_t Image::GetBytesPerPixel() const {
+size_t Rasterizer::GetBytesPerPixel() const {
   return sizeof(uint32_t);
 }
 
-size_t Image::GetDepthBytesPerPixel() const {
+size_t Rasterizer::GetDepthBytesPerPixel() const {
   return sizeof(uint32_t);
 }
 
-void Image::SetDepthTestsEnabled(bool enabled) {
+void Rasterizer::SetDepthTestsEnabled(bool enabled) {
   depth_test_enabled_ = enabled;
 }
 
-bool Image::Set(glm::vec3 pos, Color color) {
+bool Rasterizer::Set(glm::vec3 pos, Color color) {
   if (!color_buffer_ || !depth_buffer_ || pos.x < 0 || pos.y < 0 ||
-      pos.x >= width || pos.y >= height) {
+      pos.x >= size_.x || pos.y >= size_.y) {
     return false;
   }
 
   const glm::ivec2 ipos = pos;
 
-  const auto offset = width * ipos.y + ipos.x;
+  const auto offset = size_.x * ipos.y + ipos.x;
 
   auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
   auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;
@@ -68,25 +63,25 @@ bool Image::Set(glm::vec3 pos, Color color) {
   return true;
 }
 
-void Image::Clear(Color color) {
-  for (size_t j = 0; j < height; j++) {
-    for (size_t i = 0; i < width; i++) {
+void Rasterizer::Clear(Color color) {
+  for (size_t j = 0; j < size_.y; j++) {
+    for (size_t i = 0; i < size_.x; i++) {
       Set({i, j, 0}, color);
     }
   }
 }
 
-void Image::DrawLine(glm::vec3 p1, glm::vec3 p2, Color color) {
+void Rasterizer::DrawLine(glm::vec3 p1, glm::vec3 p2, Color color) {
   const auto steps = std::max(std::abs(p2.x - p1.x), std::abs(p2.y - p1.y));
   for (auto i = 0; i < steps; i++) {
     Set(glm::mix(p1, p2, i / steps), color);
   }
 }
 
-void Image::DrawTriangle(glm::vec3 p1,
-                         glm::vec3 p2,
-                         glm::vec3 p3,
-                         Color color) {
+void Rasterizer::DrawTriangle(glm::vec3 p1,
+                              glm::vec3 p2,
+                              glm::vec3 p3,
+                              Color color) {
   const auto bounding_box = GetBoundingBox(p1, p2, p3);
   for (auto y = 0; y < bounding_box.size.height; y++) {
     for (auto x = 0; x < bounding_box.size.width; x++) {
@@ -101,7 +96,7 @@ void Image::DrawTriangle(glm::vec3 p1,
   }
 }
 
-Rect Image::GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
+Rect Rasterizer::GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
   const auto min =
       glm::vec2{std::min({p1.x, p2.x, p3.x}), std::min({p1.y, p2.y, p3.y})};
   const auto max =
@@ -109,10 +104,10 @@ Rect Image::GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
   return Rect{{min.x, min.y}, {max.x - min.x, max.y - min.y}};
 }
 
-glm::vec3 Image::GetBaryCentricCoordinates(glm::vec2 p,
-                                           glm::vec2 a,
-                                           glm::vec2 b,
-                                           glm::vec2 c) {
+glm::vec3 Rasterizer::GetBaryCentricCoordinates(glm::vec2 p,
+                                                glm::vec2 a,
+                                                glm::vec2 b,
+                                                glm::vec2 c) {
   glm::vec2 v0 = b - a, v1 = c - a, v2 = p - a;
   ScalarF one_over_den = 1.0f / (v0.x * v1.y - v1.x * v0.y);
   ScalarF v = (v2.x * v1.y - v1.x * v2.y) * one_over_den;

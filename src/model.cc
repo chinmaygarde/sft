@@ -57,7 +57,7 @@ bool Model::IsValid() const {
   return is_valid_;
 }
 
-void Model::RenderTo(Image& image) {
+void Model::RenderTo(Rasterizer& image) {
   if (!IsValid()) {
     return;
   }
