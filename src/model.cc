@@ -57,34 +57,25 @@ bool Model::IsValid() const {
   return is_valid_;
 }
 
+void Model::SetTransformation(glm::mat4 xformation) {
+  xformation_ = std::move(xformation);
+}
+
 void Model::RenderTo(Rasterizer& image) {
   if (!IsValid()) {
     return;
   }
 
-  const auto elapsed_time =
-      std::chrono::duration_cast<std::chrono::milliseconds>(
-          (std::chrono::high_resolution_clock::now() - start_time_) / 2.0);
+  glm::vec2 size = image.GetSize();
 
-  auto rotation_degrees = glm::radians(180.f * elapsed_time.count() / 1000.f);
-  rotation_degrees = 0;
+  glm::mat4 proj = glm::orthoLH_NO(0.0f, size.x, 0.0f, size.y, -50.0f, 50.0f);
+  glm::mat4 view =
+      glm::translate(glm::identity<glm::mat4>(),
+                     glm::vec3(size.x / 2.0, -75.0 + (size.y / 2.0), 0.0)) *
+      glm::scale(glm::identity<glm::mat4>(), glm::vec3(4.0, 4.0, 1.0));
+  glm::mat4 model = xformation_;
 
-  auto scale_factor =
-      (std::sin(glm::radians(((elapsed_time.count() % 1000) / 1000.f) * 360)) *
-       1.0) +
-      2.0;
-  scale_factor = 2.5;
-
-  const auto flip = glm::rotate(glm::identity<glm::mat4>(), glm::radians(180.f),
-                                glm::vec3(1.f, 0.f, 0.f));
-  const auto translate =
-      glm::translate(glm::identity<glm::mat4>(), glm::vec3(200.f, 300.f, 0.0f));
-  const auto rotate = glm::rotate(glm::identity<glm::mat4>(), rotation_degrees,
-                                  glm::vec3(0.f, 1.f, 0.f));
-  const auto scale =
-      glm::scale(glm::identity<glm::mat4>(),
-                 glm::vec3(scale_factor, scale_factor, scale_factor));
-  const auto mvp = translate * flip * rotate * scale;
+  const auto mvp = proj * view * model;
   for (size_t i = 0, count = vertices_.size(); i < count; i += 3) {
     if (i + 2 >= count) {
       return;
@@ -96,7 +87,6 @@ void Model::RenderTo(Rasterizer& image) {
     glm::vec3 light_direction = {0, 0, -1};
     glm::vec3 normal = glm::normalize(glm::cross(p2 - p1, p3 - p1));
     float intensity = glm::dot(light_direction, normal);
-
     if (intensity >= 0.0) {
       image.DrawTriangle(p1, p2, p3, Color::Gray(intensity));
     }

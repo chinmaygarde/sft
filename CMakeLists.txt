@@ -19,8 +19,8 @@ add_library(sft_lib
   src/model.h
   src/rasterizer.cc
   src/rasterizer.h
-  src/renderer.cc
-  src/renderer.h
+  src/application.cc
+  src/application.h
   src/sdl_utils.cc
   src/sdl_utils.h
 )

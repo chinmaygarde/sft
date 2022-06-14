@@ -1,13 +1,13 @@
-#include "renderer.h"
+#include "application.h"
 
 namespace sft {
 
-Renderer::Renderer() {
-  render_surface_size_ = {800, 600};
-  window_size_ = render_surface_size_;
+Application::Application() {
+  glm::ivec2 render_surface_size = {800, 600};
+  window_size_ = render_surface_size;
   window_size_.x *= 2.0;
 
-  rasterizer_ = std::make_unique<Rasterizer>(render_surface_size_);
+  rasterizer_ = std::make_unique<Rasterizer>(render_surface_size);
 
   if (!rasterizer_ || !rasterizer_->GetPixels()) {
     return;
@@ -40,7 +40,7 @@ Renderer::Renderer() {
   is_valid_ = true;
 }
 
-Renderer::~Renderer() {
+Application::~Application() {
   if (window_) {
     ::SDL_DestroyWindow(window_);
   }
@@ -49,7 +49,7 @@ Renderer::~Renderer() {
   }
 }
 
-bool Renderer::Render() {
+bool Application::Render() {
   if (!is_valid_) {
     return false;
   }
@@ -93,23 +93,43 @@ bool Renderer::Render() {
   return true;
 }
 
-bool Renderer::Update() {
+bool Application::Update() {
   rasterizer_->SetDepthTestsEnabled(false);
   rasterizer_->Clear(kColorWhite);
   rasterizer_->SetDepthTestsEnabled(true);
-  rasterizer_->DrawTriangle({-1, -1, -1},  //
-                            {1, -1, -1},   //
-                            {0, 1, 1},     //
-                            kColorRed);
-  rasterizer_->DrawTriangle({-1, 1, -1},  //
-                            {1, 1, -1},   //
-                            {0, -1, 1},   //
-                            kColorGreen);
-  // model_->RenderTo(*rasterizer_);
-  // rasterizer_->DrawLine({0, 0, 0},
-  //                       {render_surface_size_.x,
-  //                       render_surface_size_.y, 1.0}, kColorBlue);
+  // rasterizer_->DrawTriangle({-1, -1, -1},  //
+  //                           {1, -1, -1},   //
+  //                           {0, 1, 1},     //
+  //                           kColorRed);
+  // rasterizer_->DrawTriangle({-1, 1, -1},  //
+  //                           {1, 1, -1},   //
+  //                           {0, -1, 1},   //
+  //                           kColorGreen);
+  model_->RenderTo(*rasterizer_);
+
   return true;
+}
+
+void Application::OnTouchEvent(TouchEventType type, glm::vec2 pos) {
+  switch (type) {
+    case TouchEventType::kTouchDown:
+      last_touch_ = pos;
+      break;
+    case TouchEventType::kTouchUp:
+      last_touch_.reset();
+      break;
+    case TouchEventType::kTouchMove:
+      if (!last_touch_.has_value()) {
+        return;
+      }
+      touch_offset_ += (pos - last_touch_.value());
+      last_touch_ = pos;
+      break;
+  }
+
+  model_->SetTransformation(glm::rotate(glm::identity<glm::mat4>(),
+                                        glm::radians(touch_offset_.x),
+                                        glm::vec3(0.0f, -1.0f, 0.0f)));
 }
 
 }  // namespace sft

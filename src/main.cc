@@ -2,9 +2,9 @@
 #include <iostream>
 #include <memory>
 
+#include "application.h"
 #include "geom.h"
 #include "rasterizer.h"
-#include "renderer.h"
 
 namespace sft {
 
@@ -15,12 +15,29 @@ bool Main(int argc, char const* argv[]) {
 
   bool is_running = true;
 
-  Renderer renderer;
+  Application application;
   while (is_running) {
-    is_running = renderer.Render();
+    is_running = application.Render();
     ::SDL_Event event;
     if (::SDL_PollEvent(&event) == 1) {
       switch (event.type) {
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+          if (event.button.button != SDL_BUTTON_LEFT) {
+            break;
+          }
+          application.OnTouchEvent(event.type == SDL_MOUSEBUTTONDOWN
+                                       ? TouchEventType::kTouchDown
+                                       : TouchEventType::kTouchUp,
+                                   glm::vec2{event.button.x, event.button.y});
+          break;
+        case SDL_MOUSEMOTION:
+          if (event.button.button != SDL_BUTTON_LEFT) {
+            break;
+          }
+          application.OnTouchEvent(TouchEventType::kTouchMove,
+                                   glm::vec2{event.button.x, event.button.y});
+          break;
         case SDL_KEYUP:
           switch (event.key.keysym.sym) {
             case SDL_KeyCode::SDLK_q:

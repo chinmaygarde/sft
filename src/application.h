@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <memory>
+#include "event.h"
 #include "geom.h"
 #include "model.h"
 #include "rasterizer.h"
@@ -9,27 +10,31 @@
 
 namespace sft {
 
-class Renderer {
+class Application {
  public:
-  Renderer();
+  Application();
 
-  ~Renderer();
+  ~Application();
 
   bool Render();
 
   bool Update();
 
+  void OnTouchEvent(TouchEventType type, glm::vec2 pos);
+
  private:
   std::unique_ptr<Rasterizer> rasterizer_;
-  glm::ivec2 render_surface_size_;
   glm::ivec2 window_size_;
   SDL_Window* window_ = nullptr;
   SDL_Renderer* renderer_ = nullptr;
   std::unique_ptr<Model> model_;
+  glm::vec2 touch_offset_;
+  std::optional<glm::vec2> last_touch_;
+
   bool is_valid_ = false;
 
-  Renderer(const Renderer&) = delete;
-  Renderer& operator=(const Renderer&) = delete;
+  Application(const Application&) = delete;
+  Application& operator=(const Application&) = delete;
 };
 
 }  // namespace sft

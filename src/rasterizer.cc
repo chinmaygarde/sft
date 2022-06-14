@@ -1,4 +1,5 @@
 #include "rasterizer.h"
+#include "macros.h"
 
 namespace sft {
 
@@ -37,14 +38,8 @@ void Rasterizer::SetDepthTestsEnabled(bool enabled) {
   depth_test_enabled_ = enabled;
 }
 
-constexpr bool IsClipped(glm::vec3 pos) {
-  return pos.x < -1.0 || pos.x > 1.0 ||  //
-         pos.y < -1.0 || pos.y > 1.0 ||  //
-         pos.z < -1.0 || pos.z > 1.0;
-}
-
 constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
-  return pos.x < 0 || pos.y < 0 || -pos.x >= size.x || pos.y >= size.y;
+  return pos.x < 0 || pos.y < 0 || -pos.x > size.x || pos.y > size.y;
 }
 
 void Rasterizer::UpdateTexel(Texel texel) {
@@ -83,7 +78,7 @@ void Rasterizer::Clear(Color color) {
   }
 }
 
-constexpr glm::ivec2 ToTexelPos(glm::vec3 nd_pos, glm::ivec2 viewport) {
+constexpr glm::ivec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
   return {
       (viewport.x / 2.0) * (nd_pos.x + 1.0),  //
       (viewport.y / 2.0) * (nd_pos.y + 1.0),  //
@@ -114,11 +109,6 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
                               glm::vec3 ndc_p2,
                               glm::vec3 ndc_p3,
                               Color color) {
-  // This is different from OpenGL behavior. But close enough.
-  if (IsClipped(ndc_p1) && IsClipped(ndc_p2) && IsClipped(ndc_p3)) {
-    return;
-  }
-
   const auto p1 = ToTexelPos(ndc_p1, viewport_);
   const auto p2 = ToTexelPos(ndc_p2, viewport_);
   const auto p3 = ToTexelPos(ndc_p3, viewport_);

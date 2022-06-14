@@ -20,11 +20,12 @@ class Model {
 
   void RenderTo(Rasterizer& image);
 
+  void SetTransformation(glm::mat4 xformation);
+
  private:
   std::vector<glm::vec4> vertices_;
+  glm::mat4 xformation_ = glm::identity<glm::mat4>();
   bool is_valid_ = false;
-  const std::chrono::high_resolution_clock::time_point start_time_ =
-      std::chrono::high_resolution_clock::now();
 
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;
