@@ -38,4 +38,12 @@ SDLTextureNoCopyCaster::~SDLTextureNoCopyCaster() {
   }
 }
 
+SDLTextureNoCopyCaster::operator bool() const {
+  return static_cast<SDL_Texture*>(*this) != NULL;
+}
+
+SDLTextureNoCopyCaster::operator SDL_Texture*() const {
+  return texture_;
+}
+
 }  // namespace sft

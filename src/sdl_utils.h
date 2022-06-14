@@ -13,9 +13,9 @@ struct SDLTextureNoCopyCaster {
 
   ~SDLTextureNoCopyCaster();
 
-  operator bool() const { return static_cast<SDL_Texture*>(*this) != NULL; }
+  operator bool() const;
 
-  operator SDL_Texture*() const { return texture_; }
+  operator SDL_Texture*() const;
 
  private:
   SDL_Surface* surface_ = nullptr;
