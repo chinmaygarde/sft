@@ -25,11 +25,7 @@ class Rasterizer {
 
   void SetDepthTestsEnabled(bool enabled);
 
-  bool Set(glm::vec3 pos, Color color);
-
   void Clear(Color color);
-
-  void DrawLine(glm::vec3 p1, glm::vec3 p2, Color color);
 
   void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color);
 
@@ -40,12 +36,7 @@ class Rasterizer {
   glm::ivec2 viewport_;
   bool depth_test_enabled_ = true;
 
-  static Rect GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
-
-  static glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
-                                             glm::vec2 a,
-                                             glm::vec2 b,
-                                             glm::vec2 c);
+  void UpdateTexel(Texel texel);
 
   Rasterizer(const Rasterizer&) = delete;
   Rasterizer& operator=(const Rasterizer&) = delete;

@@ -12,7 +12,9 @@ using Scalar = int32_t;
 using ScalarF = float;
 
 struct Color {
-  const uint32_t color = 0u;
+  uint32_t color = 0u;
+
+  Color() = default;
 
   constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
       : color(a << 24 | r << 16 | g << 8 | b << 0) {}
@@ -55,6 +57,12 @@ struct Size {
 struct Rect {
   glm::vec2 origin;
   Size size;
+};
+
+struct Texel {
+  glm::ivec2 pos;
+  ScalarF depth = 0.0;
+  Color color;
 };
 
 }  // namespace sft

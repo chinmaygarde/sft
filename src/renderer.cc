@@ -3,7 +3,7 @@
 namespace sft {
 
 Renderer::Renderer() {
-  render_surface_size_ = {800, 800};
+  render_surface_size_ = {800, 600};
   window_size_ = render_surface_size_;
   window_size_.x *= 2.0;
 
@@ -80,11 +80,13 @@ bool Renderer::Render() {
   dest.y = 0;
   dest.w = size.x;
   dest.h = size.y;
-  if (::SDL_RenderCopy(renderer_, color_attachment, nullptr, &dest) != 0) {
+  if (::SDL_RenderCopyEx(renderer_, color_attachment, nullptr, &dest, 180, NULL,
+                         SDL_FLIP_HORIZONTAL) != 0) {
     return false;
   }
   dest.x += dest.w;
-  if (::SDL_RenderCopy(renderer_, depth_attachment, nullptr, &dest) != 0) {
+  if (::SDL_RenderCopyEx(renderer_, depth_attachment, nullptr, &dest, 180, NULL,
+                         SDL_FLIP_HORIZONTAL) != 0) {
     return false;
   }
   ::SDL_RenderPresent(renderer_);
@@ -99,11 +101,10 @@ bool Renderer::Update() {
                             {1, -1, -1},   //
                             {0, 1, 1},     //
                             kColorRed);
-  // rasterizer_->DrawTriangle(
-  //     {0, 0, 0},                                                  //
-  //     {render_surface_size_.x, 0, 0},                             //
-  //     {render_surface_size_.x / 2.0, render_surface_size_.y, 1},  //
-  //     kColorGreen);
+  rasterizer_->DrawTriangle({-1, 1, -1},  //
+                            {1, 1, -1},   //
+                            {0, -1, 1},   //
+                            kColorGreen);
   // model_->RenderTo(*rasterizer_);
   // rasterizer_->DrawLine({0, 0, 0},
   //                       {render_surface_size_.x,
