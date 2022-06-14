@@ -99,9 +99,9 @@ class Renderer {
 
   bool Update() {
     image_->SetDepthTestsEnabled(false);
-    image_->Clear(kColorWhite);
+    image_->Clear(kColorGreen);
     image_->SetDepthTestsEnabled(true);
-    model_->RenderTo(*image_);
+
     image_->DrawTriangle({0, 400, 0},    //
                          {400, 400, 0},  //
                          {200, 0, 1},    //
@@ -110,6 +110,7 @@ class Renderer {
                          {400, 0, 0},    //
                          {200, 400, 1},  //
                          kColorGreen);
+    model_->RenderTo(*image_);
     image_->DrawLine({0, 0, 0},
                      {render_surface_size_.x, render_surface_size_.y, 1.0},
                      kColorBlue);

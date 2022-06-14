@@ -73,11 +73,13 @@ class Model {
             (std::chrono::high_resolution_clock::now() - start_time_) / 2.0);
 
     auto rotation_degrees = glm::radians(180.f * elapsed_time.count() / 1000.f);
+    rotation_degrees = 0;
 
     auto scale_factor = (std::sin(glm::radians(
                              ((elapsed_time.count() % 1000) / 1000.f) * 360)) *
                          1.0) +
                         2.0;
+    scale_factor = 2.5;
 
     const auto flip =
         glm::rotate(glm::identity<glm::mat4>(), glm::radians(180.f),
@@ -94,11 +96,17 @@ class Model {
       if (i + 2 >= count) {
         return;
       }
-      image.DrawTriangle(mvp * vertices_[i + 0],  //
-                         mvp * vertices_[i + 1],  //
-                         mvp * vertices_[i + 2],  //
-                         Color::Random()          //
-      );
+      glm::vec3 p1 = mvp * vertices_[i + 0];
+      glm::vec3 p2 = mvp * vertices_[i + 1];
+      glm::vec3 p3 = mvp * vertices_[i + 2];
+
+      glm::vec3 light_direction = {0, 0, -1};
+      glm::vec3 normal = glm::normalize(glm::cross(p2 - p1, p3 - p1));
+      float intensity = glm::dot(light_direction, normal);
+
+      if (intensity >= 0.0) {
+        image.DrawTriangle(p1, p2, p3, Color::Gray(intensity));
+      }
     }
   }
 
