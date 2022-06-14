@@ -93,22 +93,21 @@ bool Renderer::Render() {
 
 bool Renderer::Update() {
   rasterizer_->SetDepthTestsEnabled(false);
-  rasterizer_->Clear(kColorGreen);
+  rasterizer_->Clear(kColorWhite);
   rasterizer_->SetDepthTestsEnabled(true);
-
-  rasterizer_->DrawTriangle({render_surface_size_, 0},             //
-                            {render_surface_size_, 0},             //
-                            {render_surface_size_.x / 2.0, 0, 1},  //
+  rasterizer_->DrawTriangle({-1, -1, -1},  //
+                            {1, -1, -1},   //
+                            {0, 1, 1},     //
                             kColorRed);
-  rasterizer_->DrawTriangle(
-      {0, 0, 0},                                                  //
-      {render_surface_size_.x, 0, 0},                             //
-      {render_surface_size_.x / 2.0, render_surface_size_.y, 1},  //
-      kColorGreen);
-  model_->RenderTo(*rasterizer_);
-  rasterizer_->DrawLine({0, 0, 0},
-                        {render_surface_size_.x, render_surface_size_.y, 1.0},
-                        kColorBlue);
+  // rasterizer_->DrawTriangle(
+  //     {0, 0, 0},                                                  //
+  //     {render_surface_size_.x, 0, 0},                             //
+  //     {render_surface_size_.x / 2.0, render_surface_size_.y, 1},  //
+  //     kColorGreen);
+  // model_->RenderTo(*rasterizer_);
+  // rasterizer_->DrawLine({0, 0, 0},
+  //                       {render_surface_size_.x,
+  //                       render_surface_size_.y, 1.0}, kColorBlue);
   return true;
 }
 

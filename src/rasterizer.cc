@@ -5,7 +5,8 @@ namespace sft {
 Rasterizer::Rasterizer(glm::ivec2 size)
     : color_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
       depth_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
-      size_(size) {}
+      size_(size),
+      viewport_(size) {}
 
 Rasterizer::~Rasterizer() {
   std::free(depth_buffer_);
@@ -36,15 +37,37 @@ void Rasterizer::SetDepthTestsEnabled(bool enabled) {
   depth_test_enabled_ = enabled;
 }
 
+constexpr bool IsClipped(glm::vec3 pos) {
+  return pos.x >= -1.0 && pos.x <= 1.0 &&  //
+         pos.y >= -1.0 && pos.y <= 1.0 &&  //
+         pos.z >= -1.0 && pos.z <= 1.0;
+}
+
+constexpr glm::ivec2 ToTexelPos(glm::vec3 nd_pos, glm::ivec2 viewport) {
+  return {
+      (viewport.x / 2.0) * (nd_pos.x + 1.0),  //
+      (viewport.y / 2.0) * (nd_pos.y + 1.0),  //
+  };
+}
+
+constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
+  return pos.x < 0 || pos.y < 0 || -pos.x >= size.x || pos.y >= size.y;
+}
+
 bool Rasterizer::Set(glm::vec3 pos, Color color) {
-  if (!color_buffer_ || !depth_buffer_ || pos.x < 0 || pos.y < 0 ||
-      pos.x >= size_.x || pos.y >= size_.y) {
+  if (IsClipped(pos)) {
     return false;
   }
 
-  const glm::ivec2 ipos = pos;
+  const glm::ivec2 texel_pos = ToTexelPos(pos, viewport_);
 
-  const auto offset = size_.x * ipos.y + ipos.x;
+  std::cout << texel_pos.x << "x" << texel_pos.y << std::endl;
+
+  if (IsOOB(texel_pos, size_)) {
+    return true;
+  }
+
+  const auto offset = size_.x * texel_pos.y + texel_pos.x;
 
   auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
   auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;

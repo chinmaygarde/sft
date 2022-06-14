@@ -37,6 +37,7 @@ class Rasterizer {
   void* color_buffer_ = nullptr;
   void* depth_buffer_ = nullptr;
   const glm::ivec2 size_;
+  glm::ivec2 viewport_;
   bool depth_test_enabled_ = true;
 
   static Rect GetBoundingBox(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
