@@ -29,11 +29,13 @@ add_library(sft_lib
   src/shaders/simple_shader.h
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
+  src/texture.cc
+  src/texture.h
 )
 
 target_link_libraries(sft_lib SDL2 tinyobjloader glm)
 
-target_include_directories(sft_lib PUBLIC src)
+target_include_directories(sft_lib PUBLIC src third_party/stb)
 
 add_executable(sft src/main.cc)
 

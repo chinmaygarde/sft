@@ -1,5 +1,6 @@
 #include "application.h"
 #include "shaders/simple_shader.h"
+#include "shaders/texture_shader.h"
 
 namespace sft {
 
@@ -13,7 +14,10 @@ Application::Application() {
   auto pipeline = std::make_shared<Pipeline>();
 
   pipeline->viewport = render_surface_size;
-  pipeline->shader = std::make_shared<SimpleShader>();
+
+  auto shader = std::make_shared<TextureShader>();
+  shader->SetTexture(std::make_shared<Texture>("assets/image.png"));
+  pipeline->shader = shader;
 
   rasterizer_->SetPipeline(std::move(pipeline));
 
