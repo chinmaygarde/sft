@@ -23,6 +23,8 @@ add_library(sft_lib
   src/application.h
   src/sdl_utils.cc
   src/sdl_utils.h
+  src/pipeline.cc
+  src/pipeline.h
 )
 
 target_link_libraries(sft_lib SDL2 tinyobjloader glm)

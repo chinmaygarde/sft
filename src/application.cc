@@ -2,12 +2,28 @@
 
 namespace sft {
 
+class SimpleShader final : public Shader {
+ public:
+  glm::vec3 ProcessVertex(glm::vec3 in) override { return in; }
+
+  Color ProcessFragment(glm::vec3 bary_pos) override {
+    return Color::FromComponentsF(bary_pos.x, bary_pos.y, bary_pos.z, 1.0);
+  }
+};
+
 Application::Application() {
   glm::ivec2 render_surface_size = {800, 600};
   window_size_ = render_surface_size;
   window_size_.x *= 2.0;
 
   rasterizer_ = std::make_unique<Rasterizer>(render_surface_size);
+
+  auto pipeline = std::make_shared<Pipeline>();
+
+  pipeline->viewport = render_surface_size;
+  pipeline->shader = std::make_shared<SimpleShader>();
+
+  rasterizer_->SetPipeline(std::move(pipeline));
 
   if (!rasterizer_ || !rasterizer_->GetPixels()) {
     return;
@@ -94,9 +110,8 @@ bool Application::Render() {
 }
 
 bool Application::Update() {
-  rasterizer_->SetDepthTestsEnabled(false);
   rasterizer_->Clear(kColorWhite);
-  rasterizer_->SetDepthTestsEnabled(true);
+
   // rasterizer_->DrawTriangle({-1, -1, -1},  //
   //                           {1, -1, -1},   //
   //                           {0, 1, 1},     //

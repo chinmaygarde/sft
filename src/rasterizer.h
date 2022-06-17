@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include "geom.h"
+#include "pipeline.h"
 
 namespace sft {
 
@@ -23,7 +25,7 @@ class Rasterizer {
 
   size_t GetDepthBytesPerPixel() const;
 
-  void SetDepthTestsEnabled(bool enabled);
+  void SetPipeline(std::shared_ptr<Pipeline> pipeline) { pipeline_ = pipeline; }
 
   void Clear(Color color);
 
@@ -33,8 +35,7 @@ class Rasterizer {
   void* color_buffer_ = nullptr;
   void* depth_buffer_ = nullptr;
   const glm::ivec2 size_;
-  glm::ivec2 viewport_;
-  bool depth_test_enabled_ = true;
+  std::shared_ptr<Pipeline> pipeline_;
 
   void UpdateTexel(Texel texel);
 

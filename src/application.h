@@ -5,6 +5,7 @@
 #include "event.h"
 #include "geom.h"
 #include "model.h"
+#include "pipeline.h"
 #include "rasterizer.h"
 #include "sdl_utils.h"
 
@@ -30,7 +31,7 @@ class Application {
   std::unique_ptr<Model> model_;
   glm::vec2 touch_offset_;
   std::optional<glm::vec2> last_touch_;
-
+  std::shared_ptr<Pipeline> pipeline_;
   bool is_valid_ = false;
 
   Application(const Application&) = delete;

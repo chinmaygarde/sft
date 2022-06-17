@@ -6,8 +6,7 @@ namespace sft {
 Rasterizer::Rasterizer(glm::ivec2 size)
     : color_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
       depth_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
-      size_(size),
-      viewport_(size) {}
+      size_(size) {}
 
 Rasterizer::~Rasterizer() {
   std::free(depth_buffer_);
@@ -34,10 +33,6 @@ size_t Rasterizer::GetDepthBytesPerPixel() const {
   return sizeof(uint32_t);
 }
 
-void Rasterizer::SetDepthTestsEnabled(bool enabled) {
-  depth_test_enabled_ = enabled;
-}
-
 constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
   return pos.x < 0 || pos.y < 0 || -pos.x > size.x || pos.y > size.y;
 }
@@ -54,7 +49,7 @@ void Rasterizer::UpdateTexel(Texel texel) {
 
   auto new_depth = Color::Gray(texel.depth);
 
-  if (depth_test_enabled_) {
+  if (pipeline_->depth_test_enabled) {
     const auto old_depth = Color(depth_ptr[0]);
     if (new_depth.GetRed() > old_depth.GetRed()) {
       return;
@@ -109,9 +104,15 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
                               glm::vec3 ndc_p2,
                               glm::vec3 ndc_p3,
                               Color color) {
-  const auto p1 = ToTexelPos(ndc_p1, viewport_);
-  const auto p2 = ToTexelPos(ndc_p2, viewport_);
-  const auto p3 = ToTexelPos(ndc_p3, viewport_);
+  auto viewport = pipeline_->viewport;
+
+  ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1);
+  ndc_p2 = pipeline_->shader->ProcessVertex(ndc_p2);
+  ndc_p3 = pipeline_->shader->ProcessVertex(ndc_p3);
+
+  const auto p1 = ToTexelPos(ndc_p1, viewport);
+  const auto p2 = ToTexelPos(ndc_p2, viewport);
+  const auto p3 = ToTexelPos(ndc_p3, viewport);
 
   const auto bounding_box = GetBoundingBox(p1, p2, p3);
   for (auto y = 0; y < bounding_box.size.height; y++) {
@@ -125,7 +126,7 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
         Texel texel;
         texel.pos = p;
         texel.depth = bary_pos.z;
-        texel.color = color;
+        texel.color = pipeline_->shader->ProcessFragment(bary);
         UpdateTexel(texel);
       }
     }
