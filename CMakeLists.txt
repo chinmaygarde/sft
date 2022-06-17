@@ -25,8 +25,21 @@ add_library(sft_lib
   src/rasterizer.h
   src/sdl_utils.cc
   src/sdl_utils.h
+  # src/shaders/impeller.frag.gen.h
+  # src/shaders/impeller.vert.gen.h
+  # src/shaders/impeller.frag.h
+  # src/shaders/impeller.vert.h
+  # src/shaders/impeller.frag.cc
+  # src/shaders/impeller.vert.cc
   src/shaders/simple_shader.cc
   src/shaders/simple_shader.h
+  src/shaders/spirv_cross
+  src/shaders/spirv_cross/barrier.hpp
+  src/shaders/spirv_cross/external_interface.h
+  src/shaders/spirv_cross/image.hpp
+  src/shaders/spirv_cross/internal_interface.hpp
+  src/shaders/spirv_cross/sampler.hpp
+  src/shaders/spirv_cross/thread_group.hpp
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
   src/texture.cc
