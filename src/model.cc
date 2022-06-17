@@ -88,7 +88,7 @@ void Model::RenderTo(Rasterizer& image) {
     glm::vec3 normal = glm::normalize(glm::cross(p2 - p1, p3 - p1));
     float intensity = glm::dot(light_direction, normal);
     if (intensity >= 0.0) {
-      image.DrawTriangle(p1, p2, p3, Color::Gray(intensity));
+      image.DrawTriangle(p1, p2, p3);
     }
   }
 }

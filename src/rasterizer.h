@@ -29,7 +29,7 @@ class Rasterizer {
 
   void Clear(Color color);
 
-  void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, Color color);
+  void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 
  private:
   void* color_buffer_ = nullptr;

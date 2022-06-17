@@ -1,15 +1,7 @@
 #include "application.h"
+#include "shaders/simple_shader.h"
 
 namespace sft {
-
-class SimpleShader final : public Shader {
- public:
-  glm::vec3 ProcessVertex(glm::vec3 in) override { return in; }
-
-  Color ProcessFragment(glm::vec3 bary_pos) override {
-    return Color::FromComponentsF(bary_pos.x, bary_pos.y, bary_pos.z, 1.0);
-  }
-};
 
 Application::Application() {
   glm::ivec2 render_surface_size = {800, 600};
@@ -111,16 +103,15 @@ bool Application::Render() {
 
 bool Application::Update() {
   rasterizer_->Clear(kColorWhite);
-
-  // rasterizer_->DrawTriangle({-1, -1, -1},  //
-  //                           {1, -1, -1},   //
-  //                           {0, 1, 1},     //
-  //                           kColorRed);
-  // rasterizer_->DrawTriangle({-1, 1, -1},  //
-  //                           {1, 1, -1},   //
-  //                           {0, -1, 1},   //
-  //                           kColorGreen);
-  model_->RenderTo(*rasterizer_);
+  rasterizer_->DrawTriangle({-1, -1, -1},  //
+                            {1, -1, -1},   //
+                            {0, 1, 1}      //
+  );
+  rasterizer_->DrawTriangle({-1, 1, -1},  //
+                            {1, 1, -1},   //
+                            {0, -1, 1}    //
+  );
+  // model_->RenderTo(*rasterizer_);
 
   return true;
 }

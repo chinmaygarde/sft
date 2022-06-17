@@ -13,21 +13,27 @@ add_subdirectory(third_party/googlebenchmark)
 add_subdirectory(third_party/glm)
 
 add_library(sft_lib
+  src/application.cc
+  src/application.h
   src/geom.cc
   src/geom.h
   src/model.cc
   src/model.h
-  src/rasterizer.cc
-  src/rasterizer.h
-  src/application.cc
-  src/application.h
-  src/sdl_utils.cc
-  src/sdl_utils.h
   src/pipeline.cc
   src/pipeline.h
+  src/rasterizer.cc
+  src/rasterizer.h
+  src/sdl_utils.cc
+  src/sdl_utils.h
+  src/shaders/simple_shader.cc
+  src/shaders/simple_shader.h
+  src/shaders/texture_shader.cc
+  src/shaders/texture_shader.h
 )
 
 target_link_libraries(sft_lib SDL2 tinyobjloader glm)
+
+target_include_directories(sft_lib PUBLIC src)
 
 add_executable(sft src/main.cc)
 

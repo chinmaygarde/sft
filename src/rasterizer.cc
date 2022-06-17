@@ -1,11 +1,12 @@
 #include "rasterizer.h"
+#include <strings.h>
 #include "macros.h"
 
 namespace sft {
 
 Rasterizer::Rasterizer(glm::ivec2 size)
-    : color_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
-      depth_buffer_(std::calloc(size.x * size.y * 4, sizeof(uint8_t))),
+    : color_buffer_(std::calloc(size.x * size.y, sizeof(Color))),
+      depth_buffer_(std::calloc(size.x * size.y, sizeof(Color))),
       size_(size) {}
 
 Rasterizer::~Rasterizer() {
@@ -61,16 +62,8 @@ void Rasterizer::UpdateTexel(Texel texel) {
 }
 
 void Rasterizer::Clear(Color color) {
-  Texel texel;
-  texel.color = color;
-  texel.depth = 0;
-
-  for (size_t j = 0; j < size_.y; j++) {
-    for (size_t i = 0; i < size_.x; i++) {
-      texel.pos = {i, j};
-      UpdateTexel(texel);
-    }
-  }
+  memset_pattern4(color_buffer_, &color, size_.x * size_.y * sizeof(Color));
+  bzero(depth_buffer_, size_.x * size_.y * sizeof(color));
 }
 
 constexpr glm::ivec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
@@ -102,8 +95,7 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 
 void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
                               glm::vec3 ndc_p2,
-                              glm::vec3 ndc_p3,
-                              Color color) {
+                              glm::vec3 ndc_p3) {
   auto viewport = pipeline_->viewport;
 
   ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1);
@@ -123,10 +115,14 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
       if (bary.x >= 0.0 && bary.y >= 0.0 && bary.z >= 0.0) {
         const auto bary_pos =
             (bary.x * ndc_p1 + bary.y * ndc_p2 + bary.z * ndc_p3);
+        auto color = pipeline_->shader->ProcessFragment(bary);
+        if (!color.has_value()) {
+          continue;
+        }
         Texel texel;
         texel.pos = p;
         texel.depth = bary_pos.z;
-        texel.color = pipeline_->shader->ProcessFragment(bary);
+        texel.color = color.value();
         UpdateTexel(texel);
       }
     }
