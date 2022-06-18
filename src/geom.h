@@ -99,6 +99,7 @@ constexpr Color kColorGreen = {0, 255, 0, 255};
 constexpr Color kColorBlue = {0, 0, 255, 255};
 constexpr Color kColorWhite = {255, 255, 255, 255};
 constexpr Color kColorBlack = {0, 0, 0, 255};
+constexpr Color kColorTransparentBlack = {0, 0, 0, 0};
 
 struct Size {
   ScalarF width = 0.0;
@@ -114,6 +115,15 @@ struct Texel {
   glm::ivec2 pos;
   ScalarF depth = 0.0;
   Color color;
+};
+
+struct Sphere {
+  glm::vec3 center;
+  ScalarF radius = 0.0;
+
+  bool RayIntersects(glm::vec3 origin, glm::vec3 direction) const {
+    return true;
+  }
 };
 
 }  // namespace sft

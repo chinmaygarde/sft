@@ -42,45 +42,57 @@ struct Pipeline {
         return p_dst;
       case BlendMode::kSourceOver:
         return ColorF{
-            src.GetColor() + (1.0f - src.GetAlpha()) * dst.GetColor(),  //
-            src.GetAlpha() + (1.0f - src.GetAlpha()) * dst.GetAlpha()   //
+            src.GetColor() + (1.0f - src.GetAlpha()) * dst.GetColor(),
+            src.GetAlpha() + (1.0f - src.GetAlpha()) * dst.GetAlpha(),
         };
         return ColorF{
-            src.GetColor() + (1.0f - src.GetAlpha()) * dst.GetColor(),  //
-            src.GetAlpha() + (1.0f - src.GetAlpha()) * dst.GetAlpha()   //
+            src.GetColor() + (1.0f - src.GetAlpha()) * dst.GetColor(),
+            src.GetAlpha() + (1.0f - src.GetAlpha()) * dst.GetAlpha(),
         };
       case BlendMode::kDestinationOver:
         return ColorF{
-            dst.GetColor() + (1.0f - dst.GetAlpha()) * src.GetColor(),  //
-            dst.GetAlpha() + (1.0f - dst.GetAlpha()) * src.GetAlpha()   //
+            dst.GetColor() + (1.0f - dst.GetAlpha()) * src.GetColor(),
+            dst.GetAlpha() + (1.0f - dst.GetAlpha()) * src.GetAlpha(),
         };
       case BlendMode::kSourceIn:
-        return ColorF{src.GetColor() * dst.GetColor(),
-                      src.GetAlpha() * dst.GetAlpha()};
+        return ColorF{
+            src.GetColor() * dst.GetColor(),
+            src.GetAlpha() * dst.GetAlpha(),
+        };
       case BlendMode::kDestinationIn:
-        return ColorF{dst.GetColor() * src.GetAlpha(),
-                      src.GetAlpha() * dst.GetAlpha()};
+        return ColorF{
+            dst.GetColor() * src.GetAlpha(),
+            src.GetAlpha() * dst.GetAlpha(),
+        };
       case BlendMode::kSourceOut:
-        return ColorF{(1.0f - dst.GetAlpha()) * src.GetColor(),
-                      (1.0f - dst.GetAlpha()) * src.GetAlpha()};
+        return ColorF{
+            (1.0f - dst.GetAlpha()) * src.GetColor(),
+            (1.0f - dst.GetAlpha()) * src.GetAlpha(),
+        };
       case BlendMode::kDestinationOut:
         return ColorF{
             (1.0f - src.GetAlpha()) * dst.GetColor(),
             (1.0f - src.GetAlpha()) * dst.GetAlpha(),
         };
       case BlendMode::kSourceAtop:
-        return ColorF{dst.GetAlpha() * src.GetColor() +
-                          (1.0f - src.GetAlpha()) * dst.GetColor(),
-                      dst.GetAlpha()};
+        return ColorF{
+            dst.GetAlpha() * src.GetColor() +
+                (1.0f - src.GetAlpha()) * dst.GetColor(),
+            dst.GetAlpha(),
+        };
       case BlendMode::kDestinationAtop:
-        return ColorF{src.GetAlpha() * dst.GetColor() +
-                          (1.0f - dst.GetAlpha()) * src.GetColor(),
-                      src.GetAlpha()};
+        return ColorF{
+            src.GetAlpha() * dst.GetColor() +
+                (1.0f - dst.GetAlpha()) * src.GetColor(),
+            src.GetAlpha(),
+        };
       case BlendMode::kXOR:
-        return ColorF{1.0f - dst.GetAlpha() * src.GetColor() +
-                          (1.0f - src.GetAlpha()) * dst.GetColor(),
-                      (1.0f - dst.GetAlpha()) * src.GetAlpha() +
-                          (1.0f - src.GetAlpha()) * dst.GetAlpha()};
+        return ColorF{
+            (1.0f - dst.GetAlpha()) * src.GetColor() +
+                (1.0f - src.GetAlpha()) * dst.GetColor(),
+            (1.0f - dst.GetAlpha()) * src.GetAlpha() +
+                (1.0f - src.GetAlpha()) * dst.GetAlpha(),
+        };
     }
     return kColorBlack;
   }

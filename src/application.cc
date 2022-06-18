@@ -11,15 +11,15 @@ Application::Application() {
 
   rasterizer_ = std::make_unique<Rasterizer>(render_surface_size);
 
-  auto pipeline = std::make_shared<Pipeline>();
+  pipeline_ = std::make_shared<Pipeline>();
 
-  pipeline->viewport = render_surface_size;
+  pipeline_->viewport = render_surface_size;
 
   color_shader_ = std::make_shared<ColorShader>();
 
-  pipeline->shader = color_shader_;
+  pipeline_->shader = color_shader_;
 
-  rasterizer_->SetPipeline(std::move(pipeline));
+  rasterizer_->SetPipeline(pipeline_);
 
   if (!rasterizer_ || !rasterizer_->GetPixels()) {
     return;
@@ -108,7 +108,9 @@ bool Application::Render() {
 bool Application::Update() {
   rasterizer_->Clear(kColorWhite);
 
-  color_shader_->SetColor(kColorBlue.WithAlpha(255));
+  pipeline_->blend_mode = BlendMode::kSourceOver;
+
+  color_shader_->SetColor(kColorBlue.WithAlpha(128));
 
   auto tl = glm::vec3{-1 / 2.0, 1 / 2.0, 0};
   auto tr = glm::vec3{1 / 2.0, 1 / 2.0, 0};
@@ -116,6 +118,7 @@ bool Application::Update() {
   auto br = glm::vec3{1 / 2.0, -1 / 2.0, 0};
 
   auto d = glm::vec3{0.25, 0.25, 0.0};
+
   rasterizer_->DrawTriangle(bl - d, br - d, tr - d);
   rasterizer_->DrawTriangle(tr - d, tl - d, bl - d);
 
