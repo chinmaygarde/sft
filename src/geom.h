@@ -45,6 +45,9 @@ struct Color {
   constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
       : color(a << 24 | r << 16 | g << 8 | b << 0) {}
 
+  constexpr Color(const glm::vec4& c)
+      : Color(255 * c.r, 255 * c.g, 255 * c.b, 255 * c.a) {}
+
   constexpr Color(uint32_t p_color) : color(p_color) {}
 
   constexpr Color(ColorF c)

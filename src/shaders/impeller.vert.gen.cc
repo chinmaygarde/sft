@@ -26,7 +26,7 @@ struct Shader {
     inline void init(spirv_cross_shader& s) {
       VertexResources::init(s);
       s.register_resource(frame_info__, 0, 0);
-      s.register_stage_output(v_screen_position__, 0);
+      s.register_stage_output(v_screen_position__, 1);
       s.register_stage_input(vertex_position__, 0);
     }
   };

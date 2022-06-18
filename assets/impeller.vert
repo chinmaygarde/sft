@@ -1,12 +1,12 @@
 #version 450core
 
-uniform FrameInfo {
+layout(binding = 0) uniform FrameInfo {
   mat4 mvp;
 }
 frame_info;
 
-in vec2 vertex_position;
-out vec2 v_screen_position;
+layout(location = 0) in vec2 vertex_position;
+layout(location = 1) out vec2 v_screen_position;
 
 void main() {
   v_screen_position = vertex_position;

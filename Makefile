@@ -23,8 +23,8 @@ shaders:
 	mkdir -p build
 	rm -f build/impeller.vert.spv
 	rm -f build/impeller.frag.spv
-	glslc -g -O -fauto-bind-uniforms -fauto-map-locations assets/impeller.vert -o build/impeller.vert.spv
-	glslc -g -O -fauto-bind-uniforms -fauto-map-locations assets/impeller.frag -o build/impeller.frag.spv
+	glslc -g -O assets/impeller.vert -o build/impeller.vert.spv
+	glslc -g -O assets/impeller.frag -o build/impeller.frag.spv
 	spirv-cross build/impeller.vert.spv --cpp --cpp-interface-name ImpellerVertexShader --output src/shaders/impeller.vert.gen.cc
 	spirv-cross build/impeller.frag.spv --cpp --cpp-interface-name ImpellerFragmentShader --output src/shaders/impeller.frag.gen.cc
 	clang-format -i src/shaders/impeller.vert.gen.cc

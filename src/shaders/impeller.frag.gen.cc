@@ -13,20 +13,16 @@ struct Shader {
     internal::StageOutput<vec4> frag_color__;
 #define frag_color __res->frag_color__.get()
 
-    internal::StageInput<vec2> v_screen_position__;
-#define v_screen_position __res->v_screen_position__.get()
-
     inline void init(spirv_cross_shader& s) {
       FragmentResources::init(s);
       s.register_stage_output(frag_color__, 0);
-      s.register_stage_input(v_screen_position__, 0);
     }
   };
 
   Resources* __res;
 
   inline void main() {
-    frag_color = vec4(v_screen_position, 0.0f, 1.0f);
+    frag_color = vec4(0.0f, 0.0f, 1.0f, 1.0f);
   }
 };
 }  // namespace Impl

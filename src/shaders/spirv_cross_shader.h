@@ -14,6 +14,8 @@ class SPIRVCrossShader {
 
   void Invoke() { iface_->invoke(shader_); }
 
+  spirv_cross_shader_t* Get() const { return shader_; }
+
  private:
   const struct spirv_cross_interface* iface_;
   spirv_cross_shader_t* shader_;

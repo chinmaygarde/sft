@@ -10,19 +10,21 @@ namespace sft {
 
 class ImpellerShader final : public Shader {
  public:
-  ImpellerShader()
-      : vertex_(ImpellerVertexShader()), fragment_(ImpellerFragmentShader()) {}
+  ImpellerShader() : fragment_(ImpellerFragmentShader()) {}
 
   ~ImpellerShader() {}
 
   glm::vec3 ProcessVertex(glm::vec3 in) override { return in; }
 
   std::optional<Color> ProcessFragment(glm::vec3 bary_pos) override {
-    return 0;
+    glm::vec4 color;
+    ::spirv_cross_set_stage_output(fragment_.Get(), 0, &color, sizeof(color));
+    fragment_.Invoke();
+    return color;
   }
 
  private:
-  SPIRVCrossShader vertex_;
+  // SPIRVCrossShader vertex_;
   SPIRVCrossShader fragment_;
 };
 
