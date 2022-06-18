@@ -15,9 +15,9 @@ Application::Application() {
 
   pipeline->viewport = render_surface_size;
 
-  auto shader = std::make_shared<TextureShader>();
-  shader->SetTexture(std::make_shared<Texture>("assets/image.png"));
-  pipeline->shader = shader;
+  color_shader_ = std::make_shared<ColorShader>();
+
+  pipeline->shader = color_shader_;
 
   rasterizer_->SetPipeline(std::move(pipeline));
 
@@ -107,14 +107,23 @@ bool Application::Render() {
 
 bool Application::Update() {
   rasterizer_->Clear(kColorWhite);
-  rasterizer_->DrawTriangle({-1, -1, -1},  //
-                            {1, -1, -1},   //
-                            {0, 1, 1}      //
-  );
-  rasterizer_->DrawTriangle({-1, 1, -1},  //
-                            {1, 1, -1},   //
-                            {0, -1, 1}    //
-  );
+
+  color_shader_->SetColor(kColorBlue.WithAlpha(255));
+
+  auto tl = glm::vec3{-1 / 2.0, 1 / 2.0, 0};
+  auto tr = glm::vec3{1 / 2.0, 1 / 2.0, 0};
+  auto bl = glm::vec3{-1 / 2.0, -1 / 2.0, 0};
+  auto br = glm::vec3{1 / 2.0, -1 / 2.0, 0};
+
+  auto d = glm::vec3{0.25, 0.25, 0.0};
+  rasterizer_->DrawTriangle(bl - d, br - d, tr - d);
+  rasterizer_->DrawTriangle(tr - d, tl - d, bl - d);
+
+  color_shader_->SetColor(kColorRed.WithAlpha(128));
+
+  rasterizer_->DrawTriangle(bl + d, br + d, tr + d);
+  rasterizer_->DrawTriangle(tr + d, tl + d, bl + d);
+
   // model_->RenderTo(*rasterizer_);
 
   return true;

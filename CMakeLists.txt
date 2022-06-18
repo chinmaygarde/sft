@@ -33,6 +33,8 @@ add_library(sft_lib
   # src/shaders/impeller.vert.cc
   src/shaders/simple_shader.cc
   src/shaders/simple_shader.h
+  src/shaders/color_shader.cc
+  src/shaders/color_shader.h
   src/shaders/spirv_cross
   src/shaders/spirv_cross/barrier.hpp
   src/shaders/spirv_cross/external_interface.h

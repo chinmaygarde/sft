@@ -8,6 +8,7 @@
 #include "pipeline.h"
 #include "rasterizer.h"
 #include "sdl_utils.h"
+#include "shaders/color_shader.h"
 
 namespace sft {
 
@@ -31,6 +32,7 @@ class Application {
   std::unique_ptr<Model> model_;
   glm::vec2 touch_offset_;
   std::optional<glm::vec2> last_touch_;
+  std::shared_ptr<ColorShader> color_shader_;
   std::shared_ptr<Pipeline> pipeline_;
   bool is_valid_ = false;
 

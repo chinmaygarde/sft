@@ -11,6 +11,32 @@ namespace sft {
 using Scalar = int32_t;
 using ScalarF = float;
 
+struct ColorF {
+  ScalarF red = 0.0;
+  ScalarF green = 0.0;
+  ScalarF blue = 0.0;
+  ScalarF alpha = 0.0;
+
+  constexpr ColorF() = default;
+
+  constexpr ColorF(ScalarF p_red,
+                   ScalarF p_green,
+                   ScalarF p_blue,
+                   ScalarF p_alpha)
+      : red(p_red), green(p_green), blue(p_blue), alpha(p_alpha) {}
+
+  constexpr ColorF(glm::vec3 color, ScalarF p_alpha)
+      : red(color.r), green(color.g), blue(color.b), alpha(p_alpha) {}
+
+  constexpr glm::vec3 GetColor() const { return {red, green, blue}; }
+
+  constexpr ScalarF GetAlpha() const { return alpha; };
+
+  constexpr ColorF Premultiply() const {
+    return {red * alpha, green * alpha, blue * alpha, alpha};
+  }
+};
+
 struct Color {
   uint32_t color = 0u;
 
@@ -21,6 +47,9 @@ struct Color {
 
   constexpr Color(uint32_t p_color) : color(p_color) {}
 
+  constexpr Color(ColorF c)
+      : Color(255 * c.red, 255 * c.green, 255 * c.blue, 255 * c.alpha) {}
+
   constexpr operator uint32_t() const { return color; }
 
   constexpr uint8_t GetRed() const { return color >> 16; }
@@ -30,6 +59,19 @@ struct Color {
   constexpr uint8_t GetBlue() const { return color >> 0; }
 
   constexpr uint8_t GetAlpha() const { return color >> 24; }
+
+  constexpr Color WithAlpha(uint8_t alpha) const {
+    return Color{GetRed(), GetGreen(), GetBlue(), alpha};
+  }
+
+  constexpr ColorF GetColorF() const {
+    return {
+        GetRed() / 255.0f,    //
+        GetGreen() / 255.0f,  //
+        GetBlue() / 255.0f,   //
+        GetAlpha() / 255.0f   //
+    };
+  }
 
   static Color FromComponentsF(ScalarF r, ScalarF g, ScalarF b, ScalarF a) {
     return Color{

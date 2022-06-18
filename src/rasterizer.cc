@@ -57,7 +57,7 @@ void Rasterizer::UpdateTexel(Texel texel) {
     }
   }
 
-  *color_ptr = texel.color;
+  *color_ptr = pipeline_->Blend(texel.color, *color_ptr);
   *depth_ptr = new_depth;
 }
 
