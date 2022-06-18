@@ -60,6 +60,6 @@ static const struct spirv_cross_interface vtable = {
     spirv_cross_invoke,
 };
 
-const struct spirv_cross_interface* spirv_cross_get_interface(void) {
+const struct spirv_cross_interface* ImpellerVertexShader(void) {
   return &vtable;
 }

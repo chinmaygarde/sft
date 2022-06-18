@@ -25,12 +25,10 @@ add_library(sft_lib
   src/rasterizer.h
   src/sdl_utils.cc
   src/sdl_utils.h
-  # src/shaders/impeller.frag.gen.h
-  # src/shaders/impeller.vert.gen.h
-  # src/shaders/impeller.frag.h
-  # src/shaders/impeller.vert.h
-  # src/shaders/impeller.frag.cc
-  # src/shaders/impeller.vert.cc
+  src/shaders/impeller.frag.gen.cc
+  src/shaders/impeller.vert.gen.cc
+  src/shaders/impeller_shader.h
+  src/shaders/impeller_shader.cc
   src/shaders/simple_shader.cc
   src/shaders/simple_shader.h
   src/shaders/color_shader.cc
