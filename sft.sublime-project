@@ -4,7 +4,7 @@
       "name": "SFT Build All",
       "shell_cmd": "ninja -C build && ./build/sft",
       "working_dir": "${project_path}",
-      "file_regex": "(.*):([\\d]+):([\\d]+)?:? ?((?:error|warning|note): ?.*)",
+      "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,
     }
   ],
