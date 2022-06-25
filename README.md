@@ -1,7 +1,5 @@
 # A Toy Software Renderer
 
-Roughly follows the tutorial at https://github.com/ssloy/tinyrenderer/wiki
-
 ![demo](assets/demo.png)
 
 ## Dependencies
