@@ -11,6 +11,9 @@ add_subdirectory(third_party/googletest)
 set(GOOGLETEST_PATH "third_party/googletest")
 add_subdirectory(third_party/googlebenchmark)
 add_subdirectory(third_party/glm)
+set(SWIFTSHADER_ENABLE_ASTC FALSE)
+set(SWIFTSHADER_BUILD_TESTS FALSE)
+add_subdirectory(third_party/swiftshader)
 
 add_library(sft_lib
   src/application.cc
@@ -46,10 +49,16 @@ add_library(sft_lib
   src/texture.h
 )
 
-target_link_libraries(sft_lib SDL2 tinyobjloader glm)
+target_link_libraries(sft_lib PUBLIC SDL2 tinyobjloader glm ReactorLLVM)
 
 target_include_directories(sft_lib PUBLIC src third_party/stb)
 
 add_executable(sft src/main.cc)
 
 target_link_libraries(sft sft_lib)
+
+add_executable(sft_unittests
+  src/sft_unittests.cc
+)
+
+target_link_libraries(sft_unittests sft_lib gtest_main)
