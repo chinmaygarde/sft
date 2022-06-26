@@ -35,16 +35,17 @@ add_library(sft_lib
   src/rasterizer.h
   src/sdl_utils.cc
   src/sdl_utils.h
-  src/shaders/impeller_shader.h
-  src/shaders/impeller_shader.cc
-  src/shaders/simple_shader.cc
-  src/shaders/simple_shader.h
   src/shaders/color_shader.cc
   src/shaders/color_shader.h
+  src/shaders/impeller_shader.cc
+  src/shaders/impeller_shader.h
+  src/shaders/simple_shader.cc
+  src/shaders/simple_shader.h
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
   src/texture.cc
   src/texture.h
+  third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 
 target_link_libraries(sft_lib

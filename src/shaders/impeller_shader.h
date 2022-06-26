@@ -10,7 +10,9 @@ namespace sft {
 
 class ImpellerShader final : public Shader {
  public:
-  ImpellerShader() : fragment_(impeller_frag_interface()) {}
+  ImpellerShader()
+      : vertex_(impeller_vert_interface()),
+        fragment_(impeller_frag_interface()) {}
 
   ~ImpellerShader() {}
 
@@ -24,7 +26,7 @@ class ImpellerShader final : public Shader {
   }
 
  private:
-  // SPIRVCrossShader vertex_;
+  SPIRVCrossShader vertex_;
   SPIRVCrossShader fragment_;
 };
 
