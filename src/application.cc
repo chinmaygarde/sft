@@ -18,7 +18,7 @@ Application::Application() {
 
   color_shader_ = std::make_shared<ColorShader>();
 
-  pipeline_->shader = color_shader_;
+  pipeline_->shader = std::make_shared<ImpellerShader>();
 
   rasterizer_->SetPipeline(pipeline_);
 

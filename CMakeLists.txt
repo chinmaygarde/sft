@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+
 project(sft)
 
 add_subdirectory(third_party/sdl)
@@ -14,6 +16,11 @@ add_subdirectory(third_party/glm)
 set(SWIFTSHADER_ENABLE_ASTC FALSE)
 set(SWIFTSHADER_BUILD_TESTS FALSE)
 add_subdirectory(third_party/swiftshader)
+add_subdirectory(third_party/swiftshader/third_party/glslang)
+set(SPIRV_CROSS_ENABLE_TESTS FALSE)
+add_subdirectory(third_party/spirv_cross)
+
+include(shaders)
 
 add_library(sft_lib
   src/application.cc
@@ -28,30 +35,36 @@ add_library(sft_lib
   src/rasterizer.h
   src/sdl_utils.cc
   src/sdl_utils.h
-  src/shaders/impeller.frag.gen.cc
-  src/shaders/impeller.vert.gen.cc
   src/shaders/impeller_shader.h
   src/shaders/impeller_shader.cc
   src/shaders/simple_shader.cc
   src/shaders/simple_shader.h
   src/shaders/color_shader.cc
   src/shaders/color_shader.h
-  src/shaders/spirv_cross
-  src/shaders/spirv_cross/barrier.hpp
-  src/shaders/spirv_cross/external_interface.h
-  src/shaders/spirv_cross/image.hpp
-  src/shaders/spirv_cross/internal_interface.hpp
-  src/shaders/spirv_cross/sampler.hpp
-  src/shaders/spirv_cross/thread_group.hpp
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
   src/texture.cc
   src/texture.h
 )
 
-target_link_libraries(sft_lib PUBLIC SDL2 tinyobjloader glm ReactorLLVM)
+target_link_libraries(sft_lib
+  PUBLIC
+    SDL2
+    tinyobjloader
+    glm
+    ReactorLLVM
+    spirv-cross-cpp
+)
 
-target_include_directories(sft_lib PUBLIC src third_party/stb)
+shader(sft_lib assets/impeller.vert)
+shader(sft_lib assets/impeller.frag)
+
+target_include_directories(sft_lib
+  PUBLIC
+    src
+    third_party/stb
+    third_party/spirv_cross/include
+)
 
 add_executable(sft src/main.cc)
 

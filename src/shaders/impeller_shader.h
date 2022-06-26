@@ -3,14 +3,14 @@
 #include "shader.h"
 #include "spirv_cross_shader.h"
 
-extern const struct spirv_cross_interface* ImpellerVertexShader(void);
-extern const struct spirv_cross_interface* ImpellerFragmentShader(void);
+extern const struct spirv_cross_interface* impeller_vert_interface(void);
+extern const struct spirv_cross_interface* impeller_frag_interface(void);
 
 namespace sft {
 
 class ImpellerShader final : public Shader {
  public:
-  ImpellerShader() : fragment_(ImpellerFragmentShader()) {}
+  ImpellerShader() : fragment_(impeller_frag_interface()) {}
 
   ~ImpellerShader() {}
 

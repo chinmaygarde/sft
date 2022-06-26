@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shaders/spirv_cross/external_interface.h"
+#include "spirv_cross/external_interface.h"
 
 namespace sft {
 
