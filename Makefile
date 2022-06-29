@@ -6,6 +6,9 @@
 run: build/sft
 	./build/sft
 
+test: build/sft
+	cd build && ctest -C build
+
 build/sft: build/build.ninja
 	ninja -C build
 
@@ -17,4 +20,4 @@ clean:
 	rm -rf build
 
 sync:
-	git submodule update --init --recursive
+	git submodule update --init --recursive -j 8

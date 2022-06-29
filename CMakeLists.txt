@@ -3,24 +3,36 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_program(CCACHE_PROGRAM NAMES ccache)
+if(CCACHE_PROGRAM)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_PROGRAM}")
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools")
 
 project(sft)
 
+enable_testing()
+
+set(SPIRV_SKIP_TESTS FALSE)
 add_subdirectory(third_party/sdl)
 add_subdirectory(third_party/tinyobjloader)
 add_subdirectory(third_party/googletest)
 set(GOOGLETEST_PATH "third_party/googletest")
+set(BENCHMARK_ENABLE_TESTING FALSE)
 add_subdirectory(third_party/googlebenchmark)
 add_subdirectory(third_party/glm)
 set(SWIFTSHADER_ENABLE_ASTC FALSE)
 set(SWIFTSHADER_BUILD_TESTS FALSE)
 add_subdirectory(third_party/swiftshader)
+set(ENABLE_CTEST FALSE)
 add_subdirectory(third_party/swiftshader/third_party/glslang)
 set(SPIRV_CROSS_ENABLE_TESTS FALSE)
 add_subdirectory(third_party/spirv_cross)
 
 include(shaders)
+include(GoogleTest)
 
 add_library(sft_lib
   src/application.cc
@@ -78,3 +90,5 @@ add_executable(sft_unittests
 )
 
 target_link_libraries(sft_unittests sft_lib gtest_main)
+
+gtest_discover_tests(sft_unittests)
