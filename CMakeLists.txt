@@ -48,6 +48,8 @@ add_library(sft_lib
   third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 
+target_compile_options(sft_lib PRIVATE -Werror -Wall -Wextra -Wpedantic -Wno-unused-parameter)
+
 target_link_libraries(sft_lib
   PUBLIC
     SDL2

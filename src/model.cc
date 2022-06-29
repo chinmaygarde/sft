@@ -30,7 +30,7 @@ Model::Model(std::string path) {
     size_t index_offset = 0;
     for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
       // Triangulation is on.
-      int fv = 3;
+      size_t fv = 3;
 
       // Loop over vertices in the face.
       for (size_t v = 0; v < fv; v++) {
