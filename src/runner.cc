@@ -1,21 +1,17 @@
-#include <SDL.h>
-#include <iostream>
-#include <memory>
+#include "runner.h"
 
-#include "demo_application.h"
-#include "geom.h"
-#include "rasterizer.h"
+#include <SDL.h>
+
+#include "application.h"
 
 namespace sft {
 
-bool Main(int argc, char const* argv[]) {
-  if (::SDL_Init(SDL_INIT_VIDEO) != 0) {
-    return false;
-  }
+Runner::Runner() {
+  SFT_ASSERT(::SDL_Init(SDL_INIT_VIDEO) == 0);
+}
 
+bool Runner::Run(Application& application) const {
   bool is_running = true;
-
-  DemoApplication application;
   while (is_running) {
     is_running = application.Render();
     ::SDL_Event event;
@@ -54,14 +50,11 @@ bool Main(int argc, char const* argv[]) {
       }
     }
   }
-
-  ::SDL_Quit();
-
   return true;
 }
 
-}  // namespace sft
-
-int main(int argc, char const* argv[]) {
-  return sft::Main(argc, argv) ? EXIT_SUCCESS : EXIT_FAILURE;
+Runner::~Runner() {
+  ::SDL_Quit();
 }
+
+}  // namespace sft

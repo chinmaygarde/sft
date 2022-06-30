@@ -37,6 +37,8 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
+  src/demo_application.cc
+  src/demo_application.h
   src/geom.cc
   src/geom.h
   src/model.cc
@@ -60,7 +62,14 @@ add_library(sft_lib
   third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 
-target_compile_options(sft_lib PRIVATE -Werror -Wall -Wextra -Wpedantic -Wno-unused-parameter)
+target_compile_options(sft_lib
+  PRIVATE
+    -Werror
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wno-unused-parameter
+)
 
 target_link_libraries(sft_lib
   PUBLIC
@@ -87,6 +96,8 @@ target_link_libraries(sft sft_lib)
 
 add_executable(sft_unittests
   src/sft_unittests.cc
+  src/runner.h
+  src/runner.cc
 )
 
 target_link_libraries(sft_unittests sft_lib gtest_main)

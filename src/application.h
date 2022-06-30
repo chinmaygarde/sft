@@ -1,14 +1,14 @@
 #pragma once
 
 #include <SDL.h>
+
 #include <memory>
+
 #include "event.h"
 #include "geom.h"
-#include "model.h"
-#include "pipeline.h"
+#include "macros.h"
 #include "rasterizer.h"
 #include "sdl_utils.h"
-#include "shaders/color_shader.h"
 
 namespace sft {
 
@@ -18,26 +18,27 @@ class Application {
 
   ~Application();
 
+  bool IsValid() const;
+
   bool Render();
 
-  bool Update();
+  glm::ivec2 GetRenderSurfaceSize() const;
 
-  void OnTouchEvent(TouchEventType type, glm::vec2 pos);
+  virtual bool Update() = 0;
+
+  virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
+
+ protected:
+  std::unique_ptr<Rasterizer> rasterizer_;
 
  private:
-  std::unique_ptr<Rasterizer> rasterizer_;
+  glm::ivec2 render_surface_size_ = {800, 600};
   glm::ivec2 window_size_;
   SDL_Window* window_ = nullptr;
   SDL_Renderer* renderer_ = nullptr;
-  std::unique_ptr<Model> model_;
-  glm::vec2 touch_offset_;
-  std::optional<glm::vec2> last_touch_;
-  std::shared_ptr<ColorShader> color_shader_;
-  std::shared_ptr<Pipeline> pipeline_;
   bool is_valid_ = false;
 
-  Application(const Application&) = delete;
-  Application& operator=(const Application&) = delete;
+  SFT_DISALLOW_COPY_AND_ASSIGN(Application);
 };
 
 }  // namespace sft
