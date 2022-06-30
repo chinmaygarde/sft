@@ -98,9 +98,9 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
                               glm::vec3 ndc_p3) {
   auto viewport = pipeline_->viewport;
 
-  ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1);
-  ndc_p2 = pipeline_->shader->ProcessVertex(ndc_p2);
-  ndc_p3 = pipeline_->shader->ProcessVertex(ndc_p3);
+  ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1, 0u);
+  ndc_p2 = pipeline_->shader->ProcessVertex(ndc_p2, 1u);
+  ndc_p3 = pipeline_->shader->ProcessVertex(ndc_p3, 2u);
 
   const auto p1 = ToTexelPos(ndc_p1, viewport);
   const auto p2 = ToTexelPos(ndc_p2, viewport);

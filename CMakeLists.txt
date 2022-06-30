@@ -76,7 +76,7 @@ target_link_libraries(sft_lib
     SDL2
     tinyobjloader
     glm
-    ReactorLLVM
+    # ReactorLLVM
     spirv-cross-cpp
 )
 
