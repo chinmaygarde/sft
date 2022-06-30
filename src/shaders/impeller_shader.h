@@ -34,7 +34,7 @@ class ImpellerShader final : public Shader {
     ::spirv_cross_set_stage_output(fragment_.Get(), 0, &frag_color_,
                                    sizeof(frag_color_));
 
-    vertex_data_.push_back({{1.0, 0.0, 1.0, 1.0}});
+    vertex_data_.push_back({{1.0, 0.0, 0.0, 1.0}});
     vertex_data_.push_back({{0.0, 1.0, 0.0, 1.0}});
     vertex_data_.push_back({{0.0, 0.0, 1.0, 1.0}});
   }
@@ -44,12 +44,16 @@ class ImpellerShader final : public Shader {
   glm::vec3 ProcessVertex(glm::vec3 in, size_t index) override {
     color_ = vertex_data_[index].color;
     vertex_position_ = in;
+
     vertex_.Invoke();
     return gl_position_;
   }
 
-  std::optional<Color> ProcessFragment(glm::vec3 bary_pos) override {
-    // v_color_ = v_color_ * glm::vec4(bary_pos, 1.0);
+  std::optional<Color> ProcessFragment(glm::vec3 bary_pos,
+                                       size_t index) override {
+    v_color_ = BarycentricInterpolation(
+        vertex_data_[index + 0].color, vertex_data_[index + 1].color,
+        vertex_data_[index + 2].color, bary_pos);
 
     fragment_.Invoke();
     return frag_color_;

@@ -114,8 +114,8 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
       const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
       if (bary.x >= 0.0 && bary.y >= 0.0 && bary.z >= 0.0) {
         const auto bary_pos =
-            (bary.x * ndc_p1 + bary.y * ndc_p2 + bary.z * ndc_p3);
-        auto color = pipeline_->shader->ProcessFragment(bary);
+            BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
+        auto color = pipeline_->shader->ProcessFragment(bary, 0u);
         if (!color.has_value()) {
           continue;
         }

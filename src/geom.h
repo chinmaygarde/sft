@@ -129,4 +129,12 @@ struct Sphere {
   }
 };
 
+template <class T>
+T BarycentricInterpolation(const T& p1,
+                           const T& p2,
+                           const T& p3,
+                           const glm::vec3& bary) {
+  return bary.x * p1 + bary.y * p2 + bary.z * p3;
+}
+
 }  // namespace sft
