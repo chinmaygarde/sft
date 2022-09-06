@@ -4,11 +4,12 @@
 
 #include "geom.h"
 #include "macros.h"
+#include "renderer.h"
 #include "sphere.h"
 
 namespace sft {
 
-class RayTracer {
+class RayTracer final : public Renderer {
  public:
   RayTracer(glm::ivec2 size)
       : size_(size),
@@ -48,6 +49,21 @@ class RayTracer {
       }
     }
   }
+
+  // |Renderer|
+  void* GetPixels() const override { return color_buffer_; }
+
+  // |Renderer|
+  void* GetDepthPixels() const override { return nullptr; }
+
+  // |Renderer|
+  glm::ivec2 GetSize() const override { return size_; }
+
+  // |Renderer|
+  size_t GetBytesPerPixel() const override { return sizeof(uint32_t); }
+
+  // |Renderer|
+  size_t GetDepthBytesPerPixel() const override { return 0u; }
 
  private:
   const glm::ivec2 size_;
