@@ -5,15 +5,12 @@
 
 namespace sft {
 
-Application::Application() {
-  window_size_ = render_surface_size_;
+Application::Application(std::unique_ptr<Rasterizer> rasterizer)
+    : rasterizer_(std::move(rasterizer)) {
+  SFT_ASSERT(rasterizer_ && rasterizer_->GetPixels());
+
+  window_size_ = rasterizer_->GetSize();
   window_size_.x *= 2.0;
-
-  rasterizer_ = std::make_unique<Rasterizer>(render_surface_size_);
-
-  if (!rasterizer_ || !rasterizer_->GetPixels()) {
-    return;
-  }
 
 #ifndef NDEBUG
 #define SFT_DEBUG_TITLE "Debug Build"

@@ -2,7 +2,8 @@
 
 namespace sft {
 
-DemoApplication::DemoApplication() {
+DemoApplication::DemoApplication()
+    : Application(std::make_unique<Rasterizer>(glm::ivec2{800, 600})) {
   pipeline_ = std::make_shared<Pipeline>();
 
   pipeline_->viewport = GetRenderSurfaceSize();

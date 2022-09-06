@@ -14,9 +14,7 @@ namespace sft {
 
 class Application {
  public:
-  Application();
-
-  ~Application();
+  virtual ~Application();
 
   bool IsValid() const;
 
@@ -29,7 +27,9 @@ class Application {
   virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
 
  protected:
-  std::unique_ptr<Rasterizer> rasterizer_;
+  Application(std::unique_ptr<Rasterizer> rasterizer);
+
+  const std::unique_ptr<Rasterizer> rasterizer_;
 
  private:
   glm::ivec2 render_surface_size_ = {800, 600};

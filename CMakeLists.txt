@@ -63,6 +63,8 @@ add_library(sft_lib
   src/ray_tracer.h
   src/sphere.cc
   src/sphere.h
+  src/renderer.cc
+  src/renderer.h
   third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 
