@@ -120,15 +120,6 @@ struct Texel {
   Color color;
 };
 
-struct Sphere {
-  glm::vec3 center;
-  ScalarF radius = 0.0;
-
-  bool RayIntersects(glm::vec3 origin, glm::vec3 direction) const {
-    return true;
-  }
-};
-
 template <class T>
 T BarycentricInterpolation(const T& p1,
                            const T& p2,

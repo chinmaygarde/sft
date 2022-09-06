@@ -1,8 +1,10 @@
 #pragma once
 
+#include <iostream>
+
 #define SFT_ASSERT(x)                                       \
   {                                                         \
-    if (!(x)) [[unlikely]] {                                \
+    if (!(x)) {                                             \
       std::cout << "Assertion " #x " failed." << std::endl; \
       std::abort();                                         \
     }                                                       \

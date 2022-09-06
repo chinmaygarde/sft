@@ -59,6 +59,10 @@ add_library(sft_lib
   src/shaders/texture_shader.h
   src/texture.cc
   src/texture.h
+  src/ray_tracer.cc
+  src/ray_tracer.h
+  src/sphere.cc
+  src/sphere.h
   third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 
