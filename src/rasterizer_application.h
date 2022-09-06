@@ -12,7 +12,7 @@ class RasterizerApplication final : public Application {
  public:
   RasterizerApplication();
 
-  ~RasterizerApplication();
+  ~RasterizerApplication() override;
 
   bool Update() override;
 
@@ -24,6 +24,8 @@ class RasterizerApplication final : public Application {
   std::optional<glm::vec2> last_touch_;
   std::shared_ptr<ColorShader> color_shader_;
   std::shared_ptr<Pipeline> pipeline_;
+
+  Rasterizer* GetRasterizer() const;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(RasterizerApplication);
 };

@@ -6,24 +6,31 @@
 #include <memory>
 #include "geom.h"
 #include "pipeline.h"
+#include "renderer.h"
 
 namespace sft {
 
-class Rasterizer {
+class Rasterizer final : public Renderer {
  public:
   Rasterizer(glm::ivec2 size);
 
-  ~Rasterizer();
+  // |Renderer|
+  ~Rasterizer() override;
 
-  void* GetPixels() const;
+  // |Renderer|
+  void* GetPixels() const override;
 
-  void* GetDepthPixels() const;
+  // |Renderer|
+  void* GetDepthPixels() const override;
 
-  glm::ivec2 GetSize() const;
+  // |Renderer|
+  glm::ivec2 GetSize() const override;
 
-  size_t GetBytesPerPixel() const;
+  // |Renderer|
+  size_t GetBytesPerPixel() const override;
 
-  size_t GetDepthBytesPerPixel() const;
+  // |Renderer|
+  size_t GetDepthBytesPerPixel() const override;
 
   void SetPipeline(std::shared_ptr<Pipeline> pipeline) { pipeline_ = pipeline; }
 

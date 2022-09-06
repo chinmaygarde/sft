@@ -17,15 +17,19 @@ RasterizerApplication::RasterizerApplication()
     return;
   }
 
-  rasterizer_->SetPipeline(pipeline_);
+  GetRasterizer()->SetPipeline(pipeline_);
 }
 
 RasterizerApplication::~RasterizerApplication() = default;
 
-bool RasterizerApplication::Update() {
-  rasterizer_->SetPipeline(pipeline_);
+Rasterizer* RasterizerApplication::GetRasterizer() const {
+  return static_cast<Rasterizer*>(renderer_.get());
+}
 
-  rasterizer_->Clear(kColorWhite);
+bool RasterizerApplication::Update() {
+  GetRasterizer()->SetPipeline(pipeline_);
+
+  GetRasterizer()->Clear(kColorWhite);
 
   pipeline_->blend_mode = BlendMode::kSourceOver;
 
@@ -38,13 +42,13 @@ bool RasterizerApplication::Update() {
 
   auto d = glm::vec3{0.25, 0.25, 0.0};
 
-  rasterizer_->DrawTriangle(bl - d, br - d, tr - d);
-  rasterizer_->DrawTriangle(tr - d, tl - d, bl - d);
+  GetRasterizer()->DrawTriangle(bl - d, br - d, tr - d);
+  GetRasterizer()->DrawTriangle(tr - d, tl - d, bl - d);
 
   color_shader_->SetColor(kColorRed.WithAlpha(128));
 
-  rasterizer_->DrawTriangle(bl + d, br + d, tr + d);
-  rasterizer_->DrawTriangle(tr + d, tl + d, bl + d);
+  GetRasterizer()->DrawTriangle(bl + d, br + d, tr + d);
+  GetRasterizer()->DrawTriangle(tr + d, tl + d, bl + d);
 
   // model_->RenderTo(*rasterizer_);
 

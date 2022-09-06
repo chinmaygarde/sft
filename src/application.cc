@@ -1,15 +1,16 @@
 #include "application.h"
+
 #include "shaders/impeller_shader.h"
 #include "shaders/simple_shader.h"
 #include "shaders/texture_shader.h"
 
 namespace sft {
 
-Application::Application(std::unique_ptr<Rasterizer> rasterizer)
-    : rasterizer_(std::move(rasterizer)) {
-  SFT_ASSERT(rasterizer_ && rasterizer_->GetPixels());
+Application::Application(std::shared_ptr<Renderer> renderer)
+    : renderer_(std::move(renderer)) {
+  SFT_ASSERT(renderer_ && renderer_->GetPixels());
 
-  window_size_ = rasterizer_->GetSize();
+  window_size_ = renderer_->GetSize();
   window_size_.x *= 2.0;
 
 #ifndef NDEBUG
@@ -18,16 +19,20 @@ Application::Application(std::unique_ptr<Rasterizer> rasterizer)
 #define SFT_DEBUG_TITLE "Release Build"
 #endif
 
-  window_ = ::SDL_CreateWindow("SFT Sandbox (" SFT_DEBUG_TITLE
-                               ") (Press \"q\" or ESC to quit)",
-                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                               window_size_.x, window_size_.y, 0);
-  if (!window_) {
+  sdl_window_ = ::SDL_CreateWindow(
+      "SFT Sandbox (" SFT_DEBUG_TITLE ") (Press \"q\" or ESC to quit)",  //
+      SDL_WINDOWPOS_CENTERED,                                            //
+      SDL_WINDOWPOS_CENTERED,                                            //
+      window_size_.x,                                                    //
+      window_size_.y,                                                    //
+      0                                                                  //
+  );
+  if (!sdl_window_) {
     return;
   }
 
-  renderer_ = ::SDL_CreateRenderer(window_, -1, 0);
-  if (!renderer_) {
+  sdl_renderer_ = ::SDL_CreateRenderer(sdl_window_, -1, 0);
+  if (!sdl_renderer_) {
     return;
   }
 
@@ -35,11 +40,11 @@ Application::Application(std::unique_ptr<Rasterizer> rasterizer)
 }
 
 Application::~Application() {
-  if (window_) {
-    ::SDL_DestroyWindow(window_);
+  if (sdl_window_) {
+    ::SDL_DestroyWindow(sdl_window_);
   }
-  if (renderer_) {
-    ::SDL_DestroyRenderer(renderer_);
+  if (sdl_renderer_) {
+    ::SDL_DestroyRenderer(sdl_renderer_);
   }
 }
 
@@ -52,38 +57,50 @@ bool Application::Render() {
     return false;
   }
 
-  const auto size = rasterizer_->GetSize();
+  const auto size = renderer_->GetSize();
 
-  SDLTextureNoCopyCaster color_attachment(renderer_,                       //
-                                          rasterizer_->GetPixels(),        //
-                                          size.x,                          //
-                                          size.y,                          //
-                                          rasterizer_->GetBytesPerPixel()  //
-
+  SDLTextureNoCopyCaster color_attachment(sdl_renderer_,                 //
+                                          renderer_->GetPixels(),        //
+                                          size.x,                        //
+                                          size.y,                        //
+                                          renderer_->GetBytesPerPixel()  //
   );
-  SDLTextureNoCopyCaster depth_attachment(
-      renderer_,                            //
-      rasterizer_->GetDepthPixels(),        //
-      size.x,                               //
-      size.y,                               //
-      rasterizer_->GetDepthBytesPerPixel()  //
 
-  );
   SDL_Rect dest = {};
   dest.x = 0;
   dest.y = 0;
   dest.w = size.x;
   dest.h = size.y;
-  if (::SDL_RenderCopyEx(renderer_, color_attachment, nullptr, &dest, 180, NULL,
-                         SDL_FLIP_HORIZONTAL) != 0) {
+  if (::SDL_RenderCopyEx(sdl_renderer_,       //
+                         color_attachment,    //
+                         nullptr,             //
+                         &dest,               //
+                         180,                 //
+                         NULL,                //
+                         SDL_FLIP_HORIZONTAL  //
+                         ) != 0) {
     return false;
   }
   dest.x += dest.w;
-  if (::SDL_RenderCopyEx(renderer_, depth_attachment, nullptr, &dest, 180, NULL,
-                         SDL_FLIP_HORIZONTAL) != 0) {
+
+  SDLTextureNoCopyCaster depth_attachment(sdl_renderer_,                      //
+                                          renderer_->GetDepthPixels(),        //
+                                          size.x,                             //
+                                          size.y,                             //
+                                          renderer_->GetDepthBytesPerPixel()  //
+  );
+  if (::SDL_RenderCopyEx(sdl_renderer_,       //
+                         depth_attachment,    //
+                         nullptr,             //
+                         &dest,               //
+                         180,                 //
+                         NULL,                //
+                         SDL_FLIP_HORIZONTAL  //
+                         ) != 0) {
     return false;
   }
-  ::SDL_RenderPresent(renderer_);
+
+  ::SDL_RenderPresent(sdl_renderer_);
   return true;
 }
 
