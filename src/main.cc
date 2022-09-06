@@ -15,7 +15,7 @@ bool Main(int argc, char const* argv[]) {
 
   bool is_running = true;
 
-  DemoApplication application;
+  RasterizerApplication application;
   while (is_running) {
     is_running = application.Render();
     ::SDL_Event event;

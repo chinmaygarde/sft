@@ -8,11 +8,11 @@
 
 namespace sft {
 
-class DemoApplication final : public Application {
+class RasterizerApplication final : public Application {
  public:
-  DemoApplication();
+  RasterizerApplication();
 
-  ~DemoApplication();
+  ~RasterizerApplication();
 
   bool Update() override;
 
@@ -25,7 +25,7 @@ class DemoApplication final : public Application {
   std::shared_ptr<ColorShader> color_shader_;
   std::shared_ptr<Pipeline> pipeline_;
 
-  SFT_DISALLOW_COPY_AND_ASSIGN(DemoApplication);
+  SFT_DISALLOW_COPY_AND_ASSIGN(RasterizerApplication);
 };
 
 }  // namespace sft

@@ -1,8 +1,8 @@
-#include "demo_application.h"
+#include "rasterizer_application.h"
 
 namespace sft {
 
-DemoApplication::DemoApplication()
+RasterizerApplication::RasterizerApplication()
     : Application(std::make_unique<Rasterizer>(glm::ivec2{800, 600})) {
   pipeline_ = std::make_shared<Pipeline>();
 
@@ -20,9 +20,9 @@ DemoApplication::DemoApplication()
   rasterizer_->SetPipeline(pipeline_);
 }
 
-DemoApplication::~DemoApplication() = default;
+RasterizerApplication::~RasterizerApplication() = default;
 
-bool DemoApplication::Update() {
+bool RasterizerApplication::Update() {
   rasterizer_->SetPipeline(pipeline_);
 
   rasterizer_->Clear(kColorWhite);
@@ -51,7 +51,7 @@ bool DemoApplication::Update() {
   return true;
 }
 
-void DemoApplication::OnTouchEvent(TouchEventType type, glm::vec2 pos) {
+void RasterizerApplication::OnTouchEvent(TouchEventType type, glm::vec2 pos) {
   switch (type) {
     case TouchEventType::kTouchDown:
       last_touch_ = pos;

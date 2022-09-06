@@ -37,8 +37,8 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
-  src/demo_application.cc
-  src/demo_application.h
+  src/rasterizer_application.cc
+  src/rasterizer_application.h
   src/geom.cc
   src/geom.h
   src/model.cc
