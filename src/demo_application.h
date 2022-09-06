@@ -7,6 +7,7 @@
 #include "shaders/impeller_shader.h"
 
 namespace sft {
+
 class DemoApplication final : public Application {
  public:
   DemoApplication();
@@ -26,4 +27,5 @@ class DemoApplication final : public Application {
 
   SFT_DISALLOW_COPY_AND_ASSIGN(DemoApplication);
 };
+
 }  // namespace sft
