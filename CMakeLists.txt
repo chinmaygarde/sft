@@ -49,8 +49,6 @@ add_library(sft_lib
   src/sdl_utils.h
   src/shaders/color_shader.cc
   src/shaders/color_shader.h
-  src/shaders/simple_shader.cc
-  src/shaders/simple_shader.h
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
   src/sphere.cc

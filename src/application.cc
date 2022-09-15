@@ -1,8 +1,5 @@
 #include "application.h"
 
-#include "shaders/simple_shader.h"
-#include "shaders/texture_shader.h"
-
 namespace sft {
 
 Application::Application(std::shared_ptr<Renderer> renderer)

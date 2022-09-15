@@ -66,7 +66,7 @@ void Rasterizer::Clear(Color color) {
   bzero(depth_buffer_, size_.x * size_.y * sizeof(color));
 }
 
-constexpr glm::ivec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
+constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
   return {
       (viewport.x / 2.0) * (nd_pos.x + 1.0),  //
       (viewport.y / 2.0) * (nd_pos.y + 1.0),  //
@@ -86,10 +86,10 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
                                               glm::vec2 b,
                                               glm::vec2 c) {
   glm::vec2 v0 = b - a, v1 = c - a, v2 = p - a;
-  ScalarF one_over_den = 1.0f / (v0.x * v1.y - v1.x * v0.y);
-  ScalarF v = (v2.x * v1.y - v1.x * v2.y) * one_over_den;
-  ScalarF w = (v0.x * v2.y - v2.x * v0.y) * one_over_den;
-  ScalarF u = 1.0f - v - w;
+  auto one_over_den = 1.0 / (v0.x * v1.y - v1.x * v0.y);
+  auto v = (v2.x * v1.y - v1.x * v2.y) * one_over_den;
+  auto w = (v0.x * v2.y - v2.x * v0.y) * one_over_den;
+  auto u = 1.0 - v - w;
   return {u, v, w};
 }
 
@@ -113,19 +113,20 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
       const auto p =
           glm::vec2{x + bounding_box.origin.x, y + bounding_box.origin.y};
       const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
-      if (bary.x >= 0.0 && bary.y >= 0.0 && bary.z >= 0.0) {
-        const auto bary_pos =
-            BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
-        auto color = pipeline_->shader->ProcessFragment(bary, 0u);
-        if (!color.has_value()) {
-          continue;
-        }
-        Texel texel;
-        texel.pos = p;
-        texel.depth = bary_pos.z;
-        texel.color = color.value();
-        UpdateTexel(texel);
+      if (bary.x < 0.0 || bary.y < 0.0 || bary.z < 0.0) {
+        continue;
       }
+      auto color = pipeline_->shader->ProcessFragment(bary, 0u);
+      if (!color.has_value()) {
+        continue;
+      }
+      const auto bary_pos =
+          BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
+      Texel texel;
+      texel.pos = p;
+      texel.depth = bary_pos.z;
+      texel.color = color.value();
+      UpdateTexel(texel);
     }
   }
 }
