@@ -62,8 +62,8 @@ Application::~Application() {
 bool Application::Render() {
   const auto result = OnRender();
   const auto now = std::chrono::high_resolution_clock::now();
-  if (std::chrono::duration_cast<std::chrono::seconds>(now - last_title_update_)
-          .count() > 1) {
+  if (std::chrono::duration_cast<MillisecondsF>(now - last_title_update_)
+          .count() > 500) {
     ::SDL_SetWindowTitle(
         sdl_window_,
         CreateWindowTitle(
