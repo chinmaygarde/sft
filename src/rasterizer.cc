@@ -96,6 +96,7 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
                               glm::vec3 ndc_p2,
                               glm::vec3 ndc_p3) {
+  SFT_ASSERT(pipeline_ && "Must have pipeline");
   auto viewport = pipeline_->viewport;
 
   ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1, 0u);

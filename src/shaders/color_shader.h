@@ -7,7 +7,9 @@ namespace sft {
 
 class ColorShader final : public Shader {
  public:
-  ColorShader() : color_(kColorBlack) {}
+  ColorShader() : ColorShader(kColorBlack) {}
+
+  ColorShader(Color color) : color_(color) {}
 
   void SetColor(Color color) { color_ = color; }
 
