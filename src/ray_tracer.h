@@ -37,7 +37,11 @@ class RayTracer final : public Renderer {
 
   void AddShape(Sphere sphere) { shapes_.emplace_back(std::move(sphere)); }
 
-  void Render() {
+  void SetCameraPosition(glm::vec3 position) { camera_position_ = position; }
+
+  void Render() { RenderBackground(); }
+
+  void RenderBackground() {
     for (auto y = 0; y < size_.y; y++) {
       for (auto x = 0; x < size_.x; x++) {
         Texel texel;
@@ -68,6 +72,7 @@ class RayTracer final : public Renderer {
  private:
   const glm::ivec2 size_;
   void* color_buffer_ = nullptr;
+  glm::vec3 camera_position_ = {0.0, 0.0, 0.0};
   std::vector<Sphere> shapes_;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(RayTracer);

@@ -6,7 +6,7 @@ RasterizerApplication::RasterizerApplication()
     : Application(std::make_unique<Rasterizer>(glm::ivec2{800, 600})) {
   pipeline_ = std::make_shared<Pipeline>();
 
-  pipeline_->viewport = GetRenderSurfaceSize();
+  pipeline_->viewport = GetRasterizer()->GetSize();
 
   color_shader_ = std::make_shared<ColorShader>();
 

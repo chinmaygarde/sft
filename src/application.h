@@ -20,9 +20,7 @@ class Application {
 
   bool Render();
 
-  glm::ivec2 GetRenderSurfaceSize() const;
-
-  virtual bool Update() = 0;
+  virtual bool Update();
 
   virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
 
@@ -32,7 +30,6 @@ class Application {
   const std::shared_ptr<Renderer> renderer_;
 
  private:
-  glm::ivec2 render_surface_size_ = {800, 600};
   glm::ivec2 window_size_;
   SDL_Window* sdl_window_ = nullptr;
   SDL_Renderer* sdl_renderer_ = nullptr;

@@ -7,6 +7,9 @@ SDLTextureNoCopyCaster::SDLTextureNoCopyCaster(SDL_Renderer* renderer,
                                                int width,
                                                int height,
                                                int bytes_per_pixel) {
+  if (pixels == nullptr) {
+    return;
+  }
   auto surface = ::SDL_CreateRGBSurfaceFrom(pixels,                   //
                                             width,                    //
                                             height,                   //

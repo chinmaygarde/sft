@@ -37,8 +37,6 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
-  src/rasterizer_application.cc
-  src/rasterizer_application.h
   src/geom.cc
   src/geom.h
   src/model.cc
@@ -47,6 +45,14 @@ add_library(sft_lib
   src/pipeline.h
   src/rasterizer.cc
   src/rasterizer.h
+  src/rasterizer_application.cc
+  src/rasterizer_application.h
+  src/ray_tracer.cc
+  src/ray_tracer.h
+  src/ray_tracer_application.cc
+  src/ray_tracer_application.h
+  src/renderer.cc
+  src/renderer.h
   src/sdl_utils.cc
   src/sdl_utils.h
   src/shaders/color_shader.cc
@@ -57,14 +63,10 @@ add_library(sft_lib
   src/shaders/simple_shader.h
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
-  src/texture.cc
-  src/texture.h
-  src/ray_tracer.cc
-  src/ray_tracer.h
   src/sphere.cc
   src/sphere.h
-  src/renderer.cc
-  src/renderer.h
+  src/texture.cc
+  src/texture.h
   third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 

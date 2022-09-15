@@ -89,14 +89,14 @@ bool Application::Render() {
                                           size.y,                             //
                                           renderer_->GetDepthBytesPerPixel()  //
   );
-  if (::SDL_RenderCopyEx(sdl_renderer_,       //
-                         depth_attachment,    //
-                         nullptr,             //
-                         &dest,               //
-                         180,                 //
-                         NULL,                //
-                         SDL_FLIP_HORIZONTAL  //
-                         ) != 0) {
+  if (depth_attachment && ::SDL_RenderCopyEx(sdl_renderer_,       //
+                                             depth_attachment,    //
+                                             nullptr,             //
+                                             &dest,               //
+                                             180,                 //
+                                             NULL,                //
+                                             SDL_FLIP_HORIZONTAL  //
+                                             ) != 0) {
     return false;
   }
 
@@ -110,8 +110,8 @@ bool Application::IsValid() const {
   return is_valid_;
 }
 
-glm::ivec2 Application::GetRenderSurfaceSize() const {
-  return render_surface_size_;
+bool Application::Update() {
+  return true;
 }
 
 }  // namespace sft
