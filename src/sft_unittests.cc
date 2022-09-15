@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "buffer.h"
 #include "fixtures_location.h"
 #include "rasterizer.h"
 #include "rasterizer_application.h"
@@ -44,19 +45,40 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   RasterizerApplication application;
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<TextureShader>();
+
+  glm::vec3 p1 = {-0.5, 0.5, 0.0};
+  glm::vec3 p2 = {0.5, 0.5, 0.0};
+  glm::vec3 p3 = {0.5, -0.5, 0.0};
+  glm::vec3 p4 = {-0.5, -0.5, 0.0};
+
+  glm::vec2 tl = {0.0, 0.0};
+  glm::vec2 tr = {1.0, 0.0};
+  glm::vec2 br = {1.0, 1.0};
+  glm::vec2 bl = {0.0, 1.0};
+
+  auto vertex_buffer = std::make_shared<Buffer>();
+  struct VertexDescription {
+    glm::vec2 texture_coords;
+    glm::vec3 position;
+  };
+  vertex_buffer->Emplace(std::vector<VertexDescription>{
+      {tl, p1},
+      {tr, p2},
+      {br, p3},
+      {br, p3},
+      {bl, p4},
+      {tl, p1},
+  });
   auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(std::move(texture));
   pipeline->shader = shader;
+  pipeline->vertex_descriptor.offset = offsetof(VertexDescription, position);
+  pipeline->vertex_descriptor.stride = sizeof(VertexDescription);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBlue);
     pipeline->viewport = rasterizer.GetSize();
     rasterizer.SetPipeline(pipeline);
-    glm::vec3 p1 = {-0.5, 0.5, 0.0};
-    glm::vec3 p2 = {0.5, 0.5, 0.0};
-    glm::vec3 p3 = {0.5, -0.5, 0.0};
-    glm::vec3 p4 = {-0.5, -0.5, 0.0};
-    rasterizer.DrawTriangle(p1, p2, p3);
-    rasterizer.DrawTriangle(p3, p4, p1);
+    rasterizer.Draw(*vertex_buffer, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));

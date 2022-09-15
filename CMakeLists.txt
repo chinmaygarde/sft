@@ -35,6 +35,10 @@ add_library(sft_lib
   src/model.h
   src/pipeline.cc
   src/pipeline.h
+  src/buffer.cc
+  src/buffer.h
+  src/vertex_descriptor.cc
+  src/vertex_descriptor.h
   src/rasterizer.cc
   src/rasterizer.h
   src/rasterizer_application.cc

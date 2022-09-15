@@ -24,13 +24,8 @@ class TextureShader final : public Shader {
     texture_ = std::move(texture);
   }
 
-  void SetTextureCoordinates(std::vector<glm::vec2> coords) {
-    texture_coordinates_ = std::move(coords);
-  }
-
  private:
   std::shared_ptr<Texture> texture_;
-  std::vector<glm::vec2> texture_coordinates_;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(TextureShader);
 };

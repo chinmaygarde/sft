@@ -4,6 +4,7 @@
 
 #include "geom.h"
 #include "shader.h"
+#include "vertex_descriptor.h"
 
 namespace sft {
 
@@ -28,6 +29,7 @@ struct Pipeline {
   glm::ivec2 viewport;
   std::shared_ptr<Shader> shader;
   BlendMode blend_mode = BlendMode::kSourceOver;
+  VertexDescriptor vertex_descriptor;
 
   Color Blend(Color p_src, Color p_dst) const {
     auto src = p_src.GetColorF().Premultiply();

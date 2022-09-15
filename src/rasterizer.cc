@@ -1,5 +1,5 @@
 #include "rasterizer.h"
-#include <strings.h>
+
 #include "macros.h"
 
 namespace sft {
@@ -133,6 +133,21 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
 
 void Rasterizer::SetPipeline(std::shared_ptr<Pipeline> pipeline) {
   pipeline_ = pipeline;
+}
+
+void Rasterizer::Draw(const Buffer& vertex_buffer, size_t count) {
+  const auto& vtx_desc = pipeline_->vertex_descriptor;
+  const uint8_t* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
+  glm::vec3 p1, p2, p3;
+  for (size_t i = 0; i < count; i += 3) {
+    memcpy(&p1, vtx_ptr, sizeof(p1));
+    vtx_ptr += vtx_desc.stride;
+    memcpy(&p2, vtx_ptr, sizeof(p2));
+    vtx_ptr += vtx_desc.stride;
+    memcpy(&p3, vtx_ptr, sizeof(p3));
+    vtx_ptr += vtx_desc.stride;
+    DrawTriangle(p1, p2, p3);
+  }
 }
 
 }  // namespace sft
