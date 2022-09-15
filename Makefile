@@ -6,10 +6,10 @@
 run: build/sft_unittests
 	./build/sft_unittests
 
-test: build/sft
+test: build/sft_unittests
 	cd build && ctest -C build
 
-build/sft: build/build.ninja
+build/sft_unittests: build/build.ninja
 	ninja -C build
 
 build/build.ninja:
@@ -21,3 +21,8 @@ clean:
 
 sync:
 	git submodule update --init --recursive -j 8
+
+xcode:
+	mkdir -p build/xcode
+	cmake -G Xcode -B build/xcode -DCMAKE_BUILD_TYPE=Debug
+	open build/xcode/sft.xcodeproj
