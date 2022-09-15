@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "fixtures_location.h"
 #include "rasterizer.h"
 #include "rasterizer_application.h"
 #include "ray_tracer_application.h"
@@ -43,7 +44,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   RasterizerApplication application;
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<TextureShader>();
-  auto texture = std::make_shared<Texture>("assets/airplane.jpg");
+  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(std::move(texture));
   pipeline->shader = shader;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {

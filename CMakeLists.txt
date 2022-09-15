@@ -88,4 +88,8 @@ add_executable(sft_unittests
 
 target_link_libraries(sft_unittests sft_lib gtest_main)
 
+get_filename_component(SFT_ASSETS_LOCATION assets ABSOLUTE)
+configure_file(src/fixtures_location.h.in fixtures_location.h @ONLY)
+target_include_directories(sft_unittests PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
 gtest_discover_tests(sft_unittests)

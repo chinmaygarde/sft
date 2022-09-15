@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine SFT_ASSETS_LOCATION "@SFT_ASSETS_LOCATION@" "/"
