@@ -1,6 +1,23 @@
 #include "application.h"
 
+#include <chrono>
+#include <sstream>
+
 namespace sft {
+
+std::string CreateWindowTitle(std::chrono::milliseconds frame_time) {
+  std::stringstream stream;
+  stream << "SFT Sandbox (";
+#ifndef NDEBUG
+  stream << "Debug Build";
+#else
+  stream << "Release Build";
+#endif
+  stream << ") (";
+  stream << frame_time.count();
+  stream << " ms) (Press \"q\" or ESC to quit)";
+  return stream.str();
+}
 
 Application::Application(std::shared_ptr<Renderer> renderer)
     : renderer_(std::move(renderer)) {
@@ -9,19 +26,13 @@ Application::Application(std::shared_ptr<Renderer> renderer)
   window_size_ = renderer_->GetSize();
   window_size_.x *= 2.0;
 
-#ifndef NDEBUG
-#define SFT_DEBUG_TITLE "Debug Build"
-#else
-#define SFT_DEBUG_TITLE "Release Build"
-#endif
-
   sdl_window_ = ::SDL_CreateWindow(
-      "SFT Sandbox (" SFT_DEBUG_TITLE ") (Press \"q\" or ESC to quit)",  //
-      SDL_WINDOWPOS_CENTERED,                                            //
-      SDL_WINDOWPOS_CENTERED,                                            //
-      window_size_.x,                                                    //
-      window_size_.y,                                                    //
-      0                                                                  //
+      CreateWindowTitle(std::chrono::milliseconds{0}).c_str(),
+      SDL_WINDOWPOS_CENTERED,  //
+      SDL_WINDOWPOS_CENTERED,  //
+      window_size_.x,          //
+      window_size_.y,          //
+      0                        //
   );
   if (!sdl_window_) {
     return;
@@ -45,6 +56,28 @@ Application::~Application() {
 }
 
 bool Application::Render() {
+  const auto start_time = std::chrono::high_resolution_clock::now();
+  const auto result = OnRender();
+  const auto end_time = std::chrono::high_resolution_clock::now();
+  ::SDL_SetWindowTitle(
+      sdl_window_,
+      CreateWindowTitle(std::chrono::duration_cast<std::chrono::milliseconds>(
+                            end_time - start_time))
+          .c_str());
+  return result;
+}
+
+void Application::OnTouchEvent(TouchEventType type, glm::vec2 pos) {}
+
+bool Application::IsValid() const {
+  return is_valid_;
+}
+
+bool Application::Update() {
+  return true;
+}
+
+bool Application::OnRender() {
   if (!is_valid_) {
     return false;
   }
@@ -97,16 +130,6 @@ bool Application::Render() {
   }
 
   ::SDL_RenderPresent(sdl_renderer_);
-  return true;
-}
-
-void Application::OnTouchEvent(TouchEventType type, glm::vec2 pos) {}
-
-bool Application::IsValid() const {
-  return is_valid_;
-}
-
-bool Application::Update() {
   return true;
 }
 

@@ -35,6 +35,8 @@ class Application {
   SDL_Renderer* sdl_renderer_ = nullptr;
   bool is_valid_ = false;
 
+  bool OnRender();
+
   SFT_DISALLOW_COPY_AND_ASSIGN(Application);
 };
 
