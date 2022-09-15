@@ -2,10 +2,10 @@
 
 #include "application.h"
 #include "macros.h"
-#include "model.h"
-#include "shaders/color_shader.h"
 
 namespace sft {
+
+class Rasterizer;
 
 class RasterizerApplication final : public Application {
  public:
@@ -13,16 +13,16 @@ class RasterizerApplication final : public Application {
 
   ~RasterizerApplication() override;
 
+  using RasterizerCallback = std::function<bool(Rasterizer&)>;
+
+  void SetRasterizerCallback(RasterizerCallback callback);
+
   bool Update() override;
 
   void OnTouchEvent(TouchEventType type, glm::vec2 pos) override;
 
  private:
-  std::unique_ptr<Model> model_;
-  glm::vec2 touch_offset_;
-  std::optional<glm::vec2> last_touch_;
-  std::shared_ptr<ColorShader> color_shader_;
-  std::shared_ptr<Pipeline> pipeline_;
+  RasterizerCallback rasterizer_callback_;
 
   Rasterizer* GetRasterizer() const;
 

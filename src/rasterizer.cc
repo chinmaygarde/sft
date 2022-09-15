@@ -129,4 +129,8 @@ void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
   }
 }
 
+void Rasterizer::SetPipeline(std::shared_ptr<Pipeline> pipeline) {
+  pipeline_ = pipeline;
+}
+
 }  // namespace sft

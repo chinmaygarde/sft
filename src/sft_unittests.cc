@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+
+#include "rasterizer.h"
 #include "rasterizer_application.h"
 #include "ray_tracer_application.h"
 #include "runner.h"
@@ -6,14 +8,19 @@
 namespace sft {
 namespace testing {
 
-using RunnerTest = Runner;
+using RayTracerTest = Runner;
+using RasterizerTest = Runner;
 
-TEST_F(RunnerTest, CanRunRasterizer) {
+TEST_F(RasterizerTest, CanClearRasterizer) {
   RasterizerApplication application;
+  application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorFuchsia);
+    return true;
+  });
   ASSERT_TRUE(Run(application));
 }
 
-TEST_F(RunnerTest, CanRunRaytracer) {
+TEST_F(RayTracerTest, CanRunRaytracer) {
   RayTracerApplication application;
   Sphere sphere;
   sphere.center = {0.0, 0.0, -1.0};

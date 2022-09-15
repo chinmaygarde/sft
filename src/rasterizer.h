@@ -32,7 +32,7 @@ class Rasterizer final : public Renderer {
   // |Renderer|
   size_t GetDepthBytesPerPixel() const override;
 
-  void SetPipeline(std::shared_ptr<Pipeline> pipeline) { pipeline_ = pipeline; }
+  void SetPipeline(std::shared_ptr<Pipeline> pipeline);
 
   void Clear(Color color);
 

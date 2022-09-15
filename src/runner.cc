@@ -12,8 +12,9 @@ Runner::Runner() {
 
 bool Runner::Run(Application& application) const {
   bool is_running = true;
+  bool success = true;
   while (is_running) {
-    is_running = application.Render();
+    success = is_running = application.Render();
     ::SDL_Event event;
     if (::SDL_PollEvent(&event) == 1) {
       switch (event.type) {
@@ -50,7 +51,7 @@ bool Runner::Run(Application& application) const {
       }
     }
   }
-  return true;
+  return success;
 }
 
 Runner::~Runner() {
