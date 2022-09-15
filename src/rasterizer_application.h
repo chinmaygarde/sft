@@ -4,7 +4,6 @@
 #include "macros.h"
 #include "model.h"
 #include "shaders/color_shader.h"
-#include "shaders/impeller_shader.h"
 
 namespace sft {
 

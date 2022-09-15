@@ -23,15 +23,7 @@ set(GOOGLETEST_PATH "third_party/googletest")
 set(BENCHMARK_ENABLE_TESTING FALSE)
 add_subdirectory(third_party/googlebenchmark)
 add_subdirectory(third_party/glm)
-set(SWIFTSHADER_ENABLE_ASTC FALSE)
-set(SWIFTSHADER_BUILD_TESTS FALSE)
-add_subdirectory(third_party/swiftshader)
-set(ENABLE_CTEST FALSE)
-add_subdirectory(third_party/swiftshader/third_party/glslang)
-set(SPIRV_CROSS_ENABLE_TESTS FALSE)
-add_subdirectory(third_party/spirv_cross)
 
-include(shaders)
 include(GoogleTest)
 
 add_library(sft_lib
@@ -57,8 +49,6 @@ add_library(sft_lib
   src/sdl_utils.h
   src/shaders/color_shader.cc
   src/shaders/color_shader.h
-  src/shaders/impeller_shader.cc
-  src/shaders/impeller_shader.h
   src/shaders/simple_shader.cc
   src/shaders/simple_shader.h
   src/shaders/texture_shader.cc
@@ -67,7 +57,6 @@ add_library(sft_lib
   src/sphere.h
   src/texture.cc
   src/texture.h
-  third_party/spirv_cross/include/spirv_cross/internal_interface.cpp
 )
 
 target_compile_options(sft_lib
@@ -84,12 +73,7 @@ target_link_libraries(sft_lib
     SDL2
     tinyobjloader
     glm
-    # ReactorLLVM
-    spirv-cross-cpp
 )
-
-shader(sft_lib assets/impeller.vert)
-shader(sft_lib assets/impeller.frag)
 
 target_include_directories(sft_lib
   PUBLIC

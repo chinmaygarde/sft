@@ -10,7 +10,7 @@ RasterizerApplication::RasterizerApplication()
 
   color_shader_ = std::make_shared<ColorShader>();
 
-  pipeline_->shader = std::make_shared<ImpellerShader>();
+  pipeline_->shader = color_shader_;
 
   model_ = std::make_unique<Model>("assets/teapot/teapot.obj");
   if (!model_->IsValid()) {
