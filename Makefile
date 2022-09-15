@@ -1,10 +1,10 @@
 # This project uses CMake and Git sub-modules. This Makefile is just in place
 # to make common tasks easier.
 
-.PHONY: build/sft
+.PHONY: build/sft_unittests
 
-run: build/sft
-	./build/sft
+run: build/sft_unittests
+	./build/sft_unittests
 
 test: build/sft
 	cd build && ctest -C build

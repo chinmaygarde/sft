@@ -80,10 +80,6 @@ target_include_directories(sft_lib
     third_party/spirv_cross/include
 )
 
-add_executable(sft src/main.cc)
-
-target_link_libraries(sft sft_lib)
-
 add_executable(sft_unittests
   src/sft_unittests.cc
   src/runner.h

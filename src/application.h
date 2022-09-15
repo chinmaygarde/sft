@@ -33,6 +33,9 @@ class Application {
   glm::ivec2 window_size_;
   SDL_Window* sdl_window_ = nullptr;
   SDL_Renderer* sdl_renderer_ = nullptr;
+  std::chrono::time_point<std::chrono::high_resolution_clock>
+      last_title_update_;
+  std::chrono::nanoseconds last_update_duration_;
   bool is_valid_ = false;
 
   bool OnRender();

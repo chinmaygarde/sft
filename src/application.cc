@@ -1,12 +1,17 @@
 #include "application.h"
 
 #include <chrono>
+#include <iomanip>
 #include <sstream>
 
 namespace sft {
 
-std::string CreateWindowTitle(std::chrono::milliseconds frame_time) {
+using MillisecondsF = std::chrono::duration<double, std::milli>;
+
+std::string CreateWindowTitle(MillisecondsF frame_time) {
   std::stringstream stream;
+  stream.precision(2);
+  stream.setf(std::ios::fixed, std::ios::floatfield);
   stream << "SFT Sandbox (";
 #ifndef NDEBUG
   stream << "Debug Build";
@@ -26,13 +31,12 @@ Application::Application(std::shared_ptr<Renderer> renderer)
   window_size_ = renderer_->GetSize();
   window_size_.x *= 2.0;
 
-  sdl_window_ = ::SDL_CreateWindow(
-      CreateWindowTitle(std::chrono::milliseconds{0}).c_str(),
-      SDL_WINDOWPOS_CENTERED,  //
-      SDL_WINDOWPOS_CENTERED,  //
-      window_size_.x,          //
-      window_size_.y,          //
-      0                        //
+  sdl_window_ = ::SDL_CreateWindow(CreateWindowTitle(MillisecondsF{0}).c_str(),
+                                   SDL_WINDOWPOS_CENTERED,  //
+                                   SDL_WINDOWPOS_CENTERED,  //
+                                   window_size_.x,          //
+                                   window_size_.y,          //
+                                   0                        //
   );
   if (!sdl_window_) {
     return;
@@ -56,14 +60,17 @@ Application::~Application() {
 }
 
 bool Application::Render() {
-  const auto start_time = std::chrono::high_resolution_clock::now();
   const auto result = OnRender();
-  const auto end_time = std::chrono::high_resolution_clock::now();
-  ::SDL_SetWindowTitle(
-      sdl_window_,
-      CreateWindowTitle(std::chrono::duration_cast<std::chrono::milliseconds>(
-                            end_time - start_time))
-          .c_str());
+  const auto now = std::chrono::high_resolution_clock::now();
+  if (std::chrono::duration_cast<std::chrono::seconds>(now - last_title_update_)
+          .count() > 1) {
+    ::SDL_SetWindowTitle(
+        sdl_window_,
+        CreateWindowTitle(
+            std::chrono::duration_cast<MillisecondsF>(last_update_duration_))
+            .c_str());
+    last_title_update_ = now;
+  }
   return result;
 }
 
@@ -82,9 +89,13 @@ bool Application::OnRender() {
     return false;
   }
 
+  const auto update_start = std::chrono::high_resolution_clock::now();
   if (!Update()) {
     return false;
   }
+  const auto update_end = std::chrono::high_resolution_clock::now();
+
+  last_update_duration_ = update_end - update_start;
 
   const auto size = renderer_->GetSize();
 
