@@ -39,7 +39,10 @@ class Rasterizer final : public Renderer {
 
   void Clear(Color color);
 
-  void DrawTriangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+  void DrawTriangle(glm::vec3 p1,
+                    glm::vec3 p2,
+                    glm::vec3 p3,
+                    size_t vertex_id = 0);
 
   void Draw(const Buffer& vertex_buffer, size_t count);
 

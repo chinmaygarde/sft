@@ -95,13 +95,14 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 
 void Rasterizer::DrawTriangle(glm::vec3 ndc_p1,
                               glm::vec3 ndc_p2,
-                              glm::vec3 ndc_p3) {
+                              glm::vec3 ndc_p3,
+                              size_t vertex_id) {
   SFT_ASSERT(pipeline_ && "Must have pipeline");
   auto viewport = pipeline_->viewport;
 
-  ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1, 0u);
-  ndc_p2 = pipeline_->shader->ProcessVertex(ndc_p2, 1u);
-  ndc_p3 = pipeline_->shader->ProcessVertex(ndc_p3, 2u);
+  ndc_p1 = pipeline_->shader->ProcessVertex(ndc_p1, vertex_id + 0u);
+  ndc_p2 = pipeline_->shader->ProcessVertex(ndc_p2, vertex_id + 1u);
+  ndc_p3 = pipeline_->shader->ProcessVertex(ndc_p3, vertex_id + 2u);
 
   const auto p1 = ToTexelPos(ndc_p1, viewport);
   const auto p2 = ToTexelPos(ndc_p2, viewport);
@@ -138,6 +139,7 @@ void Rasterizer::SetPipeline(std::shared_ptr<Pipeline> pipeline) {
 void Rasterizer::Draw(const Buffer& vertex_buffer, size_t count) {
   const auto& vtx_desc = pipeline_->vertex_descriptor;
   const uint8_t* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
+  size_t vertex_id = 0;
   glm::vec3 p1, p2, p3;
   for (size_t i = 0; i < count; i += 3) {
     memcpy(&p1, vtx_ptr, sizeof(p1));
@@ -146,7 +148,8 @@ void Rasterizer::Draw(const Buffer& vertex_buffer, size_t count) {
     vtx_ptr += vtx_desc.stride;
     memcpy(&p3, vtx_ptr, sizeof(p3));
     vtx_ptr += vtx_desc.stride;
-    DrawTriangle(p1, p2, p3);
+    DrawTriangle(p1, p2, p3, vertex_id);
+    vertex_id += 3;
   }
 }
 

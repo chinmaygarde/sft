@@ -43,6 +43,9 @@ TEST_F(RasterizerTest, CanDrawTriangleRasterizer) {
 
 TEST_F(RasterizerTest, CanDrawTexturedImage) {
   RasterizerApplication application;
+
+  using VD = TextureShader::VertexDescription;
+
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<TextureShader>();
 
@@ -57,11 +60,8 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   glm::vec2 bl = {0.0, 1.0};
 
   auto vertex_buffer = std::make_shared<Buffer>();
-  struct VertexDescription {
-    glm::vec2 texture_coords;
-    glm::vec3 position;
-  };
-  vertex_buffer->Emplace(std::vector<VertexDescription>{
+
+  vertex_buffer->Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
       {br, p3},
@@ -72,8 +72,8 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(std::move(texture));
   pipeline->shader = shader;
-  pipeline->vertex_descriptor.offset = offsetof(VertexDescription, position);
-  pipeline->vertex_descriptor.stride = sizeof(VertexDescription);
+  pipeline->vertex_descriptor.offset = offsetof(VD, position);
+  pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBlue);
     pipeline->viewport = rasterizer.GetSize();

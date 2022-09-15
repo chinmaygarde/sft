@@ -10,6 +10,11 @@ namespace sft {
 
 class TextureShader final : public Shader {
  public:
+  struct VertexDescription {
+    glm::vec2 texture_coords;
+    glm::vec3 position;
+  };
+
   TextureShader() = default;
 
   glm::vec3 ProcessVertex(glm::vec3 in, size_t index) override { return in; }
