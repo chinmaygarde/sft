@@ -43,7 +43,14 @@ Color Texture::Sample(glm::vec2 pos) const {
 
   auto* color = reinterpret_cast<uint32_t*>(decoded_) + offset;
 
-  return *color;
+  const auto sampled = Color{*color};
+
+  return {
+      sampled.GetBlue(),   //
+      sampled.GetGreen(),  //
+      sampled.GetRed(),    //
+      sampled.GetAlpha()   //
+  };
 }
 
 }  // namespace sft

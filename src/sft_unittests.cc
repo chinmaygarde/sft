@@ -5,6 +5,7 @@
 #include "ray_tracer_application.h"
 #include "runner.h"
 #include "shaders/color_shader.h"
+#include "shaders/texture_shader.h"
 
 namespace sft {
 namespace testing {
@@ -23,17 +24,38 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
 
 TEST_F(RasterizerTest, CanDrawTriangleRasterizer) {
   RasterizerApplication application;
-
+  auto pipeline = std::make_shared<Pipeline>();
+  pipeline->shader = std::make_shared<ColorShader>(kColorAzure);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBlue);
-    auto pipeline = std::make_shared<Pipeline>();
-    pipeline->shader = std::make_shared<ColorShader>(kColorAzure);
     pipeline->viewport = rasterizer.GetSize();
     rasterizer.SetPipeline(pipeline);
     glm::vec3 p1 = {0.0, 0.5, 0.0};
     glm::vec3 p2 = {-0.5, -0.5, 0.0};
     glm::vec3 p3 = {0.5, -0.5, 0.0};
     rasterizer.DrawTriangle(p1, p2, p3);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanDrawTexturedImage) {
+  RasterizerApplication application;
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<TextureShader>();
+  auto texture = std::make_shared<Texture>("assets/airplane.jpg");
+  shader->SetTexture(std::move(texture));
+  pipeline->shader = shader;
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorBlue);
+    pipeline->viewport = rasterizer.GetSize();
+    rasterizer.SetPipeline(pipeline);
+    glm::vec3 p1 = {-0.5, 0.5, 0.0};
+    glm::vec3 p2 = {0.5, 0.5, 0.0};
+    glm::vec3 p3 = {0.5, -0.5, 0.0};
+    glm::vec3 p4 = {-0.5, -0.5, 0.0};
+    rasterizer.DrawTriangle(p1, p2, p3);
+    rasterizer.DrawTriangle(p3, p4, p1);
     return true;
   });
   ASSERT_TRUE(Run(application));

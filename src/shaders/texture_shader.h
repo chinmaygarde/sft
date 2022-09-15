@@ -1,5 +1,6 @@
 #pragma once
 
+#include "macros.h"
 #include "shader.h"
 #include "texture.h"
 
@@ -11,6 +12,7 @@ class TextureShader final : public Shader {
 
   std::optional<Color> ProcessFragment(glm::vec3 bary_pos,
                                        size_t index) override {
+    SFT_ASSERT(texture_ && "Texture is present.");
     return texture_->Sample({bary_pos.x, bary_pos.y});
   }
 
