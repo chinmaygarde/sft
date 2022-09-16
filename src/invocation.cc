@@ -5,9 +5,9 @@
 namespace sft {
 
 glm::vec2 FragmentInvocation::InterpolateVec2(size_t offset) const {
-  return rasterizer.InterpolateVec2(data,                     //
-                                    barycentric_coordinates,  //
-                                    offset                    //
+  return rasterizer.Interpolate<glm::vec2>(data,                     //
+                                           barycentric_coordinates,  //
+                                           offset                    //
   );
 }
 

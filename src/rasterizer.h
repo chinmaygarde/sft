@@ -42,9 +42,22 @@ class Rasterizer final : public Renderer {
 
   void Draw(const Buffer& vertex_buffer, size_t count);
 
-  glm::vec2 InterpolateVec2(const TriangleData& data,
-                            const glm::vec3& barycentric_coordinates,
-                            size_t offset) const;
+  template <class T>
+  T Interpolate(const TriangleData& data,
+                const glm::vec3& barycentric_coordinates,
+                size_t offset) const {
+    const auto& vtx_desc = pipeline_->vertex_descriptor;
+    const uint8_t* vtx_ptr = data.vertex_buffer.GetData() +
+                             (vtx_desc.stride * data.vertex_id) + offset;
+    T p1, p2, p3;
+    memcpy(&p1, vtx_ptr, sizeof(p1));
+    vtx_ptr += vtx_desc.stride;
+    memcpy(&p2, vtx_ptr, sizeof(p2));
+    vtx_ptr += vtx_desc.stride;
+    memcpy(&p3, vtx_ptr, sizeof(p3));
+    vtx_ptr += vtx_desc.stride;
+    return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
+  }
 
  private:
   void* color_buffer_ = nullptr;
