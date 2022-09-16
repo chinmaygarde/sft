@@ -61,8 +61,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBlue);
     pipeline->viewport = rasterizer.GetSize();
-    rasterizer.SetPipeline(pipeline);
-    rasterizer.Draw(*vertex_buffer, 6);
+    rasterizer.Draw(*pipeline, *vertex_buffer, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));

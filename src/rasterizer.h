@@ -36,17 +36,17 @@ class Rasterizer final : public Renderer {
   // |Renderer|
   size_t GetDepthBytesPerPixel() const override;
 
-  void SetPipeline(std::shared_ptr<Pipeline> pipeline);
-
   void Clear(Color color);
 
-  void Draw(const Buffer& vertex_buffer, size_t count);
+  void Draw(const Pipeline& pipeline,
+            const Buffer& vertex_buffer,
+            size_t count);
 
   template <class T>
   T Interpolate(const TriangleData& data,
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
-    const auto& vtx_desc = pipeline_->vertex_descriptor;
+    const auto& vtx_desc = data.pipeline.vertex_descriptor;
     const uint8_t* vtx_ptr = data.vertex_buffer.GetData() +
                              (vtx_desc.stride * data.vertex_id) + offset;
     T p1, p2, p3;
@@ -63,14 +63,12 @@ class Rasterizer final : public Renderer {
   void* color_buffer_ = nullptr;
   void* depth_buffer_ = nullptr;
   const glm::ivec2 size_;
-  std::shared_ptr<Pipeline> pipeline_;
 
-  void UpdateTexel(Texel texel);
+  void UpdateTexel(const Pipeline& pipeline, Texel texel);
 
   void DrawTriangle(const TriangleData& data);
 
-  Rasterizer(const Rasterizer&) = delete;
-  Rasterizer& operator=(const Rasterizer&) = delete;
+  SFT_DISALLOW_COPY_AND_ASSIGN(Rasterizer);
 };
 
 }  // namespace sft

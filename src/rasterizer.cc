@@ -39,7 +39,7 @@ constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
   return pos.x < 0 || pos.y < 0 || pos.x > size.x || pos.y > size.y;
 }
 
-void Rasterizer::UpdateTexel(Texel texel) {
+void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   if (IsOOB(texel.pos, size_)) {
     return;
   }
@@ -51,14 +51,14 @@ void Rasterizer::UpdateTexel(Texel texel) {
 
   auto new_depth = Color::Gray(texel.depth);
 
-  if (pipeline_->depth_test_enabled) {
+  if (pipeline.depth_test_enabled) {
     const auto old_depth = Color(depth_ptr[0]);
     if (new_depth.GetRed() > old_depth.GetRed()) {
       return;
     }
   }
 
-  *color_ptr = pipeline_->Blend(texel.color, *color_ptr);
+  *color_ptr = pipeline.Blend(texel.color, *color_ptr);
   *depth_ptr = new_depth;
 }
 
@@ -95,15 +95,14 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {
-  SFT_ASSERT(pipeline_ && "Must have pipeline");
-  auto viewport = pipeline_->viewport;
+  auto viewport = data.pipeline.viewport;
 
   const auto ndc_p1 =
-      pipeline_->shader->ProcessVertex({data.p1, data.vertex_id + 0u});
+      data.pipeline.shader->ProcessVertex({data.p1, data.vertex_id + 0u});
   const auto ndc_p2 =
-      pipeline_->shader->ProcessVertex({data.p2, data.vertex_id + 1u});
+      data.pipeline.shader->ProcessVertex({data.p2, data.vertex_id + 1u});
   const auto ndc_p3 =
-      pipeline_->shader->ProcessVertex({data.p3, data.vertex_id + 2u});
+      data.pipeline.shader->ProcessVertex({data.p3, data.vertex_id + 2u});
 
   const auto p1 = ToTexelPos(ndc_p1, viewport);
   const auto p2 = ToTexelPos(ndc_p2, viewport);
@@ -118,7 +117,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       if (bary.x < 0.0 || bary.y < 0.0 || bary.z < 0.0) {
         continue;
       }
-      auto color = pipeline_->shader->ProcessFragment({bary, *this, data});
+      auto color = data.pipeline.shader->ProcessFragment({bary, *this, data});
       if (!color.has_value()) {
         continue;
       }
@@ -128,19 +127,17 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       texel.pos = p;
       texel.depth = bary_pos.z;
       texel.color = color.value();
-      UpdateTexel(texel);
+      UpdateTexel(data.pipeline, texel);
     }
   }
 }
 
-void Rasterizer::SetPipeline(std::shared_ptr<Pipeline> pipeline) {
-  pipeline_ = pipeline;
-}
-
-void Rasterizer::Draw(const Buffer& vertex_buffer, size_t count) {
-  const auto& vtx_desc = pipeline_->vertex_descriptor;
+void Rasterizer::Draw(const Pipeline& pipeline,
+                      const Buffer& vertex_buffer,
+                      size_t count) {
+  const auto& vtx_desc = pipeline.vertex_descriptor;
   const uint8_t* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
-  TriangleData data(vertex_buffer);
+  TriangleData data(pipeline, vertex_buffer);
   size_t vertex_id = 0;
   glm::vec3 p1, p2, p3;
   for (size_t i = 0; i < count; i += 3) {
