@@ -8,6 +8,7 @@
 
 #include "buffer.h"
 #include "geom.h"
+#include "invocation.h"
 #include "pipeline.h"
 #include "renderer.h"
 
@@ -39,12 +40,11 @@ class Rasterizer final : public Renderer {
 
   void Clear(Color color);
 
-  void DrawTriangle(glm::vec3 p1,
-                    glm::vec3 p2,
-                    glm::vec3 p3,
-                    size_t vertex_id = 0);
-
   void Draw(const Buffer& vertex_buffer, size_t count);
+
+  glm::vec2 InterpolateVec2(const TriangleData& data,
+                            const glm::vec3& barycentric_coordinates,
+                            size_t offset) const;
 
  private:
   void* color_buffer_ = nullptr;
@@ -53,6 +53,8 @@ class Rasterizer final : public Renderer {
   std::shared_ptr<Pipeline> pipeline_;
 
   void UpdateTexel(Texel texel);
+
+  void DrawTriangle(const TriangleData& data);
 
   Rasterizer(const Rasterizer&) = delete;
   Rasterizer& operator=(const Rasterizer&) = delete;

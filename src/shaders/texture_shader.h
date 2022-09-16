@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "invocation.h"
 #include "macros.h"
 #include "shader.h"
 #include "texture.h"
@@ -17,12 +18,13 @@ class TextureShader final : public Shader {
 
   TextureShader() = default;
 
-  glm::vec3 ProcessVertex(glm::vec3 in, size_t index) override { return in; }
+  glm::vec3 ProcessVertex(const VertexInvocation& inv) override {
+    return inv.position;
+  }
 
-  std::optional<Color> ProcessFragment(glm::vec3 bary_pos,
-                                       size_t index) override {
-    SFT_ASSERT(texture_ && "Texture is present.");
-    return texture_->Sample({bary_pos.x, bary_pos.y});
+  std::optional<Color> ProcessFragment(const FragmentInvocation& inv) override {
+    return texture_->Sample(
+        inv.InterpolateVec2(offsetof(VertexDescription, texture_coords)));
   }
 
   void SetTexture(std::shared_ptr<Texture> texture) {

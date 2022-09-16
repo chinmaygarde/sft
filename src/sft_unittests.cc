@@ -2,6 +2,7 @@
 
 #include "buffer.h"
 #include "fixtures_location.h"
+#include "pipeline.h"
 #include "rasterizer.h"
 #include "rasterizer_application.h"
 #include "ray_tracer_application.h"
@@ -19,23 +20,6 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
   RasterizerApplication application;
   application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFuchsia);
-    return true;
-  });
-  ASSERT_TRUE(Run(application));
-}
-
-TEST_F(RasterizerTest, CanDrawTriangleRasterizer) {
-  RasterizerApplication application;
-  auto pipeline = std::make_shared<Pipeline>();
-  pipeline->shader = std::make_shared<ColorShader>(kColorAzure);
-  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
-    rasterizer.Clear(kColorBlue);
-    pipeline->viewport = rasterizer.GetSize();
-    rasterizer.SetPipeline(pipeline);
-    glm::vec3 p1 = {0.0, 0.5, 0.0};
-    glm::vec3 p2 = {-0.5, -0.5, 0.0};
-    glm::vec3 p3 = {0.5, -0.5, 0.0};
-    rasterizer.DrawTriangle(p1, p2, p3);
     return true;
   });
   ASSERT_TRUE(Run(application));

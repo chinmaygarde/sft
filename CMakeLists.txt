@@ -29,16 +29,16 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
+  src/buffer.cc
+  src/buffer.h
   src/geom.cc
   src/geom.h
+  src/invocation.cc
+  src/invocation.h
   src/model.cc
   src/model.h
   src/pipeline.cc
   src/pipeline.h
-  src/buffer.cc
-  src/buffer.h
-  src/vertex_descriptor.cc
-  src/vertex_descriptor.h
   src/rasterizer.cc
   src/rasterizer.h
   src/rasterizer_application.cc
@@ -59,6 +59,8 @@ add_library(sft_lib
   src/sphere.h
   src/texture.cc
   src/texture.h
+  src/vertex_descriptor.cc
+  src/vertex_descriptor.h
 )
 
 target_compile_options(sft_lib
