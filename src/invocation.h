@@ -2,6 +2,7 @@
 
 #include "geom.h"
 #include "macros.h"
+#include "rasterizer.h"
 
 namespace sft {
 
@@ -19,7 +20,13 @@ struct VertexInvocation {
 struct FragmentInvocation {
   glm::vec3 barycentric_coordinates;
 
-  glm::vec2 InterpolateVec2(size_t offset) const;
+  template <class T>
+  T Interpolate(size_t offset) const {
+    return rasterizer.Interpolate<T>(data,                     //
+                                     barycentric_coordinates,  //
+                                     offset                    //
+    );
+  }
 
  private:
   friend Rasterizer;

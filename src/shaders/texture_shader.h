@@ -23,8 +23,8 @@ class TextureShader final : public Shader {
   }
 
   std::optional<Color> ProcessFragment(const FragmentInvocation& inv) override {
-    return texture_->Sample(
-        inv.InterpolateVec2(offsetof(VertexDescription, texture_coords)));
+    return texture_->Sample(inv.Interpolate<glm::vec2>(
+        offsetof(VertexDescription, texture_coords)));
   }
 
   void SetTexture(std::shared_ptr<Texture> texture) {
