@@ -1,6 +1,7 @@
 #pragma once
 
 #include "geom.h"
+#include "invocation.h"
 #include "shader.h"
 
 namespace sft {

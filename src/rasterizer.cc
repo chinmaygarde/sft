@@ -1,5 +1,6 @@
 #include "rasterizer.h"
 
+#include "invocation.h"
 #include "macros.h"
 
 namespace sft {

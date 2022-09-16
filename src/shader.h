@@ -3,9 +3,11 @@
 #include <optional>
 
 #include "geom.h"
-#include "invocation.h"
 
 namespace sft {
+
+struct VertexInvocation;
+struct FragmentInvocation;
 
 class Shader {
  public:

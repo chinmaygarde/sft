@@ -33,6 +33,8 @@ add_library(sft_lib
   src/buffer.h
   src/geom.cc
   src/geom.h
+  src/triangle_data.cc
+  src/triangle_data.h
   src/invocation.cc
   src/invocation.h
   src/model.cc

@@ -8,9 +8,9 @@
 
 #include "buffer.h"
 #include "geom.h"
-#include "invocation.h"
 #include "pipeline.h"
 #include "renderer.h"
+#include "triangle_data.h"
 
 namespace sft {
 
