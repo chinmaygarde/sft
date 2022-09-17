@@ -61,6 +61,8 @@ add_library(sft_lib
   src/sphere.h
   src/texture.cc
   src/texture.h
+  src/timing.cc
+  src/timing.h
   src/vertex_descriptor.cc
   src/vertex_descriptor.h
 )

@@ -1,12 +1,11 @@
 #include "application.h"
 
-#include <chrono>
 #include <iomanip>
 #include <sstream>
 
-namespace sft {
+#include "timing.h"
 
-using MillisecondsF = std::chrono::duration<double, std::milli>;
+namespace sft {
 
 std::string CreateWindowTitle(MillisecondsF frame_time) {
   std::stringstream stream;
@@ -61,7 +60,7 @@ Application::~Application() {
 
 bool Application::Render() {
   const auto result = OnRender();
-  const auto now = std::chrono::high_resolution_clock::now();
+  const auto now = Clock::now();
   if (std::chrono::duration_cast<MillisecondsF>(now - last_title_update_)
           .count() > 500) {
     ::SDL_SetWindowTitle(
@@ -89,11 +88,11 @@ bool Application::OnRender() {
     return false;
   }
 
-  const auto update_start = std::chrono::high_resolution_clock::now();
+  const auto update_start = Clock::now();
   if (!Update()) {
     return false;
   }
-  const auto update_end = std::chrono::high_resolution_clock::now();
+  const auto update_end = Clock::now();
 
   last_update_duration_ = update_end - update_start;
 

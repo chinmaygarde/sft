@@ -54,18 +54,17 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
       {bl, p4},
       {tl, p1},
   });
-  auto texture =
-      std::make_shared<Texture>(SFT_ASSETS_LOCATION "bay_bridge.jpg");
+  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(std::move(texture));
   pipeline->shader = shader;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
-    rasterizer.Clear(kColorBlue);
+    rasterizer.Clear(kColorFirebrick);
     pipeline->viewport = rasterizer.GetSize();
     auto uniform_buffer = Buffer{};
     uniform_buffer.Emplace(Uniforms{
-        .alpha = 0.5,
+        .alpha = 0.75,
     });
     rasterizer.Draw(*pipeline, *vertex_buffer, uniform_buffer, 6);
     return true;

@@ -2,6 +2,7 @@
 
 #include "gtest/gtest.h"
 #include "macros.h"
+#include "timing.h"
 
 namespace sft {
 
@@ -15,8 +16,10 @@ class Runner : public ::testing::Test {
 
   bool Run(Application& application) const;
 
+  SecondsF ElapsedTime() const;
+
  private:
-  std::chrono::time_point<std::chrono::high_resolution_clock> start_;
+  TimePoint start_time_;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Runner);
 };

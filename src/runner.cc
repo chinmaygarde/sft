@@ -6,8 +6,12 @@
 
 namespace sft {
 
-Runner::Runner() {
+Runner::Runner() : start_time_(Clock::now()) {
   SFT_ASSERT(::SDL_Init(SDL_INIT_VIDEO) == 0);
+}
+
+SecondsF Runner::ElapsedTime() const {
+  return Clock::now() - start_time_;
 }
 
 bool Runner::Run(Application& application) const {
