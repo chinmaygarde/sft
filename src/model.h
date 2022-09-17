@@ -5,8 +5,11 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+
+#include "buffer.h"
 #include "geom.h"
 #include "rasterizer.h"
+#include "shaders/model_shader.h"
 
 namespace sft {
 
@@ -18,12 +21,14 @@ class Model {
 
   bool IsValid() const;
 
-  void RenderTo(Rasterizer& image);
+  void RenderTo(Rasterizer& rasterizer);
 
   void SetTransformation(glm::mat4 xformation);
 
  private:
-  std::vector<glm::vec4> vertices_;
+  std::shared_ptr<Pipeline> pipeline_;
+  Buffer vertex_buffer_;
+  size_t vertex_count_ = 0u;
   glm::mat4 xformation_ = glm::identity<glm::mat4>();
   bool is_valid_ = false;
 

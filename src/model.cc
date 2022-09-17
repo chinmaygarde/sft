@@ -24,6 +24,7 @@ Model::Model(std::string path) {
     return;
   }
 
+  std::vector<glm::vec3> vertices;
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
     // Loop over faces(polygon)
@@ -42,11 +43,19 @@ Model::Model(std::string path) {
         tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
         tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
 
-        vertices_.push_back({vx, vy, vz, 1.0});
+        vertices.push_back({vx, vy, vz});
       }
       index_offset += fv;
     }
   }
+  vertex_count_ = vertices.size();
+  vertex_buffer_.Emplace(std::move(vertices));
+
+  pipeline_ = std::make_shared<Pipeline>();
+  pipeline_->shader = std::make_shared<ModelShader>();
+  pipeline_->vertex_descriptor.offset =
+      offsetof(ModelShader::VertexData, position);
+  pipeline_->vertex_descriptor.stride = sizeof(ModelShader::VertexData);
 
   is_valid_ = true;
 }
@@ -61,12 +70,12 @@ void Model::SetTransformation(glm::mat4 xformation) {
   xformation_ = std::move(xformation);
 }
 
-void Model::RenderTo(Rasterizer& image) {
+void Model::RenderTo(Rasterizer& rasterizer) {
   if (!IsValid()) {
     return;
   }
 
-  glm::vec2 size = image.GetSize();
+  glm::vec2 size = rasterizer.GetSize();
 
   glm::mat4 proj = glm::orthoLH_NO(0.0f, size.x, 0.0f, size.y, -50.0f, 50.0f);
   glm::mat4 view =
@@ -76,21 +85,15 @@ void Model::RenderTo(Rasterizer& image) {
   glm::mat4 model = xformation_;
 
   const auto mvp = proj * view * model;
-  for (size_t i = 0, count = vertices_.size(); i < count; i += 3) {
-    if (i + 2 >= count) {
-      return;
-    }
-    glm::vec3 p1 = mvp * vertices_[i + 0];
-    glm::vec3 p2 = mvp * vertices_[i + 1];
-    glm::vec3 p3 = mvp * vertices_[i + 2];
 
-    glm::vec3 light_direction = {0, 0, -1};
-    glm::vec3 normal = glm::normalize(glm::cross(p2 - p1, p3 - p1));
-    float intensity = glm::dot(light_direction, normal);
-    if (intensity >= 0.0) {
-      // image.DrawTriangle(p1, p2, p3);
-    }
-  }
+  Buffer uniform_buffer;
+  uniform_buffer.Emplace(ModelShader::Uniform{
+      .mvp = mvp,
+  });
+
+  pipeline_->viewport = size;
+
+  rasterizer.Draw(*pipeline_, vertex_buffer_, uniform_buffer, vertex_count_);
 }
 
 }  // namespace sft
