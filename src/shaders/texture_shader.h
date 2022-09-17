@@ -16,6 +16,10 @@ class TextureShader final : public Shader {
     glm::vec3 position;
   };
 
+  struct Uniforms {
+    ScalarF alpha;
+  };
+
   TextureShader() = default;
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) override {
@@ -23,8 +27,11 @@ class TextureShader final : public Shader {
   }
 
   std::optional<Color> ProcessFragment(const FragmentInvocation& inv) override {
-    return texture_->Sample(inv.Interpolate<glm::vec2>(
+    auto color = texture_->Sample(inv.Interpolate<glm::vec2>(
         offsetof(VertexDescription, texture_coords)));
+    const auto alpha = inv.LoadUniform<ScalarF>(offsetof(Uniforms, alpha));
+    color.a *= alpha;
+    return color;
   }
 
   void SetTexture(std::shared_ptr<Texture> texture) {

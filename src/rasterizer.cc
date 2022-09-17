@@ -97,12 +97,12 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 void Rasterizer::DrawTriangle(const TriangleData& data) {
   auto viewport = data.pipeline.viewport;
 
-  const auto ndc_p1 =
-      data.pipeline.shader->ProcessVertex({data.p1, data.vertex_id + 0u});
-  const auto ndc_p2 =
-      data.pipeline.shader->ProcessVertex({data.p2, data.vertex_id + 1u});
-  const auto ndc_p3 =
-      data.pipeline.shader->ProcessVertex({data.p3, data.vertex_id + 2u});
+  const auto ndc_p1 = data.pipeline.shader->ProcessVertex(
+      {*this, data, data.p1, data.vertex_id + 0u});
+  const auto ndc_p2 = data.pipeline.shader->ProcessVertex(
+      {*this, data, data.p2, data.vertex_id + 1u});
+  const auto ndc_p3 = data.pipeline.shader->ProcessVertex(
+      {*this, data, data.p3, data.vertex_id + 2u});
 
   const auto p1 = ToTexelPos(ndc_p1, viewport);
   const auto p2 = ToTexelPos(ndc_p2, viewport);
@@ -134,10 +134,11 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
 
 void Rasterizer::Draw(const Pipeline& pipeline,
                       const Buffer& vertex_buffer,
+                      const Buffer& uniform_buffer,
                       size_t count) {
   const auto& vtx_desc = pipeline.vertex_descriptor;
   const uint8_t* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
-  TriangleData data(pipeline, vertex_buffer);
+  TriangleData data(pipeline, vertex_buffer, uniform_buffer);
   size_t vertex_id = 0;
   glm::vec3 p1, p2, p3;
   for (size_t i = 0; i < count; i += 3) {

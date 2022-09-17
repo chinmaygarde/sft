@@ -55,6 +55,15 @@ struct Color {
 
   constexpr operator uint32_t() const { return color; }
 
+  constexpr operator glm::vec4() const {
+    return {
+        GetRed() / 255.0,    //
+        GetGreen() / 255.0,  //
+        GetBlue() / 255.0,   //
+        GetAlpha() / 255.0   //
+    };
+  }
+
   constexpr uint8_t GetRed() const { return color >> 16; }
 
   constexpr uint8_t GetGreen() const { return color >> 8; }

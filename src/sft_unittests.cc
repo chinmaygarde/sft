@@ -29,14 +29,15 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   RasterizerApplication application;
 
   using VD = TextureShader::VertexDescription;
+  using Uniforms = TextureShader::Uniforms;
 
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<TextureShader>();
 
-  glm::vec3 p1 = {-0.5, 0.5, 0.0};
-  glm::vec3 p2 = {0.5, 0.5, 0.0};
-  glm::vec3 p3 = {0.5, -0.5, 0.0};
-  glm::vec3 p4 = {-0.5, -0.5, 0.0};
+  glm::vec3 p1 = {-0.7, 0.5, 0.0};
+  glm::vec3 p2 = {0.7, 0.5, 0.0};
+  glm::vec3 p3 = {0.7, -0.5, 0.0};
+  glm::vec3 p4 = {-0.7, -0.5, 0.0};
 
   glm::vec2 tl = {0.0, 0.0};
   glm::vec2 tr = {1.0, 0.0};
@@ -53,7 +54,8 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
       {bl, p4},
       {tl, p1},
   });
-  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto texture =
+      std::make_shared<Texture>(SFT_ASSETS_LOCATION "bay_bridge.jpg");
   shader->SetTexture(std::move(texture));
   pipeline->shader = shader;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
@@ -61,7 +63,11 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBlue);
     pipeline->viewport = rasterizer.GetSize();
-    rasterizer.Draw(*pipeline, *vertex_buffer, 6);
+    auto uniform_buffer = Buffer{};
+    uniform_buffer.Emplace(Uniforms{
+        .alpha = 0.5,
+    });
+    rasterizer.Draw(*pipeline, *vertex_buffer, uniform_buffer, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));

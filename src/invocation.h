@@ -13,8 +13,25 @@ struct VertexInvocation {
   glm::vec3 position;
   size_t vertex_id;
 
-  VertexInvocation(glm::vec3 p_position, size_t p_vertex_id)
-      : position(p_position), vertex_id(p_vertex_id) {}
+  template <class T>
+  T LoadUniform(size_t offset) const {
+    return rasterizer.LoadUniform<T>(data, offset);
+  }
+
+ private:
+  friend Rasterizer;
+
+  const Rasterizer& rasterizer;
+  const TriangleData& data;
+
+  VertexInvocation(const Rasterizer& p_rasterizer,
+                   const TriangleData& p_data,
+                   glm::vec3 p_position,
+                   size_t p_vertex_id)
+      : position(p_position),
+        vertex_id(p_vertex_id),
+        rasterizer(p_rasterizer),
+        data(p_data) {}
 };
 
 struct FragmentInvocation {
@@ -26,6 +43,11 @@ struct FragmentInvocation {
                                      barycentric_coordinates,  //
                                      offset                    //
     );
+  }
+
+  template <class T>
+  T LoadUniform(size_t offset) const {
+    return rasterizer.LoadUniform<T>(data, offset);
   }
 
  private:

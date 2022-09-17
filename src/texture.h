@@ -12,7 +12,7 @@ class Texture {
 
   bool IsValid() const { return is_valid_; }
 
-  Color Sample(glm::vec2 position) const;
+  glm::vec4 Sample(glm::vec2 position) const;
 
  private:
   uint8_t* decoded_ = nullptr;

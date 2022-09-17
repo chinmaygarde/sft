@@ -15,9 +15,14 @@ struct TriangleData {
   size_t vertex_id = 0;
   const Pipeline& pipeline;
   const Buffer& vertex_buffer;
+  const Buffer& uniform_buffer;
 
-  TriangleData(const Pipeline& p_pipeline, const Buffer& p_vertex_buffer)
-      : pipeline(p_pipeline), vertex_buffer(p_vertex_buffer) {}
+  TriangleData(const Pipeline& p_pipeline,
+               const Buffer& p_vertex_buffer,
+               const Buffer& p_uniform_buffer)
+      : pipeline(p_pipeline),
+        vertex_buffer(p_vertex_buffer),
+        uniform_buffer(p_uniform_buffer) {}
 };
 
 }  // namespace sft

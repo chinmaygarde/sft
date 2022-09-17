@@ -29,9 +29,9 @@ Texture::~Texture() {
   }
 }
 
-Color Texture::Sample(glm::vec2 pos) const {
+glm::vec4 Texture::Sample(glm::vec2 pos) const {
   if (size_.x * size_.y <= 0) {
-    return kColorBlack;
+    return kColorFirebrick;
   }
 
   pos = {glm::clamp<ScalarF>(pos.x, 0.0, 1.0),
@@ -41,16 +41,11 @@ Color Texture::Sample(glm::vec2 pos) const {
 
   auto offset = size_.x * ipos.y + ipos.x;
 
-  auto* color = reinterpret_cast<uint32_t*>(decoded_) + offset;
+  Color* icolor = reinterpret_cast<Color*>(decoded_) + offset;
 
-  const auto sampled = Color{*color};
+  glm::vec4 color = *icolor;
 
-  return {
-      sampled.GetBlue(),   //
-      sampled.GetGreen(),  //
-      sampled.GetRed(),    //
-      sampled.GetAlpha()   //
-  };
+  return {color.b, color.g, color.r, color.a};
 }
 
 }  // namespace sft

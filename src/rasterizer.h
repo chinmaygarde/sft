@@ -40,6 +40,7 @@ class Rasterizer final : public Renderer {
 
   void Draw(const Pipeline& pipeline,
             const Buffer& vertex_buffer,
+            const Buffer& uniform_buffer,
             size_t count);
 
   template <class T>
@@ -57,6 +58,13 @@ class Rasterizer final : public Renderer {
     memcpy(&p3, vtx_ptr, sizeof(p3));
     vtx_ptr += vtx_desc.stride;
     return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
+  }
+
+  template <class T>
+  T LoadUniform(const TriangleData& data, size_t offset) const {
+    T result = {};
+    memcpy(&result, data.uniform_buffer.GetData() + offset, sizeof(T));
+    return result;
   }
 
  private:
