@@ -44,7 +44,7 @@ class Rasterizer final : public Renderer {
             size_t count);
 
   template <class T>
-  T Interpolate(const TriangleData& data,
+  T LoadVarying(const TriangleData& data,
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
     const auto& vtx_desc = data.pipeline.vertex_descriptor;

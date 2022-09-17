@@ -14,10 +14,10 @@ class Shader {
   virtual ~Shader() = default;
 
   virtual glm::vec3 ProcessVertex(
-      const VertexInvocation& vertex_invocation) = 0;
+      const VertexInvocation& vertex_invocation) const = 0;
 
   virtual std::optional<Color> ProcessFragment(
-      const FragmentInvocation& fragment_invocation) = 0;
+      const FragmentInvocation& fragment_invocation) const = 0;
 };
 
 }  // namespace sft

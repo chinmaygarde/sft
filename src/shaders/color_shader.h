@@ -14,11 +14,12 @@ class ColorShader final : public Shader {
 
   void SetColor(Color color) { color_ = color; }
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) override {
+  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     return inv.position;
   }
 
-  std::optional<Color> ProcessFragment(const FragmentInvocation& inv) override {
+  std::optional<Color> ProcessFragment(
+      const FragmentInvocation& inv) const override {
     return color_;
   }
 

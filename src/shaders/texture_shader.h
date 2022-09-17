@@ -22,12 +22,13 @@ class TextureShader final : public Shader {
 
   TextureShader() = default;
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) override {
+  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     return inv.position;
   }
 
-  std::optional<Color> ProcessFragment(const FragmentInvocation& inv) override {
-    auto color = texture_->Sample(inv.Interpolate<glm::vec2>(
+  std::optional<Color> ProcessFragment(
+      const FragmentInvocation& inv) const override {
+    auto color = texture_->Sample(inv.LoadVarying<glm::vec2>(
         offsetof(VertexDescription, texture_coords)));
     const auto alpha = inv.LoadUniform<ScalarF>(offsetof(Uniforms, alpha));
     color.a *= alpha;

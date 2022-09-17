@@ -38,8 +38,8 @@ struct FragmentInvocation {
   glm::vec3 barycentric_coordinates;
 
   template <class T>
-  T Interpolate(size_t offset) const {
-    return rasterizer.Interpolate<T>(data,                     //
+  T LoadVarying(size_t offset) const {
+    return rasterizer.LoadVarying<T>(data,                     //
                                      barycentric_coordinates,  //
                                      offset                    //
     );
