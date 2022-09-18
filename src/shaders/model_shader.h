@@ -22,7 +22,7 @@ class ModelShader final : public Shader {
     const auto mvp =
         vertex_invocation.LoadUniform<glm::mat4>(offsetof(Uniform, mvp));
     auto pos = glm::vec4{vertex_invocation.position, 1.0};
-    return mvp * pos;
+    return pos * mvp;
   }
 
   std::optional<Color> ProcessFragment(

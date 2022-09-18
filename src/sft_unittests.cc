@@ -2,6 +2,7 @@
 
 #include "buffer.h"
 #include "fixtures_location.h"
+#include "model.h"
 #include "pipeline.h"
 #include "rasterizer.h"
 #include "rasterizer_application.h"
@@ -67,6 +68,18 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
         .alpha = 0.75,
     });
     rasterizer.Draw(*pipeline, *vertex_buffer, uniform_buffer, 6);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanDrawModel) {
+  RasterizerApplication application;
+  Model model(SFT_ASSETS_LOCATION "teapot");
+  ASSERT_TRUE(model.IsValid());
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorGray);
+    model.RenderTo(rasterizer);
     return true;
   });
   ASSERT_TRUE(Run(application));
