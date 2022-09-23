@@ -75,7 +75,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
 
 TEST_F(RasterizerTest, CanDrawModel) {
   RasterizerApplication application;
-  Model model(SFT_ASSETS_LOCATION "teapot");
+  Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj");
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
