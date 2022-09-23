@@ -86,12 +86,11 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
                                               glm::vec2 a,
                                               glm::vec2 b,
                                               glm::vec2 c) {
-  glm::vec2 v0 = b - a, v1 = c - a, v2 = p - a;
-  auto one_over_den = 1.0 / (v0.x * v1.y - v1.x * v0.y);
-  auto v = (v2.x * v1.y - v1.x * v2.y) * one_over_den;
-  auto w = (v0.x * v2.y - v2.x * v0.y) * one_over_den;
-  auto u = 1.0 - v - w;
-  return {u, v, w};
+  glm::vec2 ab = b - a, ac = c - a, ap = p - a;
+  float one_over_den = 1.0f / (ab.x * ac.y - ab.y * ac.x);
+  float s = (ac.y * ap.x - ac.x * ap.y) * one_over_den;
+  float t = (ab.x * ap.y - ab.y * ap.x) * one_over_den;
+  return {1.0f - s - t, s, t};
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {
@@ -108,13 +107,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   const auto p2 = ToTexelPos(ndc_p2, viewport);
   const auto p3 = ToTexelPos(ndc_p3, viewport);
 
+  constexpr float kEpsilon = 1e-5;
   const auto bounding_box = GetBoundingBox(p1, p2, p3);
   for (auto y = 0; y < bounding_box.size.height; y++) {
     for (auto x = 0; x < bounding_box.size.width; x++) {
-      const auto p =
-          glm::vec2{x + bounding_box.origin.x, y + bounding_box.origin.y};
+      const auto p = glm::vec2{x + 1.0f + bounding_box.origin.x,
+                               y + 1.0f + bounding_box.origin.y};
       const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
-      if (bary.x < 0.0 || bary.y < 0.0 || bary.z < 0.0) {
+      if (bary.x < -kEpsilon || bary.y < -kEpsilon || bary.z < -kEpsilon) {
         continue;
       }
       auto color = data.pipeline.shader->ProcessFragment({bary, *this, data});
