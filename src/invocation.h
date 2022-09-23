@@ -10,8 +10,11 @@ class Rasterizer;
 struct TriangleData;
 
 struct VertexInvocation {
-  glm::vec3 position;
   size_t vertex_id;
+
+  glm::vec3 LoadVertexData(size_t offset) const {
+    return rasterizer.LoadVertexData<glm::vec3>(data, vertex_id, offset);
+  }
 
   template <class T>
   T LoadUniform(size_t offset) const {
@@ -26,12 +29,8 @@ struct VertexInvocation {
 
   VertexInvocation(const Rasterizer& p_rasterizer,
                    const TriangleData& p_data,
-                   glm::vec3 p_position,
                    size_t p_vertex_id)
-      : position(p_position),
-        vertex_id(p_vertex_id),
-        rasterizer(p_rasterizer),
-        data(p_data) {}
+      : vertex_id(p_vertex_id), rasterizer(p_rasterizer), data(p_data) {}
 };
 
 struct FragmentInvocation {

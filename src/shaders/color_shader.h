@@ -8,6 +8,10 @@ namespace sft {
 
 class ColorShader final : public Shader {
  public:
+  struct VertexData {
+    glm::vec3 position;
+  };
+
   ColorShader() : ColorShader(kColorBlack) {}
 
   ColorShader(Color color) : color_(color) {}
@@ -15,7 +19,7 @@ class ColorShader final : public Shader {
   void SetColor(Color color) { color_ = color; }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    return inv.position;
+    return inv.LoadUniform<glm::vec3>(offsetof(VertexData, position));
   }
 
   std::optional<Color> ProcessFragment(

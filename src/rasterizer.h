@@ -61,6 +61,19 @@ class Rasterizer final : public Renderer {
   }
 
   template <class T>
+  T LoadVertexData(const TriangleData& data,
+                   size_t index,
+                   size_t offset) const {
+    const auto vtx_desc = data.pipeline.vertex_descriptor;
+    const uint8_t* vtx_ptr = data.vertex_buffer.GetData();
+    vtx_ptr += (vtx_desc.stride * index);
+    vtx_ptr += offset;
+    T result = {};
+    memcpy(&result, vtx_ptr, sizeof(result));
+    return result;
+  }
+
+  template <class T>
   T LoadUniform(const TriangleData& data, size_t offset) const {
     T result = {};
     memcpy(&result, data.uniform_buffer.GetData() + offset, sizeof(T));

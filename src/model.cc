@@ -66,10 +66,6 @@ bool Model::IsValid() const {
   return is_valid_;
 }
 
-void Model::SetTransformation(glm::mat4 xformation) {
-  xformation_ = std::move(xformation);
-}
-
 void Model::RenderTo(Rasterizer& rasterizer) {
   if (!IsValid()) {
     return;
@@ -80,9 +76,9 @@ void Model::RenderTo(Rasterizer& rasterizer) {
   glm::mat4 proj = glm::orthoLH_NO(0.0f, size.x, 0.0f, size.y, -50.0f, 50.0f);
   glm::mat4 view =
       glm::translate(glm::identity<glm::mat4>(),
-                     glm::vec3(size.x / 2.0, -75.0 + (size.y / 2.0), 0.0)) *
+                     glm::vec3(size.x / 2.0, (size.y / 2.0), 0.0)) *
       glm::scale(glm::identity<glm::mat4>(), glm::vec3(4.0, 4.0, 1.0));
-  glm::mat4 model = xformation_;
+  glm::mat4 model = glm::identity<glm::mat4>();
 
   const auto mvp = proj * view * model;
 

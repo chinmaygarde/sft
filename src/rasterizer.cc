@@ -96,13 +96,19 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 void Rasterizer::DrawTriangle(const TriangleData& data) {
   auto viewport = data.pipeline.viewport;
 
-  const auto ndc_p1 = data.pipeline.shader->ProcessVertex(
-      {*this, data, data.p1, data.vertex_id + 0u});
-  const auto ndc_p2 = data.pipeline.shader->ProcessVertex(
-      {*this, data, data.p2, data.vertex_id + 1u});
-  const auto ndc_p3 = data.pipeline.shader->ProcessVertex(
-      {*this, data, data.p3, data.vertex_id + 2u});
+  //----------------------------------------------------------------------------
+  // Invoke vertex shaders.
+  //----------------------------------------------------------------------------
+  VertexInvocation vertex_invocation(*this, data, data.vertex_id);
+  const auto ndc_p1 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  vertex_invocation.vertex_id++;
+  const auto ndc_p2 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  vertex_invocation.vertex_id++;
+  const auto ndc_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
 
+  //----------------------------------------------------------------------------
+  // Convert NDC points returned by the shader into screen-space.
+  //----------------------------------------------------------------------------
   const auto p1 = ToTexelPos(ndc_p1, viewport);
   const auto p2 = ToTexelPos(ndc_p2, viewport);
   const auto p3 = ToTexelPos(ndc_p3, viewport);

@@ -23,13 +23,10 @@ class Model {
 
   void RenderTo(Rasterizer& rasterizer);
 
-  void SetTransformation(glm::mat4 xformation);
-
  private:
   std::shared_ptr<Pipeline> pipeline_;
   Buffer vertex_buffer_;
   size_t vertex_count_ = 0u;
-  glm::mat4 xformation_ = glm::identity<glm::mat4>();
   bool is_valid_ = false;
 
   Model(const Model&) = delete;

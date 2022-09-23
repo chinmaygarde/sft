@@ -23,7 +23,7 @@ class TextureShader final : public Shader {
   TextureShader() = default;
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    return inv.position;
+    return inv.LoadVertexData(offsetof(VertexDescription, position));
   }
 
   std::optional<Color> ProcessFragment(
