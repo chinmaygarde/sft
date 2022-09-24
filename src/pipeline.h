@@ -25,12 +25,24 @@ enum class BlendMode {
   kXOR,
 };
 
+enum class CullFace {
+  kFront,
+  kBack,
+};
+
+enum class Winding {
+  kClockwise,
+  kCounterClockwise,
+};
+
 struct Pipeline {
   bool depth_test_enabled = true;
   std::optional<glm::ivec2> viewport;
   std::shared_ptr<Shader> shader;
   BlendMode blend_mode = BlendMode::kSourceOver;
   VertexDescriptor vertex_descriptor;
+  Winding winding = Winding::kClockwise;
+  std::optional<CullFace> cull_face;
 
   Color Blend(Color p_src, Color p_dst) const {
     auto src = p_src.GetColorF().Premultiply();

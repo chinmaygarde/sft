@@ -6,6 +6,11 @@
 run: build/sft_unittests
 	./build/sft_unittests
 
+debug:
+	mkdir -p build/debug
+	cmake -G Ninja -B build/debug -DCMAKE_BUILD_TYPE=Debug
+	ninja -C build/debug
+
 test: build/sft_unittests
 	cd build && ctest -C build
 

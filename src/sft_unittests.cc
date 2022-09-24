@@ -92,6 +92,9 @@ TEST_F(RasterizerTest, CanCullFaces) {
   pipeline.shader = std::make_shared<ColorShader>();
   pipeline.vertex_descriptor.offset = offsetof(VD, position);
   pipeline.vertex_descriptor.stride = sizeof(VD);
+  // This should be culled and nothing will show up.
+  pipeline.cull_face = CullFace::kBack;
+  pipeline.winding = Winding::kCounterClockwise;
   Buffer vertex_buffer, uniform_buffer;
   vertex_buffer.Emplace(std::vector<VD>{
       VD{.position = {-1.0, -1.0, 0.0}},

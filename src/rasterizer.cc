@@ -93,6 +93,23 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
   return {1.0f - s - t, s, t};
 }
 
+constexpr bool ShouldCullFace(CullFace face,
+                              Winding winding,
+                              glm::vec3 a,
+                              glm::vec3 b,
+                              glm::vec3 c) {
+  auto dir = glm::cross(b - a, c - a).z;
+  const bool is_front = face == CullFace::kFront;
+  const bool is_cw = winding == Winding::kClockwise;
+  if (!is_front) {
+    dir = -dir;
+  }
+  if (!is_cw) {
+    dir = -dir;
+  }
+  return dir < 0;
+}
+
 void Rasterizer::DrawTriangle(const TriangleData& data) {
   auto viewport = data.pipeline.viewport.value_or(size_);
 
@@ -105,6 +122,20 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   const auto ndc_p2 = data.pipeline.shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
   const auto ndc_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+
+  //----------------------------------------------------------------------------
+  // Face Culling
+  //----------------------------------------------------------------------------
+  if (data.pipeline.cull_face.has_value()) {
+    if (ShouldCullFace(data.pipeline.cull_face.value(),  //
+                       data.pipeline.winding,            //
+                       ndc_p1,                           //
+                       ndc_p2,                           //
+                       ndc_p3                            //
+                       )) {
+      return;
+    }
+  }
 
   //----------------------------------------------------------------------------
   // Convert NDC points returned by the shader into screen-space.
