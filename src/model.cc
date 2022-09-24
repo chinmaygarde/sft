@@ -62,6 +62,8 @@ Model::Model(std::string path) {
   vertex_buffer_.Emplace(std::move(vertices));
 
   pipeline_ = std::make_shared<Pipeline>();
+  pipeline_->cull_face = CullFace::kBack;
+  pipeline_->winding = Winding::kCounterClockwise;
   pipeline_->shader = std::make_shared<ModelShader>();
   pipeline_->vertex_descriptor.offset =
       offsetof(ModelShader::VertexData, position);
@@ -95,8 +97,6 @@ void Model::RenderTo(Rasterizer& rasterizer) {
       .mvp = mvp,
       .light = {0.0, 0.0, -1.0},
   });
-
-  pipeline_->viewport = size;
 
   rasterizer.Draw(*pipeline_, vertex_buffer_, uniform_buffer, vertex_count_);
 }

@@ -39,16 +39,21 @@ struct Pipeline {
   bool depth_test_enabled = true;
   std::optional<glm::ivec2> viewport;
   std::shared_ptr<Shader> shader;
-  BlendMode blend_mode = BlendMode::kSourceOver;
+  std::optional<BlendMode> blend_mode;
   VertexDescriptor vertex_descriptor;
   Winding winding = Winding::kClockwise;
   std::optional<CullFace> cull_face;
 
   Color Blend(Color p_src, Color p_dst) const {
     auto src = p_src.GetColorF().Premultiply();
+
+    if (!blend_mode.has_value()) {
+      return src;
+    }
+
     auto dst = p_dst.GetColorF().Premultiply();
 
-    switch (blend_mode) {
+    switch (blend_mode.value()) {
       case BlendMode::kClear:
         return Color(0, 0, 0, 0);
       case BlendMode::kCopy:

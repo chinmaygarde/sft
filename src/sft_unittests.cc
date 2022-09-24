@@ -59,6 +59,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(std::move(texture));
   pipeline->shader = shader;
+  pipeline->blend_mode = BlendMode::kSourceOver;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
