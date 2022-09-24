@@ -23,12 +23,12 @@ class ColorShader final : public Shader {
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    return LOAD_VERTEX(position);
+    return VTX(position);
   }
 
   std::optional<Color> ProcessFragment(
       const FragmentInvocation& inv) const override {
-    return LOAD_UNIFORM(color);
+    return UNIFORM(color);
   }
 
  private:

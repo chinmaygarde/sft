@@ -29,14 +29,14 @@ class TextureShader final : public Shader {
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    STORE_VARYING(texture_coords, LOAD_VERTEX(texture_coords));
-    return LOAD_VERTEX(position);
+    FORWARD(texture_coords, texture_coords);
+    return VTX(position);
   }
 
   std::optional<Color> ProcessFragment(
       const FragmentInvocation& inv) const override {
-    auto color = texture_->Sample(LOAD_VARYING(texture_coords));
-    const auto alpha = glm::clamp(LOAD_UNIFORM(alpha), 0.0f, 1.0f);
+    auto color = texture_->Sample(VARYING_LOAD(texture_coords));
+    const auto alpha = glm::clamp(UNIFORM(alpha), 0.0f, 1.0f);
     color.a *= alpha;
     return color;
   }

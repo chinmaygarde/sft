@@ -9,18 +9,21 @@ namespace sft {
 struct VertexInvocation;
 struct FragmentInvocation;
 
-#define LOAD_VERTEX(struct_member)                         \
+#define VTX(struct_member)                                 \
   inv.LoadVertexData<decltype(VertexData::struct_member)>( \
       offsetof(VertexData, struct_member))
-#define STORE_VARYING(struct_member, value)            \
+
+#define VARYING_STORE(struct_member, value)            \
   inv.StoreVarying<decltype(Varyings::struct_member)>( \
       value, offsetof(Varyings, struct_member))
-#define LOAD_VARYING(member) \
+#define VARYING_LOAD(member) \
   inv.LoadVarying<decltype(Varyings::member)>(offsetof(Varyings, member))
-#define LOAD_UNIFORM(member) \
+
+#define UNIFORM(member) \
   inv.LoadUniform<decltype(Uniforms::member)>(offsetof(Uniforms, member))
+
 #define FORWARD(vtx_member, var_member) \
-  STORE_VARYING(var_member, LOAD_VERTEX(vtx_member))
+  VARYING_STORE(var_member, VTX(vtx_member))
 
 class Shader {
  public:

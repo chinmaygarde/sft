@@ -30,16 +30,16 @@ class ModelShader final : public Shader {
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(vertex_color, color);
     FORWARD(normal, normal);
-    const auto mvp = LOAD_UNIFORM(mvp);
-    const auto pos = glm::vec4{LOAD_VERTEX(position), 1.0};
+    const auto mvp = UNIFORM(mvp);
+    const auto pos = glm::vec4{VTX(position), 1.0};
     return pos * mvp;
   }
 
   std::optional<Color> ProcessFragment(
       const FragmentInvocation& inv) const override {
-    auto normal = glm::normalize(LOAD_VARYING(normal));
-    auto light = LOAD_UNIFORM(light);
-    auto color = LOAD_VARYING(color);
+    auto normal = glm::normalize(VARYING_LOAD(normal));
+    auto light = UNIFORM(light);
+    auto color = VARYING_LOAD(color);
     auto intensity = glm::dot(normal, light);
     color *= glm::vec4{intensity, intensity, intensity, 1.0};
     return color;
