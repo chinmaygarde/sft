@@ -13,7 +13,7 @@ class ColorShader final : public Shader {
   };
 
   struct Uniforms {
-    Color color;
+    glm::vec4 color;
   };
 
   struct Varyings {};

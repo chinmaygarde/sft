@@ -44,16 +44,17 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   glm::vec2 tr = {1.0, 0.0};
   glm::vec2 br = {1.0, 1.0};
   glm::vec2 bl = {0.0, 1.0};
-
-  auto vertex_buffer = std::make_shared<Buffer>();
-
-  vertex_buffer->Emplace(std::vector<VD>{
+  Buffer vertex_buffer, uniform_buffer;
+  vertex_buffer.Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
       {br, p3},
       {br, p3},
       {bl, p4},
       {tl, p1},
+  });
+  uniform_buffer.Emplace(Uniforms{
+      .alpha = 0.75,
   });
   auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(std::move(texture));
@@ -62,11 +63,8 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    auto uniform_buffer = Buffer{};
-    uniform_buffer.Emplace(Uniforms{
-        .alpha = 0.75,
-    });
-    rasterizer.Draw(*pipeline, *vertex_buffer, uniform_buffer, 6);
+
+    rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -87,11 +85,25 @@ TEST_F(RasterizerTest, CanDrawModel) {
 TEST_F(RasterizerTest, CanCullFaces) {
   RasterizerApplication application;
 
+  using VD = ColorShader::VertexData;
+  using Uniforms = ColorShader::Uniforms;
+
   Pipeline pipeline;
   pipeline.shader = std::make_shared<ColorShader>();
-
+  pipeline.vertex_descriptor.offset = offsetof(VD, position);
+  pipeline.vertex_descriptor.stride = sizeof(VD);
+  Buffer vertex_buffer, uniform_buffer;
+  vertex_buffer.Emplace(std::vector<VD>{
+      VD{.position = {-1.0, -1.0, 0.0}},
+      VD{.position = {0.0, 1.0, 0.0}},
+      VD{.position = {1.0, -1.0, 0.0}},
+  });
+  uniform_buffer.Emplace(Uniforms{
+      .color = kColorFirebrick,
+  });
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
+    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
     return true;
   });
   ASSERT_TRUE(Run(application));
