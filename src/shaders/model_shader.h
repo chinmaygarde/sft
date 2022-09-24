@@ -28,8 +28,8 @@ class ModelShader final : public Shader {
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    STORE_VARYING(color, LOAD_VERTEX(vertex_color));
-    STORE_VARYING(normal, LOAD_VERTEX(normal));
+    FORWARD(vertex_color, color);
+    FORWARD(normal, normal);
     const auto mvp = LOAD_UNIFORM(mvp);
     const auto pos = glm::vec4{LOAD_VERTEX(position), 1.0};
     return pos * mvp;

@@ -19,6 +19,8 @@ struct FragmentInvocation;
   inv.LoadVarying<decltype(Varyings::member)>(offsetof(Varyings, member))
 #define LOAD_UNIFORM(member) \
   inv.LoadUniform<decltype(Uniforms::member)>(offsetof(Uniforms, member))
+#define FORWARD(vtx_member, var_member) \
+  STORE_VARYING(var_member, LOAD_VERTEX(vtx_member))
 
 class Shader {
  public:
