@@ -24,7 +24,7 @@ Model::Model(std::string path) {
     return;
   }
 
-  std::vector<glm::vec3> vertices;
+  std::vector<ModelShader::VertexData> vertices;
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
     // Loop over faces(polygon)
@@ -43,7 +43,8 @@ Model::Model(std::string path) {
         tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
         tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
 
-        vertices.push_back({vx, vy, vz});
+        vertices.push_back(ModelShader::VertexData{
+            .vertex_color = Color::Random(), .position = {vx, vy, vz}});
       }
       index_offset += fv;
     }

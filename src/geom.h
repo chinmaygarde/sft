@@ -48,6 +48,9 @@ struct Color {
   constexpr Color(const glm::vec4& c)
       : Color(255 * c.r, 255 * c.g, 255 * c.b, 255 * c.a) {}
 
+  constexpr Color(const glm::vec3& c)
+      : Color(255 * c.r, 255 * c.g, 255 * c.b, 255) {}
+
   constexpr Color(uint32_t p_color) : color(p_color) {}
 
   constexpr Color(ColorF c)
