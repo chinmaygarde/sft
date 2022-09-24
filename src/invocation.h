@@ -12,8 +12,9 @@ struct TriangleData;
 struct VertexInvocation {
   size_t vertex_id;
 
-  glm::vec3 LoadVertexData(size_t offset) const {
-    return rasterizer.LoadVertexData<glm::vec3>(data, vertex_id, offset);
+  template <class T>
+  T LoadVertexData(size_t offset) const {
+    return rasterizer.LoadVertexData<T>(data, vertex_id, offset);
   }
 
   template <class T>
