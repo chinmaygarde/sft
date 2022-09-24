@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include "geom.h"
 #include "shader.h"
@@ -26,7 +27,7 @@ enum class BlendMode {
 
 struct Pipeline {
   bool depth_test_enabled = true;
-  glm::ivec2 viewport;
+  std::optional<glm::ivec2> viewport;
   std::shared_ptr<Shader> shader;
   BlendMode blend_mode = BlendMode::kSourceOver;
   VertexDescriptor vertex_descriptor;

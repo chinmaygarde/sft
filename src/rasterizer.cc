@@ -94,7 +94,7 @@ constexpr glm::vec3 GetBaryCentricCoordinates(glm::vec2 p,
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {
-  auto viewport = data.pipeline.viewport;
+  auto viewport = data.pipeline.viewport.value_or(size_);
 
   //----------------------------------------------------------------------------
   // Invoke vertex shaders.

@@ -62,7 +62,6 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    pipeline->viewport = rasterizer.GetSize();
     auto uniform_buffer = Buffer{};
     uniform_buffer.Emplace(Uniforms{
         .alpha = 0.75,
@@ -80,6 +79,19 @@ TEST_F(RasterizerTest, CanDrawModel) {
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
     model.RenderTo(rasterizer);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanCullFaces) {
+  RasterizerApplication application;
+
+  Pipeline pipeline;
+  pipeline.shader = std::make_shared<ColorShader>();
+
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorBeige);
     return true;
   });
   ASSERT_TRUE(Run(application));
