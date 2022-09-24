@@ -29,7 +29,7 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
 TEST_F(RasterizerTest, CanDrawTexturedImage) {
   RasterizerApplication application;
 
-  using VD = TextureShader::VertexDescription;
+  using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
 
   auto pipeline = std::make_shared<Pipeline>();

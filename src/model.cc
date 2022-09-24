@@ -91,7 +91,7 @@ void Model::RenderTo(Rasterizer& rasterizer) {
   const auto mvp = proj * view * model;
 
   Buffer uniform_buffer;
-  uniform_buffer.Emplace(ModelShader::Uniform{
+  uniform_buffer.Emplace(ModelShader::Uniforms{
       .mvp = mvp,
       .light = {0.0, 0.0, -1.0},
   });

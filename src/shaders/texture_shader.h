@@ -11,7 +11,7 @@ namespace sft {
 
 class TextureShader final : public Shader {
  public:
-  struct VertexDescription {
+  struct VertexData {
     glm::vec2 texture_coords;
     glm::vec3 position;
   };
@@ -29,10 +29,10 @@ class TextureShader final : public Shader {
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    inv.StoreVarying<glm::vec2>(inv.LoadVertexData<glm::vec2>(offsetof(
-                                    VertexDescription, texture_coords)),
-                                offsetof(Varyings, texture_coords));
-    return inv.LoadVertexData<glm::vec3>(offsetof(VertexDescription, position));
+    inv.StoreVarying<glm::vec2>(
+        inv.LoadVertexData<glm::vec2>(offsetof(VertexData, texture_coords)),
+        offsetof(Varyings, texture_coords));
+    return inv.LoadVertexData<glm::vec3>(offsetof(VertexData, position));
   }
 
   std::optional<Color> ProcessFragment(

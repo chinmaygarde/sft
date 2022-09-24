@@ -13,7 +13,7 @@ class ModelShader final : public Shader {
     glm::vec3 normal;
   };
 
-  struct Uniform {
+  struct Uniforms {
     glm::mat4 mvp;
     glm::vec3 light;
   };
@@ -34,7 +34,7 @@ class ModelShader final : public Shader {
     inv.StoreVarying(
         inv.LoadVertexData<glm::vec3>(offsetof(VertexData, normal)),
         offsetof(Varyings, normal));
-    const auto mvp = inv.LoadUniform<glm::mat4>(offsetof(Uniform, mvp));
+    const auto mvp = inv.LoadUniform<glm::mat4>(offsetof(Uniforms, mvp));
     const auto pos = glm::vec4{
         inv.LoadVertexData<glm::vec3>(offsetof(VertexData, position)), 1.0};
     return pos * mvp;
@@ -44,7 +44,7 @@ class ModelShader final : public Shader {
       const FragmentInvocation& inv) const override {
     auto normal = inv.LoadVarying<glm::vec3>(offsetof(Varyings, normal));
     normal = glm::normalize(normal);
-    auto light = inv.LoadUniform<glm::vec3>(offsetof(Uniform, light));
+    auto light = inv.LoadUniform<glm::vec3>(offsetof(Uniforms, light));
     auto color = inv.LoadVarying<glm::vec4>(offsetof(Varyings, color));
     auto intensity = glm::dot(normal, light);
     color *= glm::vec4{intensity, intensity, intensity, 1.0};
