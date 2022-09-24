@@ -59,7 +59,7 @@ class Rasterizer final : public Renderer {
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
     const auto stride = data.varyings_stride;
-    auto ptr = data.varyings + offset % 3;
+    auto ptr = data.varyings + offset;
     T p1, p2, p3;
     memcpy(&p1, ptr, sizeof(p1));
     ptr += stride;

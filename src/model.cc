@@ -24,6 +24,7 @@ Model::Model(std::string path) {
     return;
   }
 
+  bool has_normals = false;
   std::vector<ModelShader::VertexData> vertices;
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
@@ -46,18 +47,35 @@ Model::Model(std::string path) {
         // Vertex normal
         glm::vec3 normal;
         if (idx.normal_index >= 0) {
+          has_normals |= true;
           normal.x = attrib.normals[3 * idx.normal_index + 0];
           normal.y = attrib.normals[3 * idx.normal_index + 1];
           normal.z = attrib.normals[3 * idx.normal_index + 2];
         }
 
-        vertices.push_back(ModelShader::VertexData{.vertex_color = kColorWhite,
-                                                   .position = position,
-                                                   .normal = normal});
+        vertices.push_back(
+            ModelShader::VertexData{.vertex_color = kColorFirebrick,
+                                    .position = position,
+                                    .normal = normal});
       }
       index_offset += fv;
     }
   }
+
+  if (!has_normals) {
+    SFT_ASSERT(vertices.size() % 3 == 0);
+    for (size_t i = 0; i < vertices.size(); i += 3) {
+      auto& va = vertices[i + 0];
+      auto& vb = vertices[i + 1];
+      auto& vc = vertices[i + 2];
+      const auto a = va.position;
+      const auto b = vb.position;
+      const auto c = vc.position;
+      auto normal = glm::normalize(glm::cross(c - a, b - a));
+      va.normal = vb.normal = vc.normal = normal;
+    }
+  }
+
   vertex_count_ = vertices.size();
   vertex_buffer_.Emplace(std::move(vertices));
 
