@@ -28,24 +28,18 @@ class ModelShader final : public Shader {
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    inv.StoreVarying(
-        inv.LoadVertexData<glm::vec4>(offsetof(VertexData, vertex_color)),
-        offsetof(Varyings, color));
-    inv.StoreVarying(
-        inv.LoadVertexData<glm::vec3>(offsetof(VertexData, normal)),
-        offsetof(Varyings, normal));
-    const auto mvp = inv.LoadUniform<glm::mat4>(offsetof(Uniforms, mvp));
-    const auto pos = glm::vec4{
-        inv.LoadVertexData<glm::vec3>(offsetof(VertexData, position)), 1.0};
+    STORE_VARYING(color, LOAD_VERTEX(vertex_color));
+    STORE_VARYING(normal, LOAD_VERTEX(normal));
+    const auto mvp = LOAD_UNIFORM(mvp);
+    const auto pos = glm::vec4{LOAD_VERTEX(position), 1.0};
     return pos * mvp;
   }
 
   std::optional<Color> ProcessFragment(
       const FragmentInvocation& inv) const override {
-    auto normal = inv.LoadVarying<glm::vec3>(offsetof(Varyings, normal));
-    normal = glm::normalize(normal);
-    auto light = inv.LoadUniform<glm::vec3>(offsetof(Uniforms, light));
-    auto color = inv.LoadVarying<glm::vec4>(offsetof(Varyings, color));
+    auto normal = glm::normalize(LOAD_VARYING(normal));
+    auto light = LOAD_UNIFORM(light);
+    auto color = LOAD_VARYING(color);
     auto intensity = glm::dot(normal, light);
     color *= glm::vec4{intensity, intensity, intensity, 1.0};
     return color;

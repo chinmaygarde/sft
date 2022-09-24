@@ -12,29 +12,27 @@ class ColorShader final : public Shader {
     glm::vec3 position;
   };
 
-  struct Uniforms {};
+  struct Uniforms {
+    Color color;
+  };
 
   struct Varyings {};
 
-  ColorShader() : ColorShader(kColorBlack) {}
-
-  ColorShader(Color color) : color_(color) {}
-
-  void SetColor(Color color) { color_ = color; }
+  ColorShader() = default;
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    return inv.LoadUniform<glm::vec3>(offsetof(VertexData, position));
+    return LOAD_VERTEX(position);
   }
 
   std::optional<Color> ProcessFragment(
       const FragmentInvocation& inv) const override {
-    return color_;
+    return LOAD_UNIFORM(color);
   }
 
  private:
-  Color color_;
+  SFT_DISALLOW_COPY_AND_ASSIGN(ColorShader);
 };
 
 }  // namespace sft
