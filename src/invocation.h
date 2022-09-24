@@ -21,6 +21,11 @@ struct VertexInvocation {
     return rasterizer.LoadUniform<T>(data, offset);
   }
 
+  template <class T>
+  void StoreVarying(const T& val, size_t offset) const {
+    rasterizer.StoreVarying(data, val, vertex_id, offset);
+  }
+
  private:
   friend Rasterizer;
 

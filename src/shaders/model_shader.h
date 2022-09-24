@@ -17,6 +17,8 @@ class ModelShader final : public Shader {
 
   ModelShader() = default;
 
+  size_t GetVaryingsSize() const override { return 0; }
+
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     const auto mvp = inv.LoadUniform<glm::mat4>(offsetof(Uniform, mvp));
     auto pos =

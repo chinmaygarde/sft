@@ -13,6 +13,8 @@ class Shader {
  public:
   virtual ~Shader() = default;
 
+  virtual size_t GetVaryingsSize() const = 0;
+
   virtual glm::vec3 ProcessVertex(
       const VertexInvocation& vertex_invocation) const = 0;
 

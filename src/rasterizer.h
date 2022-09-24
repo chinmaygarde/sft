@@ -44,19 +44,28 @@ class Rasterizer final : public Renderer {
             size_t count);
 
   template <class T>
+  void StoreVarying(const TriangleData& data,
+                    const T& val,
+                    size_t index,
+                    size_t offset) const {
+    auto* ptr = data.varyings;
+    ptr += offset;
+    ptr += (data.varyings_stride * (index % 3));
+    memcpy(ptr, &val, sizeof(T));
+  }
+
+  template <class T>
   T LoadVarying(const TriangleData& data,
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
-    const auto& vtx_desc = data.pipeline.vertex_descriptor;
-    const uint8_t* vtx_ptr = data.vertex_buffer.GetData() +
-                             (vtx_desc.stride * data.vertex_id) + offset;
+    const auto stride = data.varyings_stride;
+    auto ptr = data.varyings + offset % 3;
     T p1, p2, p3;
-    memcpy(&p1, vtx_ptr, sizeof(p1));
-    vtx_ptr += vtx_desc.stride;
-    memcpy(&p2, vtx_ptr, sizeof(p2));
-    vtx_ptr += vtx_desc.stride;
-    memcpy(&p3, vtx_ptr, sizeof(p3));
-    vtx_ptr += vtx_desc.stride;
+    memcpy(&p1, ptr, sizeof(p1));
+    ptr += stride;
+    memcpy(&p2, ptr, sizeof(p2));
+    ptr += stride;
+    memcpy(&p3, ptr, sizeof(p3));
     return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
   }
 

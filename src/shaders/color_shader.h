@@ -18,6 +18,8 @@ class ColorShader final : public Shader {
 
   void SetColor(Color color) { color_ = color; }
 
+  size_t GetVaryingsSize() const override { return 0; }
+
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     return inv.LoadUniform<glm::vec3>(offsetof(VertexData, position));
   }
