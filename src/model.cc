@@ -35,16 +35,25 @@ Model::Model(std::string path) {
 
       // Loop over vertices in the face.
       for (size_t v = 0; v < fv; v++) {
-        // access to vertex
+        // Access to vertex
         tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 
-        // vertex position
-        tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index + 0];
-        tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
-        tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
+        // Vertex position
+        glm::vec3 position(attrib.vertices[3 * idx.vertex_index + 0],
+                           attrib.vertices[3 * idx.vertex_index + 1],
+                           attrib.vertices[3 * idx.vertex_index + 2]);
 
-        vertices.push_back(ModelShader::VertexData{
-            .vertex_color = Color::Random(), .position = {vx, vy, vz}});
+        // Vertex normal
+        glm::vec3 normal;
+        if (idx.normal_index >= 0) {
+          normal.x = attrib.normals[3 * idx.normal_index + 0];
+          normal.y = attrib.normals[3 * idx.normal_index + 1];
+          normal.z = attrib.normals[3 * idx.normal_index + 2];
+        }
+
+        vertices.push_back(ModelShader::VertexData{.vertex_color = kColorWhite,
+                                                   .position = position,
+                                                   .normal = normal});
       }
       index_offset += fv;
     }
@@ -74,18 +83,17 @@ void Model::RenderTo(Rasterizer& rasterizer) {
 
   glm::vec2 size = rasterizer.GetSize();
 
-  glm::mat4 proj = glm::orthoLH_NO(0.0f, size.x, 0.0f, size.y, -50.0f, 50.0f);
-  glm::mat4 view =
-      glm::translate(glm::identity<glm::mat4>(),
-                     glm::vec3(size.x / 2.0, (size.y / 2.0), 0.0)) *
-      glm::scale(glm::identity<glm::mat4>(), glm::vec3(4.0, 4.0, 1.0));
-  glm::mat4 model = glm::identity<glm::mat4>();
+  glm::mat4 proj = glm::ortho(0.0f, size.x, 0.0f, size.y, -60.0f, 60.0f);
+  glm::mat4 view = glm::identity<glm::mat4>();
+  glm::mat4 model =
+      glm::scale(glm::identity<glm::mat4>(), glm::vec3(3.0, 3.0, 1.0));
 
   const auto mvp = proj * view * model;
 
   Buffer uniform_buffer;
   uniform_buffer.Emplace(ModelShader::Uniform{
       .mvp = mvp,
+      .light = {0.0, 0.0, -1.0},
   });
 
   pipeline_->viewport = size;
