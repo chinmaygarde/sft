@@ -144,14 +144,13 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   const auto p2 = ToTexelPos(ndc_p2, viewport);
   const auto p3 = ToTexelPos(ndc_p3, viewport);
 
-  constexpr float kEpsilon = 1e-5;
   const auto bounding_box = GetBoundingBox(p1, p2, p3);
   for (auto y = 0; y < bounding_box.size.height; y++) {
     for (auto x = 0; x < bounding_box.size.width; x++) {
       const auto p = glm::vec2{x + 1.0f + bounding_box.origin.x,
                                y + 1.0f + bounding_box.origin.y};
       const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
-      if (bary.x < -kEpsilon || bary.y < -kEpsilon || bary.z < -kEpsilon) {
+      if (bary.x < 0 || bary.y < 0 || bary.z < 0) {
         continue;
       }
       auto color = data.pipeline.shader->ProcessFragment({bary, *this, data});
