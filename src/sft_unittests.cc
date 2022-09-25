@@ -99,10 +99,10 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj");
   model.SetScale(3);
-  model.SetRotation(-45.0);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
+    model.SetRotation(application.GetTimeSinceLaunch().count() * 90);
     model.RenderTo(rasterizer);
     return true;
   });
@@ -112,11 +112,11 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
 TEST_F(RasterizerTest, CanDrawHelmet) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "Helmet.obj");
-  model.SetScale(120);
-  model.SetRotation(45.0);
+  model.SetScale(150);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
+    model.SetRotation(application.GetTimeSinceLaunch().count() * 90);
     model.RenderTo(rasterizer);
     return true;
   });

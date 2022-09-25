@@ -51,6 +51,7 @@ Model::Model(std::string path) {
           normal.x = attrib.normals[3 * idx.normal_index + 0];
           normal.y = attrib.normals[3 * idx.normal_index + 1];
           normal.z = attrib.normals[3 * idx.normal_index + 2];
+          normal = glm::normalize(normal);
         }
 
         vertices.push_back(

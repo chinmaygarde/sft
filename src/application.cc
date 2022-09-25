@@ -24,7 +24,7 @@ std::string CreateWindowTitle(MillisecondsF frame_time) {
 }
 
 Application::Application(std::shared_ptr<Renderer> renderer)
-    : renderer_(std::move(renderer)) {
+    : renderer_(std::move(renderer)), launch_time_(Clock::now()) {
   SFT_ASSERT(renderer_ && renderer_->GetPixels());
 
   window_size_ = renderer_->GetSize();
@@ -141,6 +141,10 @@ bool Application::OnRender() {
 
   ::SDL_RenderPresent(sdl_renderer_);
   return true;
+}
+
+SecondsF Application::GetTimeSinceLaunch() const {
+  return Clock::now() - launch_time_;
 }
 
 }  // namespace sft
