@@ -70,6 +70,22 @@ struct Color {
     };
   }
 
+  constexpr Color WithRed(uint8_t color) const {
+    return Color(color, GetGreen(), GetBlue(), GetAlpha());
+  }
+
+  constexpr Color WithGreen(uint8_t color) const {
+    return Color(GetRed(), color, GetBlue(), GetAlpha());
+  }
+
+  constexpr Color WithBlue(uint8_t color) const {
+    return Color(GetRed(), GetGreen(), color, GetAlpha());
+  }
+
+  constexpr Color WithAlpha(uint8_t color) const {
+    return Color(GetRed(), GetGreen(), GetBlue(), color);
+  }
+
   constexpr uint8_t GetRed() const { return color >> 16; }
 
   constexpr uint8_t GetGreen() const { return color >> 8; }
@@ -77,10 +93,6 @@ struct Color {
   constexpr uint8_t GetBlue() const { return color >> 0; }
 
   constexpr uint8_t GetAlpha() const { return color >> 24; }
-
-  constexpr Color WithAlpha(uint8_t alpha) const {
-    return Color{GetRed(), GetGreen(), GetBlue(), alpha};
-  }
 
   constexpr ColorF GetColorF() const {
     return {

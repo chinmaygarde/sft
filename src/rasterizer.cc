@@ -50,6 +50,13 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;
 
   auto new_depth = Color::Gray(texel.depth);
+
+  // In case of overruns, shade the depth buffer regions slightly differently
+  // for debugging purposes.
+  if (texel.depth == 0.0 || texel.depth == 1.0) {
+    new_depth = new_depth.WithBlue(0);
+  }
+
   if (pipeline.depth_test_enabled) {
     const auto old_depth = Color(depth_ptr[0]);
     if (new_depth.GetRed() < old_depth.GetRed()) {

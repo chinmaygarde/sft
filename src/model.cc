@@ -101,7 +101,7 @@ void Model::RenderTo(Rasterizer& rasterizer) {
 
   glm::vec2 size = rasterizer.GetSize();
 
-  glm::mat4 proj = glm::ortho(0.0f, size.x, 0.0f, size.y, -60.0f, 60.0f);
+  glm::mat4 proj = glm::ortho(0.0f, size.x, 0.0f, size.y, -100.0f, 100.0f);
   glm::mat4 view =
       glm::translate(glm::identity<glm::mat4>(), {size.x / 2, size.y / 2, 0.0});
   glm::mat4 scale =
