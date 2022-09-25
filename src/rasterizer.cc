@@ -7,7 +7,7 @@ namespace sft {
 
 Rasterizer::Rasterizer(glm::ivec2 size)
     : color_buffer_(std::calloc(size.x * size.y, sizeof(Color))),
-      depth_buffer_(std::calloc(size.x * size.y, sizeof(Color))),
+      depth_buffer_(std::calloc(size.x * size.y, sizeof(ScalarF))),
       size_(size) {}
 
 Rasterizer::~Rasterizer() {
@@ -19,19 +19,11 @@ void* Rasterizer::GetPixels() const {
   return color_buffer_;
 }
 
-void* Rasterizer::GetDepthPixels() const {
-  return depth_buffer_;
-}
-
 glm::ivec2 Rasterizer::GetSize() const {
   return size_;
 }
 
 size_t Rasterizer::GetBytesPerPixel() const {
-  return sizeof(uint32_t);
-}
-
-size_t Rasterizer::GetDepthBytesPerPixel() const {
   return sizeof(uint32_t);
 }
 
@@ -47,19 +39,11 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   const auto offset = size_.x * texel.pos.y + texel.pos.x;
 
   auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
-  auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;
-
-  auto new_depth = Color::Gray(texel.depth);
-
-  // In case of overruns, shade the depth buffer regions slightly differently
-  // for debugging purposes.
-  if (texel.depth == 0.0 || texel.depth == 1.0) {
-    new_depth = new_depth.WithBlue(0);
-  }
+  auto depth_ptr = reinterpret_cast<ScalarF*>(depth_buffer_) + offset;
 
   if (pipeline.depth_test_enabled) {
-    const auto old_depth = Color(depth_ptr[0]);
-    if (new_depth.GetRed() < old_depth.GetRed()) {
+    const auto old_depth = depth_ptr[0];
+    if (texel.depth < old_depth) {
       return;
     }
   }
@@ -73,13 +57,13 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
   if (pipeline.depth_test_enabled) {
-    *depth_ptr = new_depth;
+    *depth_ptr = texel.depth;
   }
 }
 
 void Rasterizer::Clear(Color color) {
   memset_pattern4(color_buffer_, &color, size_.x * size_.y * sizeof(Color));
-  bzero(depth_buffer_, size_.x * size_.y * sizeof(color));
+  bzero(depth_buffer_, size_.x * size_.y * sizeof(ScalarF));
 }
 
 constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {

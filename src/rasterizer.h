@@ -25,16 +25,10 @@ class Rasterizer final : public Renderer {
   void* GetPixels() const override;
 
   // |Renderer|
-  void* GetDepthPixels() const override;
-
-  // |Renderer|
   glm::ivec2 GetSize() const override;
 
   // |Renderer|
   size_t GetBytesPerPixel() const override;
-
-  // |Renderer|
-  size_t GetDepthBytesPerPixel() const override;
 
   void Clear(Color color);
 

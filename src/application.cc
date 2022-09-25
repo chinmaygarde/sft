@@ -28,7 +28,6 @@ Application::Application(std::shared_ptr<Renderer> renderer)
   SFT_ASSERT(renderer_ && renderer_->GetPixels());
 
   window_size_ = renderer_->GetSize();
-  window_size_.x *= 2.0;
 
   sdl_window_ = ::SDL_CreateWindow(CreateWindowTitle(MillisecondsF{0}).c_str(),
                                    SDL_WINDOWPOS_CENTERED,  //
@@ -118,24 +117,6 @@ bool Application::OnRender() {
                          NULL,                //
                          SDL_FLIP_HORIZONTAL  //
                          ) != 0) {
-    return false;
-  }
-  dest.x += dest.w;
-
-  SDLTextureNoCopyCaster depth_attachment(sdl_renderer_,                      //
-                                          renderer_->GetDepthPixels(),        //
-                                          size.x,                             //
-                                          size.y,                             //
-                                          renderer_->GetDepthBytesPerPixel()  //
-  );
-  if (depth_attachment && ::SDL_RenderCopyEx(sdl_renderer_,       //
-                                             depth_attachment,    //
-                                             nullptr,             //
-                                             &dest,               //
-                                             180,                 //
-                                             NULL,                //
-                                             SDL_FLIP_HORIZONTAL  //
-                                             ) != 0) {
     return false;
   }
 
