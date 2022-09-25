@@ -44,7 +44,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   glm::vec2 tr = {1.0, 0.0};
   glm::vec2 br = {1.0, 1.0};
   glm::vec2 bl = {0.0, 1.0};
-  Buffer vertex_buffer, uniform_buffer;
+  Buffer vertex_buffer;
   vertex_buffer.Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
@@ -53,19 +53,43 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
       {bl, p4},
       {tl, p1},
   });
-  uniform_buffer.Emplace(Uniforms{
-      .alpha = 0.75,
-  });
-  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
-  shader->SetTexture(std::move(texture));
+
+  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "boston.jpg");
+  auto texture3 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "kalimba.jpg");
   pipeline->shader = shader;
   pipeline->blend_mode = BlendMode::kSourceOver;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-
-    rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    {
+      Buffer uniform_buffer;
+      uniform_buffer.Emplace(Uniforms{
+          .alpha = 0.75,
+          .offset = {0, 0},
+      });
+      shader->SetTexture(texture1);
+      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    }
+    {
+      Buffer uniform_buffer;
+      uniform_buffer.Emplace(Uniforms{
+          .alpha = 0.75,
+          .offset = {0.2, 0.2},
+      });
+      shader->SetTexture(texture2);
+      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    }
+    {
+      Buffer uniform_buffer;
+      uniform_buffer.Emplace(Uniforms{
+          .alpha = 0.75,
+          .offset = {0.4, 0.4},
+      });
+      shader->SetTexture(texture3);
+      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    }
     return true;
   });
   ASSERT_TRUE(Run(application));

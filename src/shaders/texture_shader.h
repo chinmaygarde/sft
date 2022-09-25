@@ -18,6 +18,7 @@ class TextureShader final : public Shader {
 
   struct Uniforms {
     ScalarF alpha;
+    glm::vec2 offset;
   };
 
   struct Varyings {
@@ -30,11 +31,14 @@ class TextureShader final : public Shader {
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(texture_coords, texture_coords);
-    return VTX(position);
+    auto position = VTX(position);
+    auto offset = UNIFORM(offset);
+    position.x += offset.x;
+    position.y += offset.y;
+    return position;
   }
 
-  std::optional<Color> ProcessFragment(
-      const FragmentInvocation& inv) const override {
+  glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
     auto color = texture_->Sample(VARYING_LOAD(texture_coords));
     const auto alpha = glm::clamp(UNIFORM(alpha), 0.0f, 1.0f);
     color.a *= alpha;

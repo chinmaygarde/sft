@@ -166,16 +166,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       if (bary.x < 0 || bary.y < 0 || bary.z < 0) {
         continue;
       }
-      auto color = data.pipeline.shader->ProcessFragment({bary, *this, data});
-      if (!color.has_value()) {
-        continue;
-      }
+      const auto color =
+          Color{data.pipeline.shader->ProcessFragment({bary, *this, data})};
       const auto bary_pos =
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
       Texel texel;
       texel.pos = p;
       texel.depth = bary_pos.z;
-      texel.color = color.value();
+      texel.color = color;
       UpdateTexel(data.pipeline, texel);
     }
   }

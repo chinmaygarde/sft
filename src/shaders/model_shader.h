@@ -35,8 +35,7 @@ class ModelShader final : public Shader {
     return pos * mvp;
   }
 
-  std::optional<Color> ProcessFragment(
-      const FragmentInvocation& inv) const override {
+  glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
     auto normal = VARYING_LOAD(normal);
     auto light = UNIFORM(light);
     auto intensity = glm::dot(normal, light);

@@ -26,8 +26,7 @@ class ColorShader final : public Shader {
     return VTX(position);
   }
 
-  std::optional<Color> ProcessFragment(
-      const FragmentInvocation& inv) const override {
+  glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
     return UNIFORM(color);
   }
 

@@ -35,8 +35,7 @@ class Shader {
 
   virtual glm::vec3 ProcessVertex(const VertexInvocation& inv) const = 0;
 
-  virtual std::optional<Color> ProcessFragment(
-      const FragmentInvocation& inv) const = 0;
+  virtual glm::vec4 ProcessFragment(const FragmentInvocation& inv) const = 0;
 };
 
 }  // namespace sft
