@@ -135,7 +135,7 @@ TEST_F(RasterizerTest, CanApplyScissor) {
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     const auto sz = rasterizer.GetSize();
-    pipeline.scissor = Rect{sz.x / 2.0f, sz.y / 2.0f, sz.x / 2.0f, sz.y / 2.0f};
+    pipeline.scissor = Rect{sz.x / 2.0f, 0, sz.x / 2.0f, sz.y / 2.0f};
     rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
     return true;
   });
