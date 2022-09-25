@@ -32,7 +32,7 @@ class ModelShader final : public Shader {
     FORWARD(normal, normal);
     const auto mvp = UNIFORM(mvp);
     const auto pos = glm::vec4{VTX(position), 1.0};
-    return pos * mvp;
+    return mvp * pos;
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {

@@ -23,10 +23,16 @@ class Model {
 
   void RenderTo(Rasterizer& rasterizer);
 
+  void SetScale(ScalarF scale);
+
+  void SetRotation(ScalarF degrees);
+
  private:
   std::shared_ptr<Pipeline> pipeline_;
   Buffer vertex_buffer_;
   size_t vertex_count_ = 0u;
+  ScalarF scale_ = 1.0f;
+  ScalarF rotation_ = 0.0f;
   bool is_valid_ = false;
 
   Model(const Model&) = delete;

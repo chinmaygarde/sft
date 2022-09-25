@@ -80,8 +80,7 @@ Model::Model(std::string path) {
   vertex_buffer_.Emplace(std::move(vertices));
 
   pipeline_ = std::make_shared<Pipeline>();
-  pipeline_->cull_face = CullFace::kBack;
-  pipeline_->winding = Winding::kCounterClockwise;
+  pipeline_->depth_test_enabled = true;
   pipeline_->shader = std::make_shared<ModelShader>();
   pipeline_->vertex_descriptor.offset =
       offsetof(ModelShader::VertexData, position);
@@ -104,11 +103,15 @@ void Model::RenderTo(Rasterizer& rasterizer) {
   glm::vec2 size = rasterizer.GetSize();
 
   glm::mat4 proj = glm::ortho(0.0f, size.x, 0.0f, size.y, -60.0f, 60.0f);
-  glm::mat4 view = glm::identity<glm::mat4>();
-  glm::mat4 model =
-      glm::scale(glm::identity<glm::mat4>(), glm::vec3(3.0, 3.0, 1.0));
+  glm::mat4 view =
+      glm::translate(glm::identity<glm::mat4>(), {size.x / 2, size.y / 2, 0.0});
+  glm::mat4 scale =
+      glm::scale(glm::identity<glm::mat4>(), glm::vec3(scale_, scale_, 1.0));
+  glm::mat4 rotate =
+      glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation_),
+                  glm::vec3(0.0, 1.0, 0.0));
 
-  const auto mvp = proj * view * model;
+  const auto mvp = proj * view * scale * rotate;
 
   Buffer uniform_buffer;
   uniform_buffer.Emplace(ModelShader::Uniforms{
@@ -117,6 +120,14 @@ void Model::RenderTo(Rasterizer& rasterizer) {
   });
 
   rasterizer.Draw(*pipeline_, vertex_buffer_, uniform_buffer, vertex_count_);
+}
+
+void Model::SetScale(ScalarF scale) {
+  scale_ = scale;
+}
+
+void Model::SetRotation(ScalarF rotation) {
+  rotation_ = rotation;
 }
 
 }  // namespace sft
