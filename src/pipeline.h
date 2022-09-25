@@ -36,7 +36,7 @@ enum class Winding {
 };
 
 struct Pipeline {
-  bool depth_test_enabled = true;
+  bool depth_test_enabled = false;
   std::optional<glm::ivec2> viewport;
   std::shared_ptr<Shader> shader;
   std::optional<BlendMode> blend_mode;

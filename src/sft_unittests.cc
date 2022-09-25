@@ -175,5 +175,72 @@ TEST_F(RayTracerTest, CanRunRaytracer) {
   ASSERT_TRUE(Run(application));
 }
 
+TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
+  RasterizerApplication application;
+
+  using VD = ColorShader::VertexData;
+  using Uniforms = ColorShader::Uniforms;
+
+  Pipeline pipeline;
+  pipeline.shader = std::make_shared<ColorShader>();
+  pipeline.vertex_descriptor.offset = offsetof(VD, position);
+  pipeline.vertex_descriptor.stride = sizeof(VD);
+  pipeline.depth_test_enabled = true;
+  Buffer vertex_buffer, uniform_buffer;
+  vertex_buffer.Emplace(std::vector<VD>{
+      VD{.position = {-1.0, -1.0, -1.0}},
+      VD{.position = {0.0, 1.0, 1.0}},
+      VD{.position = {1.0, -1.0, -1.0}},
+  });
+  uniform_buffer.Emplace(Uniforms{
+      .color = kColorFuchsia,
+  });
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorBeige);
+    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanPerformDepthTest) {
+  RasterizerApplication application;
+
+  using VD = ColorShader::VertexData;
+  using Uniforms = ColorShader::Uniforms;
+
+  Pipeline pipeline;
+  pipeline.shader = std::make_shared<ColorShader>();
+  pipeline.vertex_descriptor.offset = offsetof(VD, position);
+  pipeline.vertex_descriptor.stride = sizeof(VD);
+
+  Buffer uniform_buffer1, uniform_buffer2;
+  Buffer vertex_buffer1, vertex_buffer2;
+  vertex_buffer1.Emplace(std::vector<VD>{
+      VD{.position = {-1.0, -1.0, -1.0}},
+      VD{.position = {0.0, 1.0, 1.0}},
+      VD{.position = {1.0, -1.0, -1.0}},
+  });
+  vertex_buffer2.Emplace(std::vector<VD>{
+      VD{.position = {-1.0, 1.0, -1.0}},  // front
+      VD{.position = {1.0, 1.0, -1.0}},   // front
+      VD{.position = {0.0, -1.0, 1.0}},   // back
+  });
+  uniform_buffer1.Emplace(Uniforms{
+      .color = kColorFuchsia,
+  });
+  uniform_buffer2.Emplace(Uniforms{
+      .color = kColorFirebrick,
+  });
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorBeige);
+    pipeline.depth_test_enabled = true;
+    rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
+    rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 }  // namespace testing
 }  // namespace sft

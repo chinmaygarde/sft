@@ -50,16 +50,24 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   auto depth_ptr = reinterpret_cast<uint32_t*>(depth_buffer_) + offset;
 
   auto new_depth = Color::Gray(texel.depth);
-
   if (pipeline.depth_test_enabled) {
     const auto old_depth = Color(depth_ptr[0]);
-    if (new_depth.GetRed() > old_depth.GetRed()) {
+    if (new_depth.GetRed() < old_depth.GetRed()) {
       return;
     }
   }
 
+  //----------------------------------------------------------------------------
+  // Write to the color attachment.
+  //----------------------------------------------------------------------------
   *color_ptr = pipeline.Blend(texel.color, *color_ptr);
-  *depth_ptr = new_depth;
+
+  //----------------------------------------------------------------------------
+  // Write to the depth attachment.
+  //----------------------------------------------------------------------------
+  if (pipeline.depth_test_enabled) {
+    *depth_ptr = new_depth;
+  }
 }
 
 void Rasterizer::Clear(Color color) {
@@ -108,6 +116,17 @@ constexpr bool ShouldCullFace(CullFace face,
     dir = -dir;
   }
   return dir < 0;
+}
+
+//------------------------------------------------------------------------------
+/// @brief      Normalizes the Z value in the NDC cube to unit-scale.
+///
+/// @param[in]  z_depth  The z depth in the NDC cube.
+///
+/// @return     The depth value in unit-scale.
+///
+constexpr ScalarF NormalizeDepth(ScalarF z_depth) {
+  return 1.0 - glm::clamp((z_depth + 1.0) / 2.0, 0.0, 1.0);
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {
@@ -172,7 +191,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
       Texel texel;
       texel.pos = p;
-      texel.depth = bary_pos.z;
+      texel.depth = NormalizeDepth(bary_pos.z);
       texel.color = color;
       UpdateTexel(data.pipeline, texel);
     }
