@@ -54,9 +54,7 @@ Model::Model(std::string path) {
         }
 
         vertices.push_back(
-            ModelShader::VertexData{.vertex_color = kColorFirebrick,
-                                    .position = position,
-                                    .normal = normal});
+            ModelShader::VertexData{.position = position, .normal = normal});
       }
       index_offset += fv;
     }
@@ -117,6 +115,7 @@ void Model::RenderTo(Rasterizer& rasterizer) {
   uniform_buffer.Emplace(ModelShader::Uniforms{
       .mvp = mvp,
       .light = {0.0, 0.0, -1.0},
+      .color = kColorFirebrick,
   });
 
   rasterizer.Draw(*pipeline_, vertex_buffer_, uniform_buffer, vertex_count_);

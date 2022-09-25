@@ -8,7 +8,6 @@ namespace sft {
 class ModelShader final : public Shader {
  public:
   struct VertexData {
-    glm::vec4 vertex_color;
     glm::vec3 position;
     glm::vec3 normal;
   };
@@ -16,10 +15,10 @@ class ModelShader final : public Shader {
   struct Uniforms {
     glm::mat4 mvp;
     glm::vec3 light;
+    glm::vec4 color;
   };
 
   struct Varyings {
-    glm::vec4 color;
     glm::vec3 normal;
   };
 
@@ -28,7 +27,6 @@ class ModelShader final : public Shader {
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    FORWARD(vertex_color, color);
     FORWARD(normal, normal);
     const auto mvp = UNIFORM(mvp);
     const auto pos = glm::vec4{VTX(position), 1.0};
@@ -36,12 +34,15 @@ class ModelShader final : public Shader {
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
-    auto normal = VARYING_LOAD(normal);
-    auto light = UNIFORM(light);
-    auto intensity = glm::dot(normal, light);
+    auto mvp = glm::identity<glm::mat4>();
+    auto normal = mvp * glm::vec4{VARYING_LOAD(normal), 1.0};
+    auto light = mvp * glm::vec4{UNIFORM(light), 1.0};
+    normal = glm::normalize(normal);
+    light = glm::normalize(light);
+    auto intensity = glm::dot(light, normal);
     auto intensity_color = glm::vec4{intensity, intensity, intensity, 1.0};
-    auto color = VARYING_LOAD(color);
-    return color * intensity_color;
+    auto color = UNIFORM(color) * intensity_color;
+    return color;
   }
 
  private:
