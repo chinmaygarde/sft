@@ -43,6 +43,7 @@ struct Pipeline {
   VertexDescriptor vertex_descriptor;
   Winding winding = Winding::kClockwise;
   std::optional<CullFace> cull_face;
+  std::optional<Rect> scissor;
 
   Color Blend(Color p_src, Color p_dst) const {
     auto src = p_src.GetColorF().Premultiply();

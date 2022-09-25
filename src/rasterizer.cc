@@ -124,7 +124,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   const auto ndc_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
 
   //----------------------------------------------------------------------------
-  // Face Culling
+  // Cull faces.
   //----------------------------------------------------------------------------
   if (data.pipeline.cull_face.has_value()) {
     if (ShouldCullFace(data.pipeline.cull_face.value(),  //
@@ -144,11 +144,24 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   const auto p2 = ToTexelPos(ndc_p2, viewport);
   const auto p3 = ToTexelPos(ndc_p3, viewport);
 
-  const auto bounding_box = GetBoundingBox(p1, p2, p3);
-  for (auto y = 0; y < bounding_box.size.height; y++) {
-    for (auto x = 0; x < bounding_box.size.width; x++) {
-      const auto p = glm::vec2{x + 1.0f + bounding_box.origin.x,
-                               y + 1.0f + bounding_box.origin.y};
+  //----------------------------------------------------------------------------
+  // Find bounding box and apply scissor.
+  //----------------------------------------------------------------------------
+  const auto bounding_box =
+      GetBoundingBox(p1, p2, p3)
+          .Intersection(data.pipeline.scissor.value_or(Rect{size_}));
+
+  if (!bounding_box.has_value()) {
+    return;
+  }
+
+  //----------------------------------------------------------------------------
+  // Shade fragments.
+  //----------------------------------------------------------------------------
+  for (auto y = 0; y < bounding_box->size.height; y++) {
+    for (auto x = 0; x < bounding_box->size.width; x++) {
+      const auto p = glm::vec2{x + 1.0f + bounding_box->origin.x,
+                               y + 1.0f + bounding_box->origin.y};
       const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
       if (bary.x < 0 || bary.y < 0 || bary.z < 0) {
         continue;
