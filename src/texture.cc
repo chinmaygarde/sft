@@ -31,7 +31,7 @@ Texture::~Texture() {
 
 glm::vec4 Texture::Sample(glm::vec2 pos) const {
   if (size_.x * size_.y <= 0) {
-    return kColorFirebrick;
+    return kColorBlack;
   }
 
   pos = {glm::clamp<ScalarF>(pos.x, 0.0, 1.0),

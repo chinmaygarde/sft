@@ -2,7 +2,7 @@
 
 namespace sft {
 
-Model::Model(std::string path) {
+Model::Model(std::string path, std::string base_dir) {
   std::string warnings;
   std::string errors;
   tinyobj::attrib_t attrib;
@@ -10,7 +10,7 @@ Model::Model(std::string path) {
   std::vector<tinyobj::material_t> materials;
 
   auto result = tinyobj::LoadObj(&attrib, &shapes, &materials, &warnings,
-                                 &errors, path.c_str());
+                                 &errors, path.c_str(), base_dir.c_str());
 
   if (!warnings.empty()) {
     std::cout << warnings << std::endl;
@@ -54,8 +54,19 @@ Model::Model(std::string path) {
           normal = glm::normalize(normal);
         }
 
+        // Texture coords.
+        glm::vec2 texture_coord;
+        if (idx.texcoord_index >= 0) {
+          texture_coord =
+              glm::vec2({attrib.texcoords[2 * idx.texcoord_index + 0],
+                         attrib.texcoords[2 * idx.texcoord_index + 1]});
+          texture_coord = glm::abs(texture_coord);
+        }
+
         vertices.push_back(
-            ModelShader::VertexData{.position = position, .normal = normal});
+            ModelShader::VertexData{.position = position,
+                                    .normal = normal,
+                                    .texture_coord = texture_coord});
       }
       index_offset += fv;
     }
@@ -80,7 +91,8 @@ Model::Model(std::string path) {
 
   pipeline_ = std::make_shared<Pipeline>();
   pipeline_->depth_test_enabled = true;
-  pipeline_->shader = std::make_shared<ModelShader>();
+  model_shader_ = std::make_shared<ModelShader>();
+  pipeline_->shader = model_shader_;
   pipeline_->vertex_descriptor.offset =
       offsetof(ModelShader::VertexData, position);
   pipeline_->vertex_descriptor.stride = sizeof(ModelShader::VertexData);
@@ -128,6 +140,10 @@ void Model::SetScale(ScalarF scale) {
 
 void Model::SetRotation(ScalarF rotation) {
   rotation_ = rotation;
+}
+
+void Model::SetTexture(std::shared_ptr<Texture> texture) {
+  model_shader_->SetTexture(std::move(texture));
 }
 
 }  // namespace sft

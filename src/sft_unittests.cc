@@ -97,7 +97,8 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
 
 TEST_F(RasterizerTest, CanDrawTeapot) {
   RasterizerApplication application;
-  Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj");
+  Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
+              SFT_ASSETS_LOCATION "teapot");
   model.SetScale(3);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -111,12 +112,15 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
 
 TEST_F(RasterizerTest, CanDrawHelmet) {
   RasterizerApplication application;
-  Model model(SFT_ASSETS_LOCATION "Helmet.obj");
+  Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
+              SFT_ASSETS_LOCATION "helmet");
   model.SetScale(150);
+  model.SetTexture(
+      std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png"));
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
-    model.SetRotation(application.GetTimeSinceLaunch().count() * 90);
+    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
     model.RenderTo(rasterizer);
     return true;
   });

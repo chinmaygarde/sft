@@ -2,6 +2,7 @@
 
 #include "invocation.h"
 #include "shader.h"
+#include "texture.h"
 
 namespace sft {
 
@@ -10,6 +11,7 @@ class ModelShader final : public Shader {
   struct VertexData {
     glm::vec3 position;
     glm::vec3 normal;
+    glm::vec2 texture_coord;
   };
 
   struct Uniforms {
@@ -19,6 +21,7 @@ class ModelShader final : public Shader {
   };
 
   struct Varyings {
+    glm::vec2 texture_coord;
     glm::vec3 normal;
   };
 
@@ -28,6 +31,7 @@ class ModelShader final : public Shader {
 
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(normal, normal);
+    FORWARD(texture_coord, texture_coord);
     const auto mvp = UNIFORM(mvp);
     const auto pos = glm::vec4{VTX(position), 1.0};
     return mvp * pos;
@@ -41,11 +45,23 @@ class ModelShader final : public Shader {
     light = glm::normalize(light);
     auto intensity = glm::dot(light, normal);
     auto intensity_color = glm::vec4{intensity, intensity, intensity, 1.0};
-    auto color = UNIFORM(color) * intensity_color;
+    glm::vec4 color;
+    if (texture_) {
+      color = texture_->Sample(VARYING_LOAD(texture_coord));
+    } else {
+      color = UNIFORM(color);
+    }
+    color *= intensity_color;
     return color;
   }
 
+  void SetTexture(std::shared_ptr<Texture> texture) {
+    texture_ = std::move(texture);
+  }
+
  private:
+  std::shared_ptr<Texture> texture_;
+
   SFT_DISALLOW_COPY_AND_ASSIGN(ModelShader);
 };
 

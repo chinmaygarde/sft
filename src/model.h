@@ -10,12 +10,13 @@
 #include "geom.h"
 #include "rasterizer.h"
 #include "shaders/model_shader.h"
+#include "texture.h"
 
 namespace sft {
 
 class Model {
  public:
-  Model(std::string path);
+  Model(std::string path, std::string base_dir);
 
   ~Model();
 
@@ -27,7 +28,10 @@ class Model {
 
   void SetRotation(ScalarF degrees);
 
+  void SetTexture(std::shared_ptr<Texture> texture);
+
  private:
+  std::shared_ptr<ModelShader> model_shader_;
   std::shared_ptr<Pipeline> pipeline_;
   Buffer vertex_buffer_;
   size_t vertex_count_ = 0u;
