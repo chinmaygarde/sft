@@ -5,7 +5,7 @@
 namespace sft {
 
 RasterizerApplication::RasterizerApplication()
-    : Application(std::make_unique<Rasterizer>(glm::ivec2{800, 600})) {}
+    : Application(std::make_unique<Rasterizer>(glm::ivec2{1024, 768})) {}
 
 RasterizerApplication::~RasterizerApplication() = default;
 
