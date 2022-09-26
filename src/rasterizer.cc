@@ -177,21 +177,23 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
     return;
   }
 
+  const auto& box = bounding_box.value();
+
   //----------------------------------------------------------------------------
   // Apply sample point culling.
   // From https://developer.arm.com/documentation/102540/0100/Primitive-culling
   //----------------------------------------------------------------------------
-  if (bounding_box.value().size.GetArea() < 2) {
+  if (box.size.GetArea() < 4) {
     return;
   }
 
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
-  for (auto y = 0; y < bounding_box->size.height; y++) {
-    for (auto x = 0; x < bounding_box->size.width; x++) {
-      const auto pos = glm::vec2{x + 1.0f + bounding_box->origin.x,
-                                 y + 1.0f + bounding_box->origin.y};
+  for (auto y = 0; y < box.size.height; y++) {
+    for (auto x = 0; x < box.size.width; x++) {
+      const auto pos =
+          glm::vec2{x + 1.0f + box.origin.x, y + 1.0f + box.origin.y};
       const auto bary = GetBaryCentricCoordinates(pos, p1, p2, p3);
       //------------------------------------------------------------------------
       // Check if the fragment falls within the triangle.
