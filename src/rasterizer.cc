@@ -178,6 +178,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   }
 
   //----------------------------------------------------------------------------
+  // Apply sample point culling.
+  // From https://developer.arm.com/documentation/102540/0100/Primitive-culling
+  //----------------------------------------------------------------------------
+  if (bounding_box.value().size.GetArea() < 2) {
+    return;
+  }
+
+  //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
   for (auto y = 0; y < bounding_box->size.height; y++) {

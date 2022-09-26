@@ -283,6 +283,8 @@ struct Size {
       : width(p_width), height(p_height) {}
 
   constexpr bool IsEmpty() const { return width * height <= 0.0; }
+
+  constexpr ScalarF GetArea() const { return width * height; }
 };
 
 struct Rect {
