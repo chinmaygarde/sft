@@ -31,6 +31,26 @@ constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
   return pos.x < 0 || pos.y < 0 || pos.x > size.x || pos.y > size.y;
 }
 
+bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
+                                         glm::ivec2 pos,
+                                         ScalarF depth) const {
+  if (IsOOB(pos, size_)) {
+    return false;
+  }
+
+  if (!pipeline.depth_test_enabled) {
+    return true;
+  }
+
+  const auto offset = size_.x * pos.y + pos.x;
+  auto depth_ptr = reinterpret_cast<ScalarF*>(depth_buffer_) + offset;
+  const auto old_depth = depth_ptr[0];
+  if (depth < old_depth) {
+    return false;
+  }
+  return true;
+}
+
 void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   if (IsOOB(texel.pos, size_)) {
     return;
@@ -38,25 +58,17 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
 
   const auto offset = size_.x * texel.pos.y + texel.pos.x;
 
-  auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
-  auto depth_ptr = reinterpret_cast<ScalarF*>(depth_buffer_) + offset;
-
-  if (pipeline.depth_test_enabled) {
-    const auto old_depth = depth_ptr[0];
-    if (texel.depth < old_depth) {
-      return;
-    }
-  }
-
   //----------------------------------------------------------------------------
   // Write to the color attachment.
   //----------------------------------------------------------------------------
+  auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
   *color_ptr = pipeline.Blend(texel.color, *color_ptr);
 
   //----------------------------------------------------------------------------
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
   if (pipeline.depth_test_enabled) {
+    auto depth_ptr = reinterpret_cast<ScalarF*>(depth_buffer_) + offset;
     *depth_ptr = texel.depth;
   }
 }
@@ -170,19 +182,39 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   for (auto y = 0; y < bounding_box->size.height; y++) {
     for (auto x = 0; x < bounding_box->size.width; x++) {
-      const auto p = glm::vec2{x + 1.0f + bounding_box->origin.x,
-                               y + 1.0f + bounding_box->origin.y};
-      const auto bary = GetBaryCentricCoordinates(p, p1, p2, p3);
+      const auto pos = glm::vec2{x + 1.0f + bounding_box->origin.x,
+                                 y + 1.0f + bounding_box->origin.y};
+      const auto bary = GetBaryCentricCoordinates(pos, p1, p2, p3);
+      //------------------------------------------------------------------------
+      // Check if the fragment falls within the triangle.
+      //------------------------------------------------------------------------
       if (bary.x < 0 || bary.y < 0 || bary.z < 0) {
         continue;
       }
-      const auto color =
-          Color{data.pipeline.shader->ProcessFragment({bary, *this, data})};
+
+      //------------------------------------------------------------------------
+      // If the depth test fails, short circuit processing the shader for the
+      // fragment.
+      //------------------------------------------------------------------------
       const auto bary_pos =
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
+      const auto depth = NormalizeDepth(bary_pos.z);
+      if (!FragmentPassesDepthTest(data.pipeline, pos, depth)) {
+        continue;
+      }
+
+      //------------------------------------------------------------------------
+      // Shade the fragment.
+      //------------------------------------------------------------------------
+      const auto color =
+          Color{data.pipeline.shader->ProcessFragment({bary, *this, data})};
+
+      //------------------------------------------------------------------------
+      // Update the texel.
+      //------------------------------------------------------------------------
       Texel texel;
-      texel.pos = p;
-      texel.depth = NormalizeDepth(bary_pos.z);
+      texel.pos = pos;
+      texel.depth = depth;
       texel.color = color;
       UpdateTexel(data.pipeline, texel);
     }

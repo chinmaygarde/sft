@@ -88,6 +88,10 @@ class Rasterizer final : public Renderer {
   void* depth_buffer_ = nullptr;
   const glm::ivec2 size_;
 
+  bool FragmentPassesDepthTest(const Pipeline& pipeline,
+                               glm::ivec2 pos,
+                               ScalarF depth) const;
+
   void UpdateTexel(const Pipeline& pipeline, Texel texel);
 
   void DrawTriangle(const TriangleData& data);
