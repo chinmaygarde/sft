@@ -91,6 +91,8 @@ Model::Model(std::string path, std::string base_dir) {
 
   pipeline_ = std::make_shared<Pipeline>();
   pipeline_->depth_test_enabled = true;
+  pipeline_->cull_face = CullFace::kBack;
+  pipeline_->winding = Winding::kCounterClockwise;
   model_shader_ = std::make_shared<ModelShader>();
   pipeline_->shader = model_shader_;
   pipeline_->vertex_descriptor.offset =
