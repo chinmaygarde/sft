@@ -99,7 +99,8 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
-  model.SetScale(3);
+  model.SetScale(4);
+  model.SetTexture(std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg"));
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
