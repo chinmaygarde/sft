@@ -38,9 +38,8 @@ class ModelShader final : public Shader {
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
-    auto mvp = glm::identity<glm::mat4>();
-    auto normal = mvp * glm::vec4{VARYING_LOAD(normal), 1.0};
-    auto light = mvp * glm::vec4{UNIFORM(light), 1.0};
+    auto normal = glm::vec4{VARYING_LOAD(normal), 1.0};
+    auto light = glm::vec4{UNIFORM(light), 1.0};
     normal = glm::normalize(normal);
     light = glm::normalize(light);
     auto intensity = glm::dot(light, normal);

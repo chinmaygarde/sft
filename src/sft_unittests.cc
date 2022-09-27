@@ -114,7 +114,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
-  model.SetScale(150);
+  model.SetScale(300);
   model.SetTexture(
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png"));
   ASSERT_TRUE(model.IsValid());

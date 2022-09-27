@@ -30,6 +30,8 @@ class Model {
 
   void SetTexture(std::shared_ptr<Texture> texture);
 
+  void SetLightDirection(glm::vec3 dir);
+
  private:
   std::shared_ptr<ModelShader> model_shader_;
   std::shared_ptr<Pipeline> pipeline_;
@@ -37,6 +39,7 @@ class Model {
   size_t vertex_count_ = 0u;
   ScalarF scale_ = 1.0f;
   ScalarF rotation_ = 0.0f;
+  glm::vec3 light_direction_ = {0.0, 0.0, 1.0};
   bool is_valid_ = false;
 
   Model(const Model&) = delete;

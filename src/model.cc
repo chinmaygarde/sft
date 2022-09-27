@@ -129,7 +129,7 @@ void Model::RenderTo(Rasterizer& rasterizer) {
   Buffer uniform_buffer;
   uniform_buffer.Emplace(ModelShader::Uniforms{
       .mvp = mvp,
-      .light = {0.0, 0.0, -1.0},
+      .light = light_direction_,
       .color = kColorFirebrick,
   });
 
@@ -146,6 +146,10 @@ void Model::SetRotation(ScalarF rotation) {
 
 void Model::SetTexture(std::shared_ptr<Texture> texture) {
   model_shader_->SetTexture(std::move(texture));
+}
+
+void Model::SetLightDirection(glm::vec3 dir) {
+  light_direction_ = glm::normalize(dir);
 }
 
 }  // namespace sft
