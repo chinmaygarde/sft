@@ -95,6 +95,106 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   ASSERT_TRUE(Run(application));
 }
 
+TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
+  RasterizerApplication application;
+
+  using VD = TextureShader::VertexData;
+  using Uniforms = TextureShader::Uniforms;
+
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<TextureShader>();
+
+  glm::vec3 p1 = {-0.7, 0.5, 0.0};
+  glm::vec3 p2 = {0.7, 0.5, 0.0};
+  glm::vec3 p3 = {0.7, -0.5, 0.0};
+  glm::vec3 p4 = {-0.7, -0.5, 0.0};
+
+  glm::vec2 tl = {0.0, 0.0};
+  glm::vec2 tr = {6.0, 0.0};
+  glm::vec2 br = {6.0, 6.0};
+  glm::vec2 bl = {0.0, 6.0};
+  Buffer vertex_buffer;
+  vertex_buffer.Emplace(std::vector<VD>{
+      {tl, p1},
+      {tr, p2},
+      {br, p3},
+      {br, p3},
+      {bl, p4},
+      {tl, p1},
+  });
+  Buffer uniform_buffer;
+  uniform_buffer.Emplace(Uniforms{
+      .alpha = 1.0,
+      .offset = {0, 0},
+  });
+  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  Sampler sampler;
+  sampler.wrap_mode_s = WrapMode::kRepeat;
+  sampler.wrap_mode_t = WrapMode::kMirror;
+  texture1->SetSampler(sampler);
+  shader->SetTexture(texture1);
+  pipeline->shader = shader;
+  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->vertex_descriptor.offset = offsetof(VD, position);
+  pipeline->vertex_descriptor.stride = sizeof(VD);
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorFirebrick);
+    { rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6); }
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
+  RasterizerApplication application;
+
+  using VD = TextureShader::VertexData;
+  using Uniforms = TextureShader::Uniforms;
+
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<TextureShader>();
+
+  glm::vec3 p1 = {-0.7, 0.5, 0.0};
+  glm::vec3 p2 = {0.7, 0.5, 0.0};
+  glm::vec3 p3 = {0.7, -0.5, 0.0};
+  glm::vec3 p4 = {-0.7, -0.5, 0.0};
+
+  glm::vec2 tl = {0.0, 0.0};
+  glm::vec2 tr = {6.0, 0.0};
+  glm::vec2 br = {6.0, 6.0};
+  glm::vec2 bl = {0.0, 6.0};
+  Buffer vertex_buffer;
+  vertex_buffer.Emplace(std::vector<VD>{
+      {tl, p1},
+      {tr, p2},
+      {br, p3},
+      {br, p3},
+      {bl, p4},
+      {tl, p1},
+  });
+  Buffer uniform_buffer;
+  uniform_buffer.Emplace(Uniforms{
+      .alpha = 1.0,
+      .offset = {0, 0},
+  });
+  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  Sampler sampler;
+  sampler.wrap_mode_s = WrapMode::kClamp;
+  sampler.wrap_mode_t = WrapMode::kMirror;
+  texture1->SetSampler(sampler);
+  shader->SetTexture(texture1);
+  pipeline->shader = shader;
+  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->vertex_descriptor.offset = offsetof(VD, position);
+  pipeline->vertex_descriptor.stride = sizeof(VD);
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorFirebrick);
+    { rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6); }
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 TEST_F(RasterizerTest, CanDrawTeapot) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
@@ -104,7 +204,7 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
-    model.SetRotation(application.GetTimeSinceLaunch().count() * 90);
+    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
     model.RenderTo(rasterizer);
     return true;
   });

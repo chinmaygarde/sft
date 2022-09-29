@@ -30,6 +30,10 @@ Texture::~Texture() {
 }
 
 glm::vec4 Texture::Sample(glm::vec2 pos) const {
+  return sampler_.Sample(pos, *this);
+}
+
+glm::vec4 Texture::SampleClamped(glm::vec2 pos) const {
   if (size_.x * size_.y <= 0) {
     return kColorBlack;
   }
