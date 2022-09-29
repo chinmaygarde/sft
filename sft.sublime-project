@@ -2,8 +2,8 @@
   "build_systems": [
     {
       "name": "SFT Build All",
-      "shell_cmd": "ninja -C build sft_unittests && ./build/sft_unittests --gtest_filter=\"*\"",
-      "working_dir": "${project_path}",
+      "shell_cmd": "ninja sft_unittests && ./sft_unittests --gtest_filter=\"*CanDrawHelmet\"",
+      "working_dir": "${project_path}/build",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,
     }

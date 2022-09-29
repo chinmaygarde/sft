@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "imgui_impl_sft.h"
 #include "timing.h"
 
 namespace sft {
@@ -45,10 +46,19 @@ Application::Application(std::shared_ptr<Renderer> renderer)
     return;
   }
 
+  ImGui::CreateContext();
+  auto result = ImGui_ImplSFT_Init(sdl_window_, sdl_renderer_);
+  if (!result) {
+    return;
+  }
+
   is_valid_ = true;
 }
 
 Application::~Application() {
+  ImGui_ImplSFT_Shutdown();
+  ImGui::DestroyContext();
+
   if (sdl_window_) {
     ::SDL_DestroyWindow(sdl_window_);
   }
@@ -58,7 +68,14 @@ Application::~Application() {
 }
 
 bool Application::Render() {
+  ImGui_ImplSFT_NewFrame();
+  ImGui::NewFrame();
+
   const auto result = OnRender();
+
+  ImGui::Render();
+  ImGui_ImplSFT_RenderDrawData(ImGui::GetDrawData());
+
   const auto now = Clock::now();
   if (std::chrono::duration_cast<MillisecondsF>(now - last_title_update_)
           .count() > 500) {
