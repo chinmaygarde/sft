@@ -37,7 +37,12 @@ void ImGui_ImplSFT_NewFrame() {
   ImGui_ImplSDL2_NewFrame();
 }
 
-void ImGui_ImplSFT_RenderDrawData(ImDrawData* draw_data) {}
+void ImGui_ImplSFT_RenderDrawData(ImDrawData* draw) {
+  if (!draw || draw->CmdListsCount <= 0) {
+    // Nothing to draw.
+    return;
+  }
+}
 
 void ImGui_ImplSFT_Shutdown() {
   auto& io = ImGui::GetIO();
