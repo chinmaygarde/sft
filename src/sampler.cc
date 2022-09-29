@@ -11,13 +11,13 @@ constexpr ScalarF SamplerLocation(ScalarF location, WrapMode mode) {
     case WrapMode::kClamp:
       return glm::clamp(location, 0.0f, 1.0f);
     case WrapMode::kRepeat:
-      return location - glm::floor(location);
+      return glm::fract(location);
     case WrapMode::kMirror: {
       const auto is_even = static_cast<int>(glm::floor(location)) % 2 == 0;
       if (is_even) {
-        return location - glm::floor(location);
+        return glm::fract(location);
       } else {
-        return 1.0f - (location - glm::floor(location));
+        return 1.0f - glm::fract(location);
       }
     }
   }
