@@ -10,13 +10,15 @@ enum class WrapMode {
   kMirror,
 };
 
-class Texture;
+enum class Filter {
+  kNearest,
+  kLinear,
+};
 
 struct Sampler {
   WrapMode wrap_mode_s = WrapMode::kRepeat;
   WrapMode wrap_mode_t = WrapMode::kRepeat;
-
-  glm::vec4 Sample(glm::vec2 location, const Texture& texture) const;
+  Filter min_mag_filter = Filter::kNearest;
 };
 
 }  // namespace sft

@@ -29,17 +29,32 @@ Texture::~Texture() {
   }
 }
 
+constexpr ScalarF SamplerLocation(ScalarF location, WrapMode mode) {
+  // Section 3.7.6 "Texture Wrap Modes"
+  // https://registry.khronos.org/OpenGL/specs/es/2.0/es_full_spec_2.0.pdf
+  switch (mode) {
+    case WrapMode::kClamp:
+      return glm::clamp(location, 0.0f, 1.0f);
+    case WrapMode::kRepeat:
+      return glm::fract(location);
+    case WrapMode::kMirror: {
+      const auto is_even = static_cast<int>(glm::floor(location)) % 2 == 0;
+      const auto fract = glm::fract(location);
+      return is_even ? fract : 1.0 - fract;
+    }
+  }
+  return 0.0;
+}
+
 glm::vec4 Texture::Sample(glm::vec2 pos) const {
-  return sampler_.Sample(pos, *this);
+  return SampleClamped({SamplerLocation(pos.x, sampler_.wrap_mode_s),
+                        SamplerLocation(pos.y, sampler_.wrap_mode_t)});
 }
 
 glm::vec4 Texture::SampleClamped(glm::vec2 pos) const {
   if (size_.x * size_.y <= 0) {
     return kColorBlack;
   }
-
-  pos = {glm::clamp<ScalarF>(pos.x, 0.0, 1.0),
-         glm::clamp<ScalarF>(pos.y, 0.0, 1.0)};
 
   glm::ivec2 ipos = {pos.x * (size_.x - 1), pos.y * (size_.y - 1)};
 

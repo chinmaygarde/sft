@@ -1,6 +1,7 @@
 #pragma once
 
 #include "geom.h"
+#include "macros.h"
 #include "sampler.h"
 
 namespace sft {
@@ -19,16 +20,15 @@ class Texture {
 
   glm::vec4 Sample(glm::vec2 position) const;
 
-  glm::vec4 SampleClamped(glm::vec2 position) const;
-
  private:
   uint8_t* decoded_ = nullptr;
   glm::ivec2 size_;
   Sampler sampler_;
   bool is_valid_;
 
-  Texture(const Texture&) = delete;
-  Texture& operator=(const Texture&) = delete;
+  glm::vec4 SampleClamped(glm::vec2 position) const;
+
+  SFT_DISALLOW_COPY_AND_ASSIGN(Texture);
 };
 
 }  // namespace sft
