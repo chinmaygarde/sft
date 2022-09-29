@@ -2,10 +2,13 @@
 
 #include "backends/imgui_impl_sdl.h"
 #include "macros.h"
+#include "texture.h"
 
 namespace sft {
 
-struct RendererData {};
+struct RendererData {
+  std::shared_ptr<Texture> font_atlas_;
+};
 
 bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   auto result = ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
@@ -16,12 +19,17 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   auto& io = ImGui::GetIO();
   SFT_ASSERT(io.BackendRendererUserData == nullptr);
   SFT_ASSERT(io.BackendRendererName == nullptr);
-  io.BackendRendererUserData = new RendererData{};
+  auto data = new RendererData{};
+  io.BackendRendererUserData = data;
   io.BackendRendererName = "SFT";
   uint8_t* pixels = nullptr;
   int width = 0;
   int height = 0;
   io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+  data->font_atlas_ = std::make_shared<Texture>(
+      Mapping::MakeWithCopy(pixels, width * height * 4),
+      glm::ivec2{width, height});
+
   return true;
 }
 

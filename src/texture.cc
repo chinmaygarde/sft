@@ -19,15 +19,15 @@ Texture::Texture(const char* path) {
     return;
   }
 
-  decoded_ = decoded;
+  mapping_ = std::make_shared<Mapping>(
+      decoded, width * height * 4, [decoded]() { ::stbi_image_free(decoded); });
   size_ = {width, height};
 }
 
-Texture::~Texture() {
-  if (decoded_ != nullptr) {
-    ::stbi_image_free(decoded_);
-  }
-}
+Texture::Texture(std::shared_ptr<Mapping> mapping, glm::ivec2 size)
+    : mapping_(std::move(mapping)), size_(size) {}
+
+Texture::~Texture() = default;
 
 constexpr ScalarF SamplerLocation(ScalarF location, WrapMode mode) {
   // Section 3.7.6 "Texture Wrap Modes"
@@ -115,10 +115,14 @@ glm::vec4 Texture::SampleUnit(glm::vec2 pos) const {
   return kColorBlack;
 }
 
+const uint8_t* Texture::GetBuffer() const {
+  return mapping_ ? mapping_->GetBuffer() : nullptr;
+}
+
 glm::vec4 Texture::SampleUV(glm::ivec2 uv) const {
   uv = glm::clamp(uv, {0, 0}, {size_.x - 1, size_.y - 1});
   auto offset = size_.x * uv.y + uv.x;
-  Color* icolor = reinterpret_cast<Color*>(decoded_) + offset;
+  const Color* icolor = reinterpret_cast<const Color*>(GetBuffer()) + offset;
   glm::vec4 color = *icolor;
   return {color.b, color.g, color.r, color.a};
 }

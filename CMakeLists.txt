@@ -49,6 +49,8 @@ add_library(sft_lib
   src/ray_tracer_application.h
   src/renderer.cc
   src/renderer.h
+  src/mapping.cc
+  src/mapping.h
   src/sampler.cc
   src/sampler.h
   src/sdl_utils.cc
