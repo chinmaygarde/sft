@@ -26,7 +26,13 @@ class Texture {
   Sampler sampler_;
   bool is_valid_;
 
-  glm::vec4 SampleClamped(glm::vec2 position) const;
+  glm::vec4 SampleUnit(glm::vec2 position) const;
+
+  glm::vec4 SampleUnitNearest(glm::vec2 pos) const;
+
+  glm::vec4 SampleUnitLinear(glm::vec2 pos) const;
+
+  glm::vec4 SampleUV(glm::ivec2 uv) const;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Texture);
 };

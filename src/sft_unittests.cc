@@ -95,6 +95,68 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   ASSERT_TRUE(Run(application));
 }
 
+TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
+  RasterizerApplication application;
+
+  using VD = TextureShader::VertexData;
+  using Uniforms = TextureShader::Uniforms;
+
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<TextureShader>();
+
+  glm::vec3 p1 = {-0.4, 0.4, 0.0};
+  glm::vec3 p2 = {0.4, 0.4, 0.0};
+  glm::vec3 p3 = {0.4, -0.4, 0.0};
+  glm::vec3 p4 = {-0.4, -0.4, 0.0};
+
+  glm::vec2 tl = {0.0, 0.0};
+  glm::vec2 tr = {1.0, 0.0};
+  glm::vec2 br = {1.0, 1.0};
+  glm::vec2 bl = {0.0, 1.0};
+  Buffer vertex_buffer;
+  vertex_buffer.Emplace(std::vector<VD>{
+      {tl, p1},
+      {tr, p2},
+      {br, p3},
+      {br, p3},
+      {bl, p4},
+      {tl, p1},
+  });
+
+  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  texture1->SetSampler({.min_mag_filter = Filter::kLinear});
+  auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  texture2->SetSampler({.min_mag_filter = Filter::kNearest});
+  pipeline->shader = shader;
+  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->vertex_descriptor.offset = offsetof(VD, position);
+  pipeline->vertex_descriptor.stride = sizeof(VD);
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorFirebrick);
+    {
+      Buffer uniform_buffer;
+      uniform_buffer.Emplace(Uniforms{
+          .alpha = 1.0,
+          .offset = {0, -0.5},
+      });
+      shader->SetTexture(texture1);
+      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    }
+    {
+      Buffer uniform_buffer;
+      uniform_buffer.Emplace(Uniforms{
+          .alpha = 1.0,
+          .offset = {0, 0.5},
+      });
+      shader->SetTexture(texture2);
+      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    }
+
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
   RasterizerApplication application;
 
@@ -200,7 +262,9 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
   model.SetScale(4);
-  model.SetTexture(std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg"));
+  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
+  texture->SetSampler({.min_mag_filter = Filter::kLinear});
+  model.SetTexture(texture);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
@@ -216,8 +280,10 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
   model.SetScale(300);
-  model.SetTexture(
-      std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png"));
+  auto texture =
+      std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png");
+  texture->SetSampler({.min_mag_filter = Filter::kLinear});
+  model.SetTexture(texture);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
