@@ -138,7 +138,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   // Invoke vertex shaders.
   //----------------------------------------------------------------------------
-  VertexInvocation vertex_invocation(*this, data, data.vertex_id);
+  VertexInvocation vertex_invocation(*this, data, data.base_vertex_id);
   const auto ndc_p1 = data.pipeline.shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
   const auto ndc_p2 = data.pipeline.shader->ProcessVertex(vertex_invocation);
@@ -236,21 +236,21 @@ void Rasterizer::Draw(const Pipeline& pipeline,
                       const Buffer& uniform_buffer,
                       size_t count) {
   const auto& vtx_desc = pipeline.vertex_descriptor;
-  const uint8_t* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
+  const auto* vtx_ptr = reinterpret_cast<const glm::vec3*>(
+      vertex_buffer.GetData() + vtx_desc.offset);
   const auto varyings_size = pipeline.shader->GetVaryingsSize();
   auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
-  TriangleData data(pipeline, vertex_buffer, uniform_buffer, varyings_size,
-                    varyings);
-  size_t vertex_id = 0;
-  glm::vec3 p1, p2, p3;
+  TriangleData data(pipeline,        //
+                    vertex_buffer,   //
+                    uniform_buffer,  //
+                    varyings_size,   //
+                    varyings         //
+  );
   for (size_t i = 0; i < count; i += 3) {
-    data.vertex_id = vertex_id;
-    vertex_id += 3;
-    memcpy(&data.p1, vtx_ptr, sizeof(p1));
-    vtx_ptr += vtx_desc.stride;
-    memcpy(&data.p2, vtx_ptr, sizeof(p2));
-    vtx_ptr += vtx_desc.stride;
-    memcpy(&data.p3, vtx_ptr, sizeof(p3));
+    data.base_vertex_id = i;
+    memcpy(&data.p1, &vtx_ptr[i + 0], sizeof(glm::vec3));
+    memcpy(&data.p2, &vtx_ptr[i + 1], sizeof(glm::vec3));
+    memcpy(&data.p3, &vtx_ptr[i + 2], sizeof(glm::vec3));
     DrawTriangle(data);
   }
 }

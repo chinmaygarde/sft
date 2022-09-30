@@ -12,7 +12,7 @@ struct TriangleData {
   glm::vec3 p1;
   glm::vec3 p2;
   glm::vec3 p3;
-  size_t vertex_id = 0;
+  size_t base_vertex_id = 0;
   const Pipeline& pipeline;
   const Buffer& vertex_buffer;
   const Buffer& uniform_buffer;
