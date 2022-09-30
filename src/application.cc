@@ -73,8 +73,12 @@ bool Application::Render() {
 
   const auto result = OnRender();
 
+  ImGui::ShowDemoWindow();
+
   ImGui::Render();
-  ImGui_ImplSFT_RenderDrawData(ImGui::GetDrawData());
+  if (auto rasterizer = GetHUDRasterizer()) {
+    ImGui_ImplSFT_RenderDrawData(rasterizer, ImGui::GetDrawData());
+  }
 
   const auto now = Clock::now();
   if (std::chrono::duration_cast<MillisecondsF>(now - last_title_update_)
@@ -143,6 +147,10 @@ bool Application::OnRender() {
 
 SecondsF Application::GetTimeSinceLaunch() const {
   return Clock::now() - launch_time_;
+}
+
+Rasterizer* Application::GetHUDRasterizer() const {
+  return nullptr;
 }
 
 }  // namespace sft

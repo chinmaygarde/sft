@@ -28,4 +28,8 @@ void RasterizerApplication::SetRasterizerCallback(RasterizerCallback callback) {
   rasterizer_callback_ = std::move(callback);
 }
 
+Rasterizer* RasterizerApplication::GetHUDRasterizer() const {
+  return GetRasterizer();
+}
+
 }  // namespace sft

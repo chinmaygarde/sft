@@ -13,6 +13,8 @@
 
 namespace sft {
 
+class Rasterizer;
+
 class Application {
  public:
   virtual ~Application();
@@ -26,6 +28,8 @@ class Application {
   virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
 
   SecondsF GetTimeSinceLaunch() const;
+
+  virtual Rasterizer* GetHUDRasterizer() const;
 
  protected:
   Application(std::shared_ptr<Renderer> renderer);

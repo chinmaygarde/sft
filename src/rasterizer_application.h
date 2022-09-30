@@ -21,6 +21,8 @@ class RasterizerApplication final : public Application {
 
   void OnTouchEvent(TouchEventType type, glm::vec2 pos) override;
 
+  Rasterizer* GetHUDRasterizer() const override;
+
  private:
   RasterizerCallback rasterizer_callback_;
 
