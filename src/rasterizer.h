@@ -35,7 +35,41 @@ class Rasterizer final : public Renderer {
   void Draw(const Pipeline& pipeline,
             const Buffer& vertex_buffer,
             const Buffer& uniform_buffer,
-            size_t count);
+            size_t count) {
+    Buffer index_buffer;
+    for (size_t i = 0; i < count; i++) {
+      index_buffer.Emplace<uint32_t>(i);
+    }
+    Draw(pipeline, vertex_buffer, index_buffer, uniform_buffer, count);
+  }
+
+  void Draw(const Pipeline& pipeline,
+            const Buffer& vertex_buffer,
+            const Buffer& index_buffer,
+            const Buffer& uniform_buffer,
+            size_t count) {
+    const auto& vtx_desc = pipeline.vertex_descriptor;
+    const auto* vtx_ptr = reinterpret_cast<const glm::vec3*>(
+        vertex_buffer.GetData() + vtx_desc.offset);
+    const auto* idx_ptr =
+        reinterpret_cast<const uint32_t*>(index_buffer.GetData());
+    const auto varyings_size = pipeline.shader->GetVaryingsSize();
+    auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
+    TriangleData data(pipeline,        //
+                      vertex_buffer,   //
+                      uniform_buffer,  //
+                      varyings_size,   //
+                      varyings         //
+    );
+    for (size_t i = 0; i < count; i += 3) {
+      data.base_vertex_id = i;
+      size_t index = idx_ptr[i];
+      memcpy(&data.p1, &vtx_ptr[index + 0], sizeof(glm::vec3));
+      memcpy(&data.p2, &vtx_ptr[index + 1], sizeof(glm::vec3));
+      memcpy(&data.p3, &vtx_ptr[index + 2], sizeof(glm::vec3));
+      DrawTriangle(data);
+    }
+  }
 
   template <class T>
   void StoreVarying(const TriangleData& data,
