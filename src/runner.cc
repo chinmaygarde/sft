@@ -3,6 +3,8 @@
 #include <SDL.h>
 
 #include "application.h"
+#include "backends/imgui_impl_sdl.h"
+#include "imgui.h"
 
 namespace sft {
 
@@ -21,6 +23,10 @@ bool Runner::Run(Application& application) const {
     success = is_running = application.Render();
     ::SDL_Event event;
     if (::SDL_PollEvent(&event) == 1) {
+      auto& io = ImGui::GetIO();
+
+      ImGui_ImplSDL2_ProcessEvent(&event);
+
       switch (event.type) {
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
