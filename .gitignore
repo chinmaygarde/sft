@@ -3,3 +3,4 @@ build/
 *.sublime-workspace
 .cache/
 *.orig
+*.ini
