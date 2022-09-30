@@ -33,8 +33,12 @@ add_library(sft_lib
   src/buffer.h
   src/geom.cc
   src/geom.h
+  src/imgui_impl_sft.cc
+  src/imgui_impl_sft.h
   src/invocation.cc
   src/invocation.h
+  src/mapping.cc
+  src/mapping.h
   src/model.cc
   src/model.h
   src/pipeline.cc
@@ -49,14 +53,14 @@ add_library(sft_lib
   src/ray_tracer_application.h
   src/renderer.cc
   src/renderer.h
-  src/mapping.cc
-  src/mapping.h
   src/sampler.cc
   src/sampler.h
   src/sdl_utils.cc
   src/sdl_utils.h
   src/shaders/color_shader.cc
   src/shaders/color_shader.h
+  src/shaders/imgui_shader.cc
+  src/shaders/imgui_shader.h
   src/shaders/model_shader.cc
   src/shaders/model_shader.h
   src/shaders/texture_shader.cc
@@ -67,16 +71,14 @@ add_library(sft_lib
   src/texture.h
   src/timing.cc
   src/timing.h
-  src/imgui_impl_sft.cc
-  src/imgui_impl_sft.h
   src/triangle_data.cc
   src/triangle_data.h
   src/vertex_descriptor.cc
   src/vertex_descriptor.h
   third_party/imgui/backends/imgui_impl_sdl.cpp
   third_party/imgui/backends/imgui_impl_sdl.h
-  third_party/imgui/imgui.h
   third_party/imgui/imgui.cpp
+  third_party/imgui/imgui.h
   third_party/imgui/imgui_demo.cpp
   third_party/imgui/imgui_draw.cpp
   third_party/imgui/imgui_tables.cpp

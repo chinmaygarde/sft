@@ -2,12 +2,13 @@
 
 #include "backends/imgui_impl_sdl.h"
 #include "macros.h"
+#include "shaders/imgui_shader.h"
 #include "texture.h"
 
 namespace sft {
 
 struct RendererData {
-  std::shared_ptr<Texture> font_atlas_;
+  std::shared_ptr<Pipeline> pipeline;
 };
 
 bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
@@ -26,9 +27,21 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   int width = 0;
   int height = 0;
   io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-  data->font_atlas_ = std::make_shared<Texture>(
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<ImGuiShader>();
+  auto font_atlas = std::make_shared<Texture>(
       Mapping::MakeWithCopy(pixels, width * height * 4),
       glm::ivec2{width, height});
+
+  shader->SetTexture(font_atlas);
+
+  pipeline->shader = shader;
+  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->vertex_descriptor.offset =
+      offsetof(ImGuiShader::VertexData, vertex_position);
+  pipeline->vertex_descriptor.stride = sizeof(ImGuiShader::VertexData);
+
+  data->pipeline = pipeline;
 
   return true;
 }
