@@ -33,6 +33,7 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   auto font_atlas = std::make_shared<Texture>(
       Mapping::MakeWithCopy(pixels, width * height * 4),
       glm::ivec2{width, height});
+  font_atlas->SetSampler({.min_mag_filter = Filter::kLinear});
 
   shader->SetTexture(font_atlas);
 
@@ -83,8 +84,8 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
   uniform_buffer.Emplace<ImGuiShader::Uniforms>(
       {.mvp = glm::ortho<ScalarF>(0,                    // left
                                   draw->DisplaySize.x,  // right
-                                  0,                    // bottom
-                                  draw->DisplaySize.y   // top
+                                  draw->DisplaySize.y,  // bottom
+                                  0                     // top
                                   )});
 
   for (int i = 0; i < draw->CmdListsCount; i++) {

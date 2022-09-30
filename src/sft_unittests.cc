@@ -2,6 +2,7 @@
 
 #include "buffer.h"
 #include "fixtures_location.h"
+#include "imgui.h"
 #include "model.h"
 #include "pipeline.h"
 #include "rasterizer.h"
@@ -21,6 +22,16 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
   RasterizerApplication application;
   application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFuchsia);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanShowHUD) {
+  RasterizerApplication application;
+  application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorFuchsia);
+    ImGui::ShowDemoWindow();
     return true;
   });
   ASSERT_TRUE(Run(application));

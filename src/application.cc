@@ -68,17 +68,7 @@ Application::~Application() {
 }
 
 bool Application::Render() {
-  ImGui_ImplSFT_NewFrame();
-  ImGui::NewFrame();
-
   const auto result = OnRender();
-
-  ImGui::ShowDemoWindow();
-
-  ImGui::Render();
-  if (auto rasterizer = GetHUDRasterizer()) {
-    ImGui_ImplSFT_RenderDrawData(rasterizer, ImGui::GetDrawData());
-  }
 
   const auto now = Clock::now();
   if (std::chrono::duration_cast<MillisecondsF>(now - last_title_update_)
@@ -109,9 +99,19 @@ bool Application::OnRender() {
   }
 
   const auto update_start = Clock::now();
+
+  ImGui_ImplSFT_NewFrame();
+  ImGui::NewFrame();
+
   if (!Update()) {
     return false;
   }
+
+  ImGui::Render();
+  if (auto rasterizer = GetHUDRasterizer()) {
+    ImGui_ImplSFT_RenderDrawData(rasterizer, ImGui::GetDrawData());
+  }
+
   const auto update_end = Clock::now();
 
   last_update_duration_ = update_end - update_start;
