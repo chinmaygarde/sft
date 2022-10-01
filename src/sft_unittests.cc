@@ -96,7 +96,54 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   ASSERT_TRUE(Run(application));
 }
 
-TEST_F(RasterizerTest, CanDrawWithIndexBuffer) {
+TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
+  RasterizerApplication application;
+
+  using VD = TextureShader::VertexData;
+  using Uniforms = TextureShader::Uniforms;
+
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<TextureShader>();
+
+  glm::vec3 p1 = {-0.7, 0.5, 0.0};
+  glm::vec3 p2 = {0.7, 0.5, 0.0};
+  glm::vec3 p3 = {0.7, -0.5, 0.0};
+  glm::vec3 p4 = {-0.7, -0.5, 0.0};
+
+  glm::vec2 tl = {0.0, 0.0};
+  glm::vec2 tr = {1.0, 0.0};
+  glm::vec2 br = {1.0, 1.0};
+  glm::vec2 bl = {0.0, 1.0};
+
+  auto buffer = Buffer::Create();
+  auto vertex_buffer = buffer->Emplace(std::vector<VD>{
+      {tl, p1},  // 0
+      {tr, p2},  // 1
+      {br, p3},  // 2
+      {bl, p4},  // 3
+  });
+  auto uniform_buffer = buffer->Emplace(Uniforms{
+      .alpha = 1.0,
+      .offset = {0, 0},
+  });
+  auto index_buffer = buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
+  auto texture1 =
+      std::make_shared<Texture>(SFT_ASSETS_LOCATION "embarcadero.jpg");
+  shader->SetTexture(texture1);
+  pipeline->shader = shader;
+  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->vertex_descriptor.index_type = IndexType::kUInt16;
+  pipeline->vertex_descriptor.offset = offsetof(VD, position);
+  pipeline->vertex_descriptor.stride = sizeof(VD);
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorFirebrick);
+    rasterizer.Draw(*pipeline, vertex_buffer, index_buffer, uniform_buffer, 6);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
   RasterizerApplication application;
 
   using VD = TextureShader::VertexData;
@@ -127,11 +174,11 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer) {
       .offset = {0, 0},
   });
   auto index_buffer = buffer->Emplace(std::vector<uint32_t>{0, 1, 2, 2, 3, 0});
-  auto texture1 =
-      std::make_shared<Texture>(SFT_ASSETS_LOCATION "embarcadero.jpg");
+  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(texture1);
   pipeline->shader = shader;
   pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->vertex_descriptor.index_type = IndexType::kUInt32;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {

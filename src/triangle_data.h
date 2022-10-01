@@ -42,10 +42,19 @@ struct TriangleData {
     if (!index_buffer) {
       return index;
     }
-    // For now, index buffers can only contain uint32_ts
-    auto index_ptr =
-        reinterpret_cast<const uint32_t*>(index_buffer.GetData()) + index;
-    return *index_ptr;
+    switch (pipeline.vertex_descriptor.index_type) {
+      case IndexType::kUInt32: {
+        auto index_ptr =
+            reinterpret_cast<const uint32_t*>(index_buffer.GetData()) + index;
+        return *index_ptr;
+      }
+      case IndexType::kUInt16: {
+        auto index_ptr =
+            reinterpret_cast<const uint16_t*>(index_buffer.GetData()) + index;
+        return *index_ptr;
+      }
+    }
+    return 0u;
   }
 
   template <class T>
