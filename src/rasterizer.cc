@@ -135,6 +135,8 @@ constexpr ScalarF NormalizeDepth(ScalarF z_depth) {
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {
+  metrics_.primitive_count++;
+
   auto viewport = data.pipeline.viewport.value_or(size_);
 
   //----------------------------------------------------------------------------
@@ -147,6 +149,8 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   vertex_invocation.vertex_id++;
   const auto ndc_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
 
+  metrics_.vertex_invocations += 3;
+
   //----------------------------------------------------------------------------
   // Cull faces.
   //----------------------------------------------------------------------------
@@ -157,6 +161,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
                        ndc_p2,                           //
                        ndc_p3                            //
                        )) {
+      metrics_.face_culling++;
       return;
     }
   }
@@ -176,6 +181,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           .Intersection(data.pipeline.scissor.value_or(Rect{size_}));
 
   if (!bounding_box.has_value()) {
+    metrics_.scissor_culling++;
     return;
   }
 
@@ -186,6 +192,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   // From https://developer.arm.com/documentation/102540/0100/Primitive-culling
   //----------------------------------------------------------------------------
   if (box.size.width < 2 && box.size.height < 2) {
+    metrics_.sample_point_culling++;
     return;
   }
 
@@ -220,6 +227,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       //------------------------------------------------------------------------
       const auto color =
           Color{data.pipeline.shader->ProcessFragment({bary, *this, data})};
+      metrics_.fragment_invocations++;
 
       //------------------------------------------------------------------------
       // Update the texel.
@@ -237,6 +245,7 @@ void Rasterizer::Draw(const Pipeline& pipeline,
                       const Buffer& vertex_buffer,
                       const Buffer& uniform_buffer,
                       size_t count) {
+  metrics_.draw_count++;
   const auto& vtx_desc = pipeline.vertex_descriptor;
   const auto* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
   const auto varyings_size = pipeline.shader->GetVaryingsSize();
@@ -257,6 +266,14 @@ void Rasterizer::Draw(const Pipeline& pipeline,
     vtx_ptr += vtx_desc.stride;
     DrawTriangle(data);
   }
+}
+
+void Rasterizer::ResetMetrics() {
+  metrics_.Reset();
+}
+
+const RasterizerMetrics& Rasterizer::GetMetrics() const {
+  return metrics_;
 }
 
 }  // namespace sft

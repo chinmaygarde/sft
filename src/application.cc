@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "imgui_impl_sft.h"
+#include "rasterizer.h"
 #include "timing.h"
 
 namespace sft {
@@ -102,17 +103,29 @@ bool Application::OnRender() {
     return false;
   }
 
+  auto rasterizer = GetHUDRasterizer();
+
   const auto update_start = Clock::now();
 
   ImGui_ImplSFT_NewFrame();
   ImGui::NewFrame();
 
+  if (rasterizer) {
+    rasterizer->ResetMetrics();
+  }
+
   if (!Update()) {
     return false;
   }
 
+  if (rasterizer) {
+    rasterizer->GetMetrics().Display();
+    rasterizer->ResetMetrics();
+  }
+
   ImGui::Render();
-  if (auto rasterizer = GetHUDRasterizer()) {
+
+  if (rasterizer) {
     ImGui_ImplSFT_RenderDrawData(rasterizer, ImGui::GetDrawData());
   }
 

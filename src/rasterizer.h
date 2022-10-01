@@ -9,6 +9,7 @@
 #include "buffer.h"
 #include "geom.h"
 #include "pipeline.h"
+#include "rasterizer_metrics.h"
 #include "renderer.h"
 #include "triangle_data.h"
 
@@ -83,10 +84,15 @@ class Rasterizer final : public Renderer {
     return result;
   }
 
+  void ResetMetrics();
+
+  const RasterizerMetrics& GetMetrics() const;
+
  private:
   void* color_buffer_ = nullptr;
   void* depth_buffer_ = nullptr;
   const glm::ivec2 size_;
+  RasterizerMetrics metrics_;
 
   bool FragmentPassesDepthTest(const Pipeline& pipeline,
                                glm::ivec2 pos,

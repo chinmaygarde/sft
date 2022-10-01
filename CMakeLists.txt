@@ -73,6 +73,8 @@ add_library(sft_lib
   src/timing.h
   src/triangle_data.cc
   src/triangle_data.h
+  src/rasterizer_metrics.cc
+  src/rasterizer_metrics.h
   src/vertex_descriptor.cc
   src/vertex_descriptor.h
   third_party/imgui/backends/imgui_impl_sdl.cpp
