@@ -61,6 +61,14 @@ ImGuiShader::VertexData ToShaderVertexData(const ImDrawVert& v) {
   return result;
 }
 
+constexpr Rect ToScissorRect(const ImVec2& display_size, const ImVec4& clip) {
+  return Rect::MakeLTRB(clip.x,                   //
+                        display_size.y - clip.y,  //
+                        clip.z,                   //
+                        display_size.y - clip.w   //
+  );
+}
+
 void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
   if (!draw || draw->CmdListsCount <= 0) {
     // Nothing to draw.
@@ -81,6 +89,8 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
 
   Buffer uniform_buffer;
 
+  SFT_ASSERT(draw->DisplayPos.x == 0 && draw->DisplayPos.y == 0);
+
   uniform_buffer.Emplace<ImGuiShader::Uniforms>(
       {.mvp = glm::ortho<ScalarF>(0,                    // left
                                   draw->DisplaySize.x,  // right
@@ -96,6 +106,9 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
     for (const auto& cmd : cmd_buffer) {
       SFT_ASSERT(cmd.VtxOffset == 0);
       SFT_ASSERT(cmd.ElemCount % 3 == 0);
+
+      user_data->pipeline->scissor =
+          ToScissorRect(draw->DisplaySize, cmd.ClipRect);
 
       size_t index_offset = cmd.IdxOffset;
 
