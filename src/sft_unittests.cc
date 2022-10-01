@@ -27,16 +27,6 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
   ASSERT_TRUE(Run(application));
 }
 
-TEST_F(RasterizerTest, CanShowHUD) {
-  RasterizerApplication application;
-  application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
-    rasterizer.Clear(kColorGray);
-    ImGui::ShowDemoWindow();
-    return true;
-  });
-  ASSERT_TRUE(Run(application));
-}
-
 TEST_F(RasterizerTest, CanDrawTexturedImage) {
   RasterizerApplication application;
 
@@ -293,7 +283,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   model.SetScale(300);
   auto texture =
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png");
-  texture->SetSampler({.min_mag_filter = Filter::kLinear});
+  texture->SetSampler({.min_mag_filter = Filter::kNearest});
   model.SetTexture(texture);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -435,6 +425,16 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
     pipeline.depth_test_enabled = true;
     rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
     rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
+TEST_F(RasterizerTest, CanShowHUD) {
+  RasterizerApplication application;
+  application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorGray);
+    ImGui::ShowDemoWindow();
     return true;
   });
   ASSERT_TRUE(Run(application));
