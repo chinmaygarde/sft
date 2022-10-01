@@ -174,16 +174,22 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   // Find bounding box and apply scissor.
   //----------------------------------------------------------------------------
-  const auto bounding_box =
-      GetBoundingBox(p1, p2, p3)
-          .Intersection(data.pipeline.scissor.value_or(Rect{size_}));
+  const auto bounding_box = GetBoundingBox(p1, p2, p3);
 
-  if (!bounding_box.has_value()) {
+  if (bounding_box.size.IsEmpty()) {
+    metrics_.empty_primitive++;
+    return;
+  }
+
+  auto scissor_box =
+      bounding_box.Intersection(data.pipeline.scissor.value_or(Rect{size_}));
+
+  if (!scissor_box.has_value()) {
     metrics_.scissor_culling++;
     return;
   }
 
-  const auto& box = bounding_box.value();
+  const auto& box = scissor_box.value();
 
   //----------------------------------------------------------------------------
   // Apply sample point culling.
