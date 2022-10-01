@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "buffer.h"
+#include "buffer_view.h"
 #include "geom.h"
 #include "pipeline.h"
 #include "rasterizer_metrics.h"
@@ -34,8 +35,8 @@ class Rasterizer final : public Renderer {
   void Clear(Color color);
 
   void Draw(const Pipeline& pipeline,
-            const Buffer& vertex_buffer,
-            const Buffer& uniform_buffer,
+            BufferView vertex_buffer,
+            BufferView uniform_buffer,
             size_t count);
 
   template <class T>

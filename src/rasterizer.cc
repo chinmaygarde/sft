@@ -242,8 +242,8 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
 }
 
 void Rasterizer::Draw(const Pipeline& pipeline,
-                      const Buffer& vertex_buffer,
-                      const Buffer& uniform_buffer,
+                      BufferView vertex_buffer,
+                      BufferView uniform_buffer,
                       size_t count) {
   metrics_.draw_count++;
   const auto& vtx_desc = pipeline.vertex_descriptor;
