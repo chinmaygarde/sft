@@ -30,12 +30,16 @@ Application::Application(std::shared_ptr<Renderer> renderer)
 
   window_size_ = renderer_->GetSize();
 
+  Uint32 window_flags = 0;
+
+  // window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+
   sdl_window_ = ::SDL_CreateWindow(CreateWindowTitle(MillisecondsF{0}).c_str(),
                                    SDL_WINDOWPOS_CENTERED,  //
                                    SDL_WINDOWPOS_CENTERED,  //
                                    window_size_.x,          //
                                    window_size_.y,          //
-                                   0                        //
+                                   window_flags             //
   );
   if (!sdl_window_) {
     return;
