@@ -35,6 +35,8 @@ class Buffer final : public std::enable_shared_from_this<Buffer> {
 
   const uint8_t* GetData() const { return buffer_.data(); }
 
+  std::shared_ptr<Buffer> AsShared() { return shared_from_this(); }
+
  private:
   std::vector<uint8_t> buffer_;
 
