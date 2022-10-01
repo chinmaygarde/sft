@@ -38,11 +38,20 @@ class Rasterizer final : public Renderer {
             const BufferView& vertex_buffer,
             const BufferView& uniform_buffer,
             size_t count) {
+    return Draw(pipeline, vertex_buffer, {}, uniform_buffer, count);
+  }
+
+  void Draw(const Pipeline& pipeline,
+            const BufferView& vertex_buffer,
+            const BufferView& index_buffer,
+            const BufferView& uniform_buffer,
+            size_t count) {
     metrics_.draw_count++;
     const auto varyings_size = pipeline.shader->GetVaryingsSize();
     auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
     TriangleData data(pipeline,        //
                       vertex_buffer,   //
+                      index_buffer,    //
                       uniform_buffer,  //
                       varyings_size,   //
                       varyings         //

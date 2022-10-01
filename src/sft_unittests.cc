@@ -117,17 +117,16 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer) {
 
   auto buffer = Buffer::Create();
   auto vertex_buffer = buffer->Emplace(std::vector<VD>{
-      {tl, p1},
-      {tr, p2},
-      {br, p3},
-      {br, p3},
-      {bl, p4},
-      {tl, p1},
+      {tl, p1},  // 0
+      {tr, p2},  // 1
+      {br, p3},  // 2
+      {bl, p4},  // 3
   });
   auto uniform_buffer = buffer->Emplace(Uniforms{
-      .alpha = 0.75,
+      .alpha = 1.0,
       .offset = {0, 0},
   });
+  auto index_buffer = buffer->Emplace(std::vector<uint32_t>{0, 1, 2, 2, 3, 0});
   auto texture1 =
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "embarcadero.jpg");
   shader->SetTexture(texture1);
@@ -137,7 +136,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+    rasterizer.Draw(*pipeline, vertex_buffer, index_buffer, uniform_buffer, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));
