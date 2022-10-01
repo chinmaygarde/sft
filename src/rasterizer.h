@@ -35,8 +35,8 @@ class Rasterizer final : public Renderer {
   void Clear(Color color);
 
   void Draw(const Pipeline& pipeline,
-            BufferView vertex_buffer,
-            BufferView uniform_buffer,
+            const BufferView& vertex_buffer,
+            const BufferView& uniform_buffer,
             size_t count);
 
   template <class T>
