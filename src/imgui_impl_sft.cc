@@ -122,6 +122,8 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
 
       size_t index_offset = cmd.IdxOffset;
 
+      auto vertex_buffer = Buffer::Create();
+
       for (size_t e = 0; e < cmd.ElemCount; e += 3) {
         const auto v1_idx = idx_buffer[index_offset++];
         const auto v2_idx = idx_buffer[index_offset++];
@@ -131,18 +133,16 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
         const auto v2 = ToShaderVertexData(vtx_buffer[v2_idx]);
         const auto v3 = ToShaderVertexData(vtx_buffer[v3_idx]);
 
-        // Inefficient but we don't have buffer views.
-        auto vertex_buffer = Buffer::Create();
         vertex_buffer->Emplace(v1);
         vertex_buffer->Emplace(v2);
         vertex_buffer->Emplace(v3);
-
-        rasterizer->Draw(*user_data->pipeline,  // pipeline
-                         *vertex_buffer,        // vertex_buffer
-                         *uniform_buffer,       // uniform buffer
-                         3u                     // count
-        );
       }
+
+      rasterizer->Draw(*user_data->pipeline,  // pipeline
+                       *vertex_buffer,        // vertex_buffer
+                       *uniform_buffer,       // uniform buffer
+                       cmd.ElemCount          // count
+      );
     }
   }
 }
