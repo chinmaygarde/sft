@@ -37,7 +37,25 @@ class Rasterizer final : public Renderer {
   void Draw(const Pipeline& pipeline,
             const BufferView& vertex_buffer,
             const BufferView& uniform_buffer,
-            size_t count);
+            size_t count) {
+    metrics_.draw_count++;
+    const auto varyings_size = pipeline.shader->GetVaryingsSize();
+    auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
+    TriangleData data(pipeline,        //
+                      vertex_buffer,   //
+                      uniform_buffer,  //
+                      varyings_size,   //
+                      varyings         //
+    );
+    const auto vtx_offset = pipeline.vertex_descriptor.offset;
+    for (size_t i = 0; i < count; i += 3) {
+      data.base_vertex_id = i;
+      data.p1 = data.GetVertexData<decltype(data.p1)>(i + 0, vtx_offset);
+      data.p2 = data.GetVertexData<decltype(data.p2)>(i + 1, vtx_offset);
+      data.p3 = data.GetVertexData<decltype(data.p3)>(i + 2, vtx_offset);
+      DrawTriangle(data);
+    }
+  }
 
   template <class T>
   void StoreVarying(const TriangleData& data,
@@ -69,13 +87,7 @@ class Rasterizer final : public Renderer {
   T LoadVertexData(const TriangleData& data,
                    size_t index,
                    size_t offset) const {
-    const auto vtx_desc = data.pipeline.vertex_descriptor;
-    const uint8_t* vtx_ptr = data.vertex_buffer.GetData();
-    vtx_ptr += (vtx_desc.stride * index);
-    vtx_ptr += offset;
-    T result = {};
-    memcpy(&result, vtx_ptr, sizeof(result));
-    return result;
+    return data.GetVertexData<T>(index, offset);
   }
 
   template <class T>

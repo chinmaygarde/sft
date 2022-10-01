@@ -1,13 +1,16 @@
 #pragma once
 
+#include <type_traits>
+
+#include "buffer_view.h"
 #include "geom.h"
 #include "macros.h"
+#include "pipeline.h"
 
 namespace sft {
 
 class Buffer;
 
-struct Pipeline;
 struct BufferView;
 
 struct TriangleData {
@@ -31,6 +34,15 @@ struct TriangleData {
         uniform_buffer(p_uniform_buffer),
         varyings_stride(p_varyings_stride),
         varyings(p_varyings) {}
+
+  template <class T>
+  T GetVertexData(size_t vertex_index, size_t offset) const {
+    const auto* vtx_ptr = vertex_buffer.GetData() + offset;
+    vtx_ptr += vertex_index * pipeline.vertex_descriptor.stride;
+    T result;
+    ::memmove(&result, vtx_ptr, sizeof(T));
+    return result;
+  }
 };
 
 }  // namespace sft

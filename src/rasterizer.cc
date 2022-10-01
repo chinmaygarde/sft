@@ -245,33 +245,6 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   }
 }
 
-void Rasterizer::Draw(const Pipeline& pipeline,
-                      const BufferView& vertex_buffer,
-                      const BufferView& uniform_buffer,
-                      size_t count) {
-  metrics_.draw_count++;
-  const auto& vtx_desc = pipeline.vertex_descriptor;
-  const auto* vtx_ptr = vertex_buffer.GetData() + vtx_desc.offset;
-  const auto varyings_size = pipeline.shader->GetVaryingsSize();
-  auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
-  TriangleData data(pipeline,        //
-                    vertex_buffer,   //
-                    uniform_buffer,  //
-                    varyings_size,   //
-                    varyings         //
-  );
-  for (size_t i = 0; i < count; i += 3) {
-    data.base_vertex_id = i;
-    memcpy(&data.p1, vtx_ptr, sizeof(glm::vec3));
-    vtx_ptr += vtx_desc.stride;
-    memcpy(&data.p2, vtx_ptr, sizeof(glm::vec3));
-    vtx_ptr += vtx_desc.stride;
-    memcpy(&data.p3, vtx_ptr, sizeof(glm::vec3));
-    vtx_ptr += vtx_desc.stride;
-    DrawTriangle(data);
-  }
-}
-
 void Rasterizer::ResetMetrics() {
   metrics_.Reset();
 }
