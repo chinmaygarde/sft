@@ -57,13 +57,26 @@ struct TriangleData {
     return 0u;
   }
 
-  template <class T>
-  T GetVertexData(size_t index, size_t offset) const {
+  const uint8_t* GetVertexDataPtr(size_t index, size_t offset) const {
     const auto* vtx_ptr = vertex_buffer.GetData() + offset;
     vtx_ptr += GetVertexIndex(index) * pipeline.vertex_descriptor.stride;
+    return vtx_ptr;
+  }
+
+  template <class T>
+  T GetVertexData(size_t index, size_t offset) const {
     T result;
-    ::memmove(&result, vtx_ptr, sizeof(T));
+    ::memmove(&result, GetVertexDataPtr(index, offset), sizeof(T));
     return result;
+  }
+
+  glm::vec3 GetVertex(size_t index, size_t offset) {
+    switch (pipeline.vertex_descriptor.vertex_format) {
+      case VertexFormat::kFloat2:
+        return {GetVertexData<glm::vec2>(index, offset), 0.0};
+      case VertexFormat::kFloat3:
+        return GetVertexData<glm::vec3>(index, offset);
+    }
   }
 };
 

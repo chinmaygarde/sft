@@ -10,7 +10,7 @@ namespace sft {
 class ImGuiShader final : public Shader {
  public:
   struct VertexData {
-    glm::vec3 vertex_position;
+    glm::vec2 vertex_position;
     glm::vec2 texture_coordinates;
     glm::vec4 vertex_color;
   };
@@ -35,7 +35,7 @@ class ImGuiShader final : public Shader {
   glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(texture_coordinates, texture_coordinates);
     FORWARD(vertex_color, vertex_color);
-    auto pos = glm::vec4{VTX(vertex_position), 1.0};
+    auto pos = glm::vec4{VTX(vertex_position), 0.0, 1.0};
     auto mvp = UNIFORM(mvp);
     return mvp * pos;
   }

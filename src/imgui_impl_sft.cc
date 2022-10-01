@@ -49,6 +49,7 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   pipeline->vertex_descriptor.offset =
       offsetof(ImGuiShader::VertexData, vertex_position);
   pipeline->vertex_descriptor.stride = sizeof(ImGuiShader::VertexData);
+  pipeline->vertex_descriptor.vertex_format = VertexFormat::kFloat2;
 
   data->pipeline = pipeline;
 
@@ -62,7 +63,7 @@ void ImGui_ImplSFT_NewFrame() {
 ImGuiShader::VertexData ToShaderVertexData(const ImDrawVert& v) {
   ImGuiShader::VertexData result;
   result.vertex_color = Color{v.col}.BGRA2RGBA();
-  result.vertex_position = {v.pos.x, v.pos.y, 0.0};
+  result.vertex_position = {v.pos.x, v.pos.y};
   result.texture_coordinates = {v.uv.x, v.uv.y};
   return result;
 }
