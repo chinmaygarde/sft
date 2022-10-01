@@ -24,10 +24,16 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   auto data = new RendererData{};
   io.BackendRendererUserData = data;
   io.BackendRendererName = "SFT";
+
+  ImFontConfig cfg;
+  cfg.SizePixels = 18;
+  io.Fonts->AddFontDefault(&cfg);
+
   uint8_t* pixels = nullptr;
   int width = 0;
   int height = 0;
   io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<ImGuiShader>();
   auto font_atlas = std::make_shared<Texture>(
