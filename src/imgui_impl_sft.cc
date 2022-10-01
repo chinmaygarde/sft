@@ -93,11 +93,11 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
   SFT_ASSERT(io.BackendRendererUserData != nullptr);
   auto user_data = reinterpret_cast<RendererData*>(io.BackendRendererUserData);
 
-  Buffer uniform_buffer;
+  auto uniform_buffer = Buffer::Create();
 
   SFT_ASSERT(draw->DisplayPos.x == 0 && draw->DisplayPos.y == 0);
 
-  uniform_buffer.Emplace<ImGuiShader::Uniforms>(
+  uniform_buffer->Emplace<ImGuiShader::Uniforms>(
       {.mvp = glm::ortho<ScalarF>(0,                    // left
                                   draw->DisplaySize.x,  // right
                                   draw->DisplaySize.y,  // bottom
@@ -132,14 +132,14 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
         const auto v3 = ToShaderVertexData(vtx_buffer[v3_idx]);
 
         // Inefficient but we don't have buffer views.
-        Buffer vertex_buffer;
-        vertex_buffer.Emplace(v1);
-        vertex_buffer.Emplace(v2);
-        vertex_buffer.Emplace(v3);
+        auto vertex_buffer = Buffer::Create();
+        vertex_buffer->Emplace(v1);
+        vertex_buffer->Emplace(v2);
+        vertex_buffer->Emplace(v3);
 
         rasterizer->Draw(*user_data->pipeline,  // pipeline
-                         vertex_buffer,         // vertex_buffer
-                         uniform_buffer,        // uniform buffer
+                         *vertex_buffer,        // vertex_buffer
+                         *uniform_buffer,       // uniform buffer
                          3u                     // count
         );
       }

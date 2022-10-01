@@ -1,14 +1,17 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "macros.h"
 
 namespace sft {
 
-class Buffer {
+class Buffer final : public std::enable_shared_from_this<Buffer> {
  public:
-  Buffer() = default;
+  static std::shared_ptr<Buffer> Create() {
+    return std::shared_ptr<Buffer>(new Buffer());
+  }
 
   ~Buffer() = default;
 
@@ -34,6 +37,8 @@ class Buffer {
 
  private:
   std::vector<uint8_t> buffer_;
+
+  Buffer() = default;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Buffer);
 };

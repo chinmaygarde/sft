@@ -35,7 +35,7 @@ class Model {
  private:
   std::shared_ptr<ModelShader> model_shader_;
   std::shared_ptr<Pipeline> pipeline_;
-  Buffer vertex_buffer_;
+  std::shared_ptr<Buffer> vertex_buffer_;
   size_t vertex_count_ = 0u;
   ScalarF scale_ = 1.0f;
   ScalarF rotation_ = 0.0f;

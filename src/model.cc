@@ -2,7 +2,8 @@
 
 namespace sft {
 
-Model::Model(std::string path, std::string base_dir) {
+Model::Model(std::string path, std::string base_dir)
+    : vertex_buffer_(Buffer::Create()) {
   std::string warnings;
   std::string errors;
   tinyobj::attrib_t attrib;
@@ -87,7 +88,7 @@ Model::Model(std::string path, std::string base_dir) {
   }
 
   vertex_count_ = vertices.size();
-  vertex_buffer_.Emplace(std::move(vertices));
+  vertex_buffer_->Emplace(std::move(vertices));
 
   pipeline_ = std::make_shared<Pipeline>();
   pipeline_->depth_test_enabled = true;
@@ -126,14 +127,14 @@ void Model::RenderTo(Rasterizer& rasterizer) {
 
   const auto mvp = proj * view * scale * rotate;
 
-  Buffer uniform_buffer;
-  uniform_buffer.Emplace(ModelShader::Uniforms{
+  auto uniform_buffer = Buffer::Create();
+  uniform_buffer->Emplace(ModelShader::Uniforms{
       .mvp = mvp,
       .light = light_direction_,
       .color = kColorFirebrick,
   });
 
-  rasterizer.Draw(*pipeline_, vertex_buffer_, uniform_buffer, vertex_count_);
+  rasterizer.Draw(*pipeline_, *vertex_buffer_, *uniform_buffer, vertex_count_);
 }
 
 void Model::SetScale(ScalarF scale) {

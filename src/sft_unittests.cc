@@ -45,8 +45,8 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   glm::vec2 tr = {1.0, 0.0};
   glm::vec2 br = {1.0, 1.0};
   glm::vec2 bl = {0.0, 1.0};
-  Buffer vertex_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
       {br, p3},
@@ -65,31 +65,31 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
     {
-      Buffer uniform_buffer;
-      uniform_buffer.Emplace(Uniforms{
+      auto uniform_buffer = Buffer::Create();
+      uniform_buffer->Emplace(Uniforms{
           .alpha = 0.75,
           .offset = {0, 0},
       });
       shader->SetTexture(texture1);
-      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+      rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     {
-      Buffer uniform_buffer;
-      uniform_buffer.Emplace(Uniforms{
+      auto uniform_buffer = Buffer::Create();
+      uniform_buffer->Emplace(Uniforms{
           .alpha = 0.75,
           .offset = {0.2, 0.2},
       });
       shader->SetTexture(texture2);
-      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+      rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     {
-      Buffer uniform_buffer;
-      uniform_buffer.Emplace(Uniforms{
+      auto uniform_buffer = Buffer::Create();
+      uniform_buffer->Emplace(Uniforms{
           .alpha = 0.75,
           .offset = {0.4, 0.4},
       });
       shader->SetTexture(texture3);
-      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+      rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     return true;
   });
@@ -114,8 +114,8 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
   glm::vec2 tr = {1.0, 0.0};
   glm::vec2 br = {1.0, 1.0};
   glm::vec2 bl = {0.0, 1.0};
-  Buffer vertex_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
       {br, p3},
@@ -135,22 +135,22 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
     {
-      Buffer uniform_buffer;
-      uniform_buffer.Emplace(Uniforms{
+      auto uniform_buffer = Buffer::Create();
+      uniform_buffer->Emplace(Uniforms{
           .alpha = 1.0,
           .offset = {0, -0.5},
       });
       shader->SetTexture(texture1);
-      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+      rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     {
-      Buffer uniform_buffer;
-      uniform_buffer.Emplace(Uniforms{
+      auto uniform_buffer = Buffer::Create();
+      uniform_buffer->Emplace(Uniforms{
           .alpha = 1.0,
           .offset = {0, 0.5},
       });
       shader->SetTexture(texture2);
-      rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6);
+      rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
 
     return true;
@@ -176,8 +176,8 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
   glm::vec2 tr = {6.0, 0.0};
   glm::vec2 br = {6.0, 6.0};
   glm::vec2 bl = {0.0, 6.0};
-  Buffer vertex_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
       {br, p3},
@@ -185,8 +185,8 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
       {bl, p4},
       {tl, p1},
   });
-  Buffer uniform_buffer;
-  uniform_buffer.Emplace(Uniforms{
+  auto uniform_buffer = Buffer::Create();
+  uniform_buffer->Emplace(Uniforms{
       .alpha = 1.0,
       .offset = {0, 0},
   });
@@ -202,7 +202,7 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    { rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6); }
+    { rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6); }
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -226,8 +226,8 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
   glm::vec2 tr = {6.0, 0.0};
   glm::vec2 br = {6.0, 6.0};
   glm::vec2 bl = {0.0, 6.0};
-  Buffer vertex_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       {tl, p1},
       {tr, p2},
       {br, p3},
@@ -235,8 +235,8 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
       {bl, p4},
       {tl, p1},
   });
-  Buffer uniform_buffer;
-  uniform_buffer.Emplace(Uniforms{
+  auto uniform_buffer = Buffer::Create();
+  uniform_buffer->Emplace(Uniforms{
       .alpha = 1.0,
       .offset = {0, 0},
   });
@@ -252,7 +252,7 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    { rasterizer.Draw(*pipeline, vertex_buffer, uniform_buffer, 6); }
+    { rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6); }
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -308,18 +308,19 @@ TEST_F(RasterizerTest, CanCullFaces) {
   // This should be culled and nothing will show up.
   pipeline.cull_face = CullFace::kBack;
   pipeline.winding = Winding::kCounterClockwise;
-  Buffer vertex_buffer, uniform_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  auto uniform_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       VD{.position = {-1.0, -1.0, 0.0}},
       VD{.position = {0.0, 1.0, 0.0}},
       VD{.position = {1.0, -1.0, 0.0}},
   });
-  uniform_buffer.Emplace(Uniforms{
+  uniform_buffer->Emplace(Uniforms{
       .color = kColorFirebrick,
   });
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
-    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
+    rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 3u);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -335,20 +336,21 @@ TEST_F(RasterizerTest, CanApplyScissor) {
   pipeline.shader = std::make_shared<ColorShader>();
   pipeline.vertex_descriptor.offset = offsetof(VD, position);
   pipeline.vertex_descriptor.stride = sizeof(VD);
-  Buffer vertex_buffer, uniform_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  auto uniform_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       VD{.position = {-1.0, -1.0, 0.0}},
       VD{.position = {0.0, 1.0, 0.0}},
       VD{.position = {1.0, -1.0, 0.0}},
   });
-  uniform_buffer.Emplace(Uniforms{
+  uniform_buffer->Emplace(Uniforms{
       .color = kColorFirebrick,
   });
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     const auto sz = rasterizer.GetSize();
     pipeline.scissor = Rect{sz.x / 2.0f, 0, sz.x / 2.0f, sz.y / 2.0f};
-    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
+    rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 3u);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -374,18 +376,19 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
   pipeline.vertex_descriptor.offset = offsetof(VD, position);
   pipeline.vertex_descriptor.stride = sizeof(VD);
   pipeline.depth_test_enabled = true;
-  Buffer vertex_buffer, uniform_buffer;
-  vertex_buffer.Emplace(std::vector<VD>{
+  auto vertex_buffer = Buffer::Create();
+  auto uniform_buffer = Buffer::Create();
+  vertex_buffer->Emplace(std::vector<VD>{
       VD{.position = {-1.0, -1.0, -1.0}},
       VD{.position = {0.0, 1.0, 1.0}},
       VD{.position = {1.0, -1.0, -1.0}},
   });
-  uniform_buffer.Emplace(Uniforms{
+  uniform_buffer->Emplace(Uniforms{
       .color = kColorFuchsia,
   });
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
-    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
+    rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 3u);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -402,29 +405,31 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
   pipeline.vertex_descriptor.offset = offsetof(VD, position);
   pipeline.vertex_descriptor.stride = sizeof(VD);
 
-  Buffer uniform_buffer1, uniform_buffer2;
-  Buffer vertex_buffer1, vertex_buffer2;
-  vertex_buffer1.Emplace(std::vector<VD>{
+  auto uniform_buffer1 = Buffer::Create();
+  auto uniform_buffer2 = Buffer::Create();
+  auto vertex_buffer1 = Buffer::Create();
+  auto vertex_buffer2 = Buffer::Create();
+  vertex_buffer1->Emplace(std::vector<VD>{
       VD{.position = {-1.0, -1.0, -1.0}},
       VD{.position = {0.0, 1.0, 1.0}},
       VD{.position = {1.0, -1.0, -1.0}},
   });
-  vertex_buffer2.Emplace(std::vector<VD>{
+  vertex_buffer2->Emplace(std::vector<VD>{
       VD{.position = {-1.0, 1.0, -1.0}},  // front
       VD{.position = {1.0, 1.0, -1.0}},   // front
       VD{.position = {0.0, -1.0, 1.0}},   // back
   });
-  uniform_buffer1.Emplace(Uniforms{
+  uniform_buffer1->Emplace(Uniforms{
       .color = kColorFuchsia,
   });
-  uniform_buffer2.Emplace(Uniforms{
+  uniform_buffer2->Emplace(Uniforms{
       .color = kColorFirebrick,
   });
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     pipeline.depth_test_enabled = true;
-    rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
-    rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
+    rasterizer.Draw(pipeline, *vertex_buffer1, *uniform_buffer1, 3u);
+    rasterizer.Draw(pipeline, *vertex_buffer2, *uniform_buffer2, 3u);
     return true;
   });
   ASSERT_TRUE(Run(application));
