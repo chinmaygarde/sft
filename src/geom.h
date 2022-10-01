@@ -86,6 +86,10 @@ struct Color {
     return Color(GetRed(), GetGreen(), GetBlue(), color);
   }
 
+  constexpr Color BGRA2RGBA() const {
+    return Color(GetBlue(), GetGreen(), GetRed(), GetAlpha());
+  }
+
   constexpr uint8_t GetRed() const { return color >> 16; }
 
   constexpr uint8_t GetGreen() const { return color >> 8; }

@@ -30,7 +30,7 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
 TEST_F(RasterizerTest, CanShowHUD) {
   RasterizerApplication application;
   application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
-    rasterizer.Clear(kColorFuchsia);
+    rasterizer.Clear(kColorGray);
     ImGui::ShowDemoWindow();
     return true;
   });
