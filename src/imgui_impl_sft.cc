@@ -104,6 +104,10 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
     const ImVector<ImDrawVert>& vtx_buffer = draw_list->VtxBuffer;
     const ImVector<ImDrawIdx>& idx_buffer = draw_list->IdxBuffer;
     for (const auto& cmd : cmd_buffer) {
+      if (cmd.UserCallback) {
+        cmd.UserCallback(draw_list, &cmd);
+        continue;
+      }
       SFT_ASSERT(cmd.VtxOffset == 0);
       SFT_ASSERT(cmd.ElemCount % 3 == 0);
 
