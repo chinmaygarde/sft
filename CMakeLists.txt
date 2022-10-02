@@ -31,6 +31,8 @@ add_library(sft_lib
   src/application.h
   src/buffer.cc
   src/buffer.h
+  src/blend.cc
+  src/blend.h
   src/buffer_view.cc
   src/buffer_view.h
   src/geom.cc
