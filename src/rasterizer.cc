@@ -1,4 +1,5 @@
 #include "rasterizer.h"
+#include <cfloat>
 
 #include "invocation.h"
 #include "macros.h"
@@ -268,7 +269,8 @@ std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
       [debug_tex_buf]() { std::free(debug_tex_buf); });
   auto depth_bytes = reinterpret_cast<ScalarF*>(depth_buffer_);
   for (auto i = 0; i < texel_count; i++) {
-    debug_tex_buf[i] = Color::FromComponentsF(depth_bytes[i], 0.0, 0.0, 1.0);
+    const auto level = glm::clamp(depth_bytes[i], 0.0f, 1.0f);
+    debug_tex_buf[i] = Color::FromComponentsF(level, level, level, 1.0);
   }
   return std::make_shared<Texture>(std::move(debug_tex_mapping), size_);
 }

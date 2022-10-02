@@ -28,7 +28,7 @@ class ImGuiShader final : public Shader {
 
   ~ImGuiShader() = default;
 
-  void SetTexture(std::shared_ptr<Texture> tex) { texture_ = std::move(tex); }
+  void SetTexture(Texture* texture) { texture_ = texture; }
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
@@ -49,7 +49,7 @@ class ImGuiShader final : public Shader {
   }
 
  private:
-  std::shared_ptr<Texture> texture_;
+  Texture* texture_ = nullptr;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(ImGuiShader);
 };

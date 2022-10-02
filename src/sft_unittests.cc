@@ -423,6 +423,22 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   ASSERT_TRUE(Run(application));
 }
 
+static void DisplayTextureInHUD(const char* title,
+                                Texture* tex,
+                                ScalarF scale) {
+  if (!tex) {
+    return;
+  }
+  ImGui::Text(title, "");
+  ImGui::Image(tex,                                                         //
+               ImVec2(tex->GetSize().x * scale, tex->GetSize().y * scale),  //
+               ImVec2(0, 1),        // uv0
+               ImVec2(1, 0),        // uv1
+               ImVec4(1, 1, 1, 1),  // tint color
+               ImVec4(1, 1, 1, 1)   // border color
+  );
+}
+
 TEST_F(RasterizerTest, CanDrawHelmet) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
@@ -444,8 +460,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
     model.SetScale(scale);
     model.RenderTo(rasterizer);
     depth_tex = rasterizer.CaptureDebugDepthTexture();
-    ImGui::Image(depth_tex.get(),
-                 ImVec2(depth_tex->GetSize().x, depth_tex->GetSize().y));
+    DisplayTextureInHUD("Depth Texture", depth_tex.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));

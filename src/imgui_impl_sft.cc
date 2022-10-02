@@ -9,6 +9,8 @@
 namespace sft {
 
 struct RendererData {
+  std::shared_ptr<Texture> font_atlas;
+  std::shared_ptr<ImGuiShader> shader;
   std::shared_ptr<Pipeline> pipeline;
 };
 
@@ -41,7 +43,8 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
       glm::ivec2{width, height});
   font_atlas->SetSampler({.min_mag_filter = Filter::kNearest});
 
-  shader->SetTexture(font_atlas);
+  shader->SetTexture(font_atlas.get());
+  io.Fonts->SetTexID(font_atlas.get());
 
   pipeline->depth_test_enabled = false;
   pipeline->shader = shader;
@@ -51,6 +54,8 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   pipeline->vertex_descriptor.stride = sizeof(ImGuiShader::VertexData);
   pipeline->vertex_descriptor.vertex_format = VertexFormat::kFloat2;
 
+  data->font_atlas = font_atlas;
+  data->shader = shader;
   data->pipeline = pipeline;
 
   return true;
@@ -138,6 +143,9 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
         vertex_buffer->Emplace(v2);
         vertex_buffer->Emplace(v3);
       }
+
+      auto texture = reinterpret_cast<Texture*>(cmd.GetTexID());
+      user_data->shader->SetTexture(texture);
 
       rasterizer->Draw(*user_data->pipeline,  // pipeline
                        *vertex_buffer,        // vertex_buffer
