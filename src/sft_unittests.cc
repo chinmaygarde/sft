@@ -349,6 +349,59 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
   ASSERT_TRUE(Run(application));
 }
 
+// Compare with the outputs of
+// https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
+TEST_F(RasterizerTest, CanBlendWithDifferentModes) {
+  RasterizerApplication application;
+
+  using VD = ColorShader::VertexData;
+  using Uniforms = ColorShader::Uniforms;
+
+  auto pipeline = std::make_shared<Pipeline>();
+  auto shader = std::make_shared<ColorShader>();
+
+  auto buffer = Buffer::Create();
+
+  auto index_buffer = buffer->Emplace(std::vector<uint32_t>{0, 1, 2, 2, 3, 0});
+  auto src_vertex = buffer->Emplace(std::vector<VD>{
+      {{-0.25, 0.25, 0.0}},
+      {{1, 0.25, 0.0}},
+      {{1, -1, 0.0}},
+      {{-0.25, -1, 0.0}},
+  });
+  auto dst_vertex = buffer->Emplace(std::vector<VD>{
+      {{-1, 1, 0.0}},
+      {{0.25, 1.0, 0.0}},
+      {{0.25, -0.25, 0.0}},
+      {{-1, -0.25, 0.0}},
+  });
+  auto src_uniform = buffer->Emplace(Uniforms{
+      .color = kColorSkyBlue,
+  });
+  auto dst_uniform = buffer->Emplace(Uniforms{
+      .color = kColorYellow,
+  });
+  pipeline->shader = shader;
+  pipeline->vertex_descriptor.offset = offsetof(VD, position);
+  pipeline->vertex_descriptor.stride = sizeof(VD);
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorWhite);
+    const char* items[] = {
+        "Clear",           "Copy",       "Destination",     "SourceOver",
+        "DestinationOver", "SourceIn",   "DestinationIn",   "SourceOut",
+        "DestinationOut",  "SourceAtop", "DestinationAtop", "XOR",
+    };
+    static int selected = static_cast<int>(BlendMode::kSourceOver);
+    ImGui::Combo("Blend Mode", &selected, items,
+                 sizeof(items) / sizeof(const char*));
+    pipeline->blend_mode = static_cast<BlendMode>(selected);
+    rasterizer.Draw(*pipeline, dst_vertex, index_buffer, dst_uniform, 6);
+    rasterizer.Draw(*pipeline, src_vertex, index_buffer, src_uniform, 6);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 TEST_F(RasterizerTest, CanDrawTeapot) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
