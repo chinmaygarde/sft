@@ -268,8 +268,16 @@ std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
       debug_tex_bytes,                                  //
       [debug_tex_buf]() { std::free(debug_tex_buf); });
   auto depth_bytes = reinterpret_cast<ScalarF*>(depth_buffer_);
+
+  ScalarF min = 1;
+  ScalarF max = 0;
   for (auto i = 0; i < texel_count; i++) {
-    const auto level = glm::clamp(depth_bytes[i], 0.0f, 1.0f);
+    ScalarF level = depth_bytes[i];
+    min = glm::min(min, level);
+    max = glm::max(max, level);
+  }
+  for (auto i = 0; i < texel_count; i++) {
+    const auto level = glm::lerp(min, max, depth_bytes[i]);
     debug_tex_buf[i] = Color::FromComponentsF(level, level, level, 1.0);
   }
   return std::make_shared<Texture>(std::move(debug_tex_mapping), size_);

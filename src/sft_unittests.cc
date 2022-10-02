@@ -556,12 +556,16 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
   uniform_buffer->Emplace(Uniforms{
       .color = kColorFuchsia,
   });
+  static std::shared_ptr<Texture> depth_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 3u);
+    depth_tex = rasterizer.CaptureDebugDepthTexture();
+    DisplayTextureInHUD("Depth Buffer", depth_tex.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
+  depth_tex = nullptr;
 }
 
 TEST_F(RasterizerTest, CanPerformDepthTest) {
@@ -592,14 +596,18 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
   auto uniform_buffer2 = buffer->Emplace(Uniforms{
       .color = kColorFirebrick,
   });
+  static std::shared_ptr<Texture> depth_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     pipeline.depth_test_enabled = true;
     rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
     rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
+    depth_tex = rasterizer.CaptureDebugDepthTexture();
+    DisplayTextureInHUD("Depth Buffer", depth_tex.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
+  depth_tex.reset();
 }
 
 TEST_F(RasterizerTest, CanShowHUD) {
