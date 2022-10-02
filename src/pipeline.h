@@ -25,6 +25,44 @@ enum class BlendMode {
   kXOR,
 };
 
+enum class BlendOp {
+  kAdd,
+  kSubtract,
+  kReverseSubtract,
+  kMin,
+  kMax,
+};
+
+enum class BlendFactor {
+  kZero,
+  kOne,
+  kSourceColor,
+  kOneMinusSourceColor,
+  kSourceAlpha,
+  kOneMinusSourceAlpha,
+  kDestinationColor,
+  kOneMinusDestinationColor,
+  kDestinationAlpha,
+  kOneMinusDestinationAlpha,
+  kSourceAlphaSaturated,
+  kBlendColor,
+  kOneMinusBlendColor,
+  kBlendAlpha,
+  kOneMinusBlendAlpha,
+};
+
+struct BlendDescriptor {
+  bool enabled = false;
+
+  BlendFactor src_color_fac = BlendFactor::kSourceAlpha;
+  BlendOp color_op = BlendOp::kAdd;
+  BlendFactor dst_color_fac = BlendFactor::kOneMinusSourceAlpha;
+
+  BlendFactor src_alpha_fac = BlendFactor::kSourceAlpha;
+  BlendOp alpha_op = BlendOp::kAdd;
+  BlendFactor dst_alpha_fac = BlendFactor::kOneMinusSourceAlpha;
+};
+
 enum class CullFace {
   kFront,
   kBack,
