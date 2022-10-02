@@ -45,7 +45,7 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
 
   pipeline->depth_test_enabled = false;
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.offset =
       offsetof(ImGuiShader::VertexData, vertex_position);
   pipeline->vertex_descriptor.stride = sizeof(ImGuiShader::VertexData);

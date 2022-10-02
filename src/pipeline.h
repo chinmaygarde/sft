@@ -10,22 +10,6 @@
 
 namespace sft {
 
-// https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
-enum class BlendMode {
-  kClear,
-  kCopy,
-  kDestination,
-  kSourceOver,
-  kDestinationOver,
-  kSourceIn,
-  kDestinationIn,
-  kSourceOut,
-  kDestinationOut,
-  kSourceAtop,
-  kDestinationAtop,
-  kXOR,
-};
-
 enum class CullFace {
   kFront,
   kBack,
@@ -40,7 +24,6 @@ struct Pipeline {
   bool depth_test_enabled = false;
   std::optional<glm::ivec2> viewport;
   std::shared_ptr<Shader> shader;
-  std::optional<BlendMode> blend_mode;
   BlendDescriptor blend;
   VertexDescriptor vertex_descriptor;
   Winding winding = Winding::kClockwise;

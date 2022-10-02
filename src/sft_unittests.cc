@@ -59,7 +59,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "boston.jpg");
   auto texture3 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "kalimba.jpg");
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -131,7 +131,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "embarcadero.jpg");
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt16;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
@@ -177,7 +177,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
   auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt32;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
@@ -222,7 +222,7 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
   auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   texture2->SetSampler({.min_mag_filter = Filter::kNearest});
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -289,7 +289,7 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
   texture1->SetSampler(sampler);
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -338,7 +338,7 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
   texture1->SetSampler(sampler);
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend_mode = BlendMode::kSourceOver;
+  pipeline->blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {

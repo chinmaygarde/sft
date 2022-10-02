@@ -46,7 +46,7 @@ enum class BlendFactor {
 /// new_color = new_color & write_mask;
 /// ```
 struct BlendDescriptor {
-  bool enabled = true;
+  bool enabled = false;
 
   BlendFactor src_color_fac = BlendFactor::kSourceAlpha;
   BlendOp color_op = BlendOp::kAdd;
