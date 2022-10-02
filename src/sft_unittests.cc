@@ -433,6 +433,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   texture->SetSampler({.min_mag_filter = Filter::kNearest});
   model.SetTexture(texture);
   ASSERT_TRUE(model.IsValid());
+  static std::shared_ptr<Texture> depth_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
     static float rotation = 45;
@@ -442,9 +443,13 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
     model.SetRotation(rotation);
     model.SetScale(scale);
     model.RenderTo(rasterizer);
+    depth_tex = rasterizer.CaptureDebugDepthTexture();
+    ImGui::Image(depth_tex.get(),
+                 ImVec2(depth_tex->GetSize().x, depth_tex->GetSize().y));
     return true;
   });
   ASSERT_TRUE(Run(application));
+  depth_tex = nullptr;
 }
 
 TEST_F(RasterizerTest, CanCullFaces) {

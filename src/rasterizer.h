@@ -16,6 +16,8 @@
 
 namespace sft {
 
+class Texture;
+
 class Rasterizer final : public Renderer {
  public:
   Rasterizer(glm::ivec2 size);
@@ -109,6 +111,8 @@ class Rasterizer final : public Renderer {
   void ResetMetrics();
 
   const RasterizerMetrics& GetMetrics() const;
+
+  std::shared_ptr<Texture> CaptureDebugDepthTexture() const;
 
  private:
   void* color_buffer_ = nullptr;

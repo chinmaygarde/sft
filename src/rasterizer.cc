@@ -2,6 +2,8 @@
 
 #include "invocation.h"
 #include "macros.h"
+#include "mapping.h"
+#include "texture.h"
 
 namespace sft {
 
@@ -251,6 +253,24 @@ void Rasterizer::ResetMetrics() {
 
 const RasterizerMetrics& Rasterizer::GetMetrics() const {
   return metrics_;
+}
+
+std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
+  const auto texel_count = size_.x * size_.y;
+  const auto debug_tex_bytes = texel_count * sizeof(Color);
+  auto debug_tex_buf = reinterpret_cast<Color*>(std::malloc(debug_tex_bytes));
+  if (!debug_tex_buf) {
+    return nullptr;
+  }
+  auto debug_tex_mapping = std::make_shared<Mapping>(
+      reinterpret_cast<const uint8_t*>(debug_tex_buf),  //
+      debug_tex_bytes,                                  //
+      [debug_tex_buf]() { std::free(debug_tex_buf); });
+  auto depth_bytes = reinterpret_cast<ScalarF*>(depth_buffer_);
+  for (auto i = 0; i < texel_count; i++) {
+    debug_tex_buf[i] = Color::FromComponentsF(depth_bytes[i], 0.0, 0.0, 1.0);
+  }
+  return std::make_shared<Texture>(std::move(debug_tex_mapping), size_);
 }
 
 }  // namespace sft

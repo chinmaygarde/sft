@@ -19,6 +19,8 @@ class Texture {
 
   const Sampler& GetSampler() const { return sampler_; }
 
+  glm::ivec2 GetSize() const { return size_; }
+
   bool IsValid() const { return is_valid_; }
 
   glm::vec4 Sample(glm::vec2 position) const;
