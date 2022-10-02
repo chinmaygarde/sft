@@ -61,7 +61,7 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   //----------------------------------------------------------------------------
   // Write to the color attachment.
   //----------------------------------------------------------------------------
-  auto color_ptr = reinterpret_cast<uint32_t*>(color_buffer_) + offset;
+  auto color_ptr = reinterpret_cast<Color*>(color_buffer_) + offset;
   *color_ptr = pipeline.Blend(texel.color, *color_ptr);
 
   //----------------------------------------------------------------------------
