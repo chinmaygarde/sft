@@ -371,7 +371,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
-  model.SetScale(300);
+
   auto texture =
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png");
   texture->SetSampler({.min_mag_filter = Filter::kNearest});
@@ -379,7 +379,12 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
-    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
+    static float rotation = 45;
+    static float scale = 300;
+    ImGui::SliderFloat("Rotation", &rotation, 0, 360);
+    ImGui::SliderFloat("Scale", &scale, 50, 900);
+    model.SetRotation(rotation);
+    model.SetScale(scale);
     model.RenderTo(rasterizer);
     return true;
   });
