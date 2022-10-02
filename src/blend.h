@@ -32,12 +32,12 @@ enum class BlendFactor {
 ///
 /// ```
 /// if (blending_enabled) {
-///   new_color.rgb = (src_color_blend_factor * src_color.rgb)
+///   new_color.rgb = (src_color_fac * src_color.rgb)
 ///                             <color_blend_op>
-///                     (dst_color_blend_factor * dst_color.rgb);
-///   new_color.a = (src_alpha_blend_factor * src_color.a)
+///                     (dst_color_fac * dst_color.rgb);
+///   new_color.a = (src_alpha_fac * src_color.a)
 ///                             <alpha_blend_op>
-///                     (dst_alpha_blend_factor * dst_color.a);
+///                     (dst_alpha_fac * dst_color.a);
 /// } else {
 ///   new_color = src_color;
 /// }
@@ -153,5 +153,101 @@ struct BlendDescriptor {
     return glm::vec4{color.x, color.y, color.z, alpha};
   }
 };
+
+// https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
+enum class BlendMode {
+  kClear,
+  kCopy,
+  kDestination,
+  kSourceOver,
+  kDestinationOver,
+  kSourceIn,
+  kDestinationIn,
+  kSourceOut,
+  kDestinationOut,
+  kSourceAtop,
+  kDestinationAtop,
+  kXOR,
+};
+
+constexpr BlendDescriptor BlendDescriptorForMode(BlendMode mode) {
+  BlendDescriptor desc;
+  desc.enabled = true;
+  switch (mode) {
+    case BlendMode::kClear:
+      desc.dst_alpha_fac = BlendFactor::kZero;
+      desc.dst_color_fac = BlendFactor::kZero;
+      desc.src_alpha_fac = BlendFactor::kZero;
+      desc.src_color_fac = BlendFactor::kZero;
+      break;
+    case BlendMode::kCopy:
+      desc.dst_alpha_fac = BlendFactor::kZero;
+      desc.dst_color_fac = BlendFactor::kZero;
+      desc.src_alpha_fac = BlendFactor::kOne;
+      desc.src_color_fac = BlendFactor::kOne;
+      break;
+    case BlendMode::kDestination:
+      desc.dst_alpha_fac = BlendFactor::kDestinationAlpha;
+      desc.dst_color_fac = BlendFactor::kOne;
+      desc.src_alpha_fac = BlendFactor::kZero;
+      desc.src_color_fac = BlendFactor::kZero;
+      break;
+    case BlendMode::kSourceOver:
+      desc.dst_alpha_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.dst_color_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.src_alpha_fac = BlendFactor::kOne;
+      desc.src_color_fac = BlendFactor::kOne;
+      break;
+    case BlendMode::kDestinationOver:
+      desc.dst_alpha_fac = BlendFactor::kDestinationAlpha;
+      desc.dst_color_fac = BlendFactor::kOne;
+      desc.src_alpha_fac = BlendFactor::kOneMinusDestinationAlpha;
+      desc.src_color_fac = BlendFactor::kOneMinusDestinationAlpha;
+      break;
+    case BlendMode::kSourceIn:
+      desc.dst_alpha_fac = BlendFactor::kZero;
+      desc.dst_color_fac = BlendFactor::kZero;
+      desc.src_alpha_fac = BlendFactor::kDestinationAlpha;
+      desc.src_color_fac = BlendFactor::kDestinationAlpha;
+      break;
+    case BlendMode::kDestinationIn:
+      desc.dst_alpha_fac = BlendFactor::kSourceAlpha;
+      desc.dst_color_fac = BlendFactor::kSourceAlpha;
+      desc.src_alpha_fac = BlendFactor::kZero;
+      desc.src_color_fac = BlendFactor::kZero;
+      break;
+    case BlendMode::kSourceOut:
+      desc.dst_alpha_fac = BlendFactor::kZero;
+      desc.dst_color_fac = BlendFactor::kZero;
+      desc.src_alpha_fac = BlendFactor::kOneMinusDestinationAlpha;
+      desc.src_color_fac = BlendFactor::kOneMinusDestinationAlpha;
+      break;
+    case BlendMode::kDestinationOut:
+      desc.dst_alpha_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.dst_color_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.src_alpha_fac = BlendFactor::kZero;
+      desc.src_color_fac = BlendFactor::kZero;
+      break;
+    case BlendMode::kSourceAtop:
+      desc.dst_alpha_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.dst_color_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.src_alpha_fac = BlendFactor::kDestinationAlpha;
+      desc.src_color_fac = BlendFactor::kDestinationAlpha;
+      break;
+    case BlendMode::kDestinationAtop:
+      desc.dst_alpha_fac = BlendFactor::kSourceAlpha;
+      desc.dst_color_fac = BlendFactor::kSourceAlpha;
+      desc.src_alpha_fac = BlendFactor::kOneMinusDestinationAlpha;
+      desc.src_color_fac = BlendFactor::kOneMinusDestinationAlpha;
+      break;
+    case BlendMode::kXOR:
+      desc.dst_alpha_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.dst_color_fac = BlendFactor::kOneMinusSourceAlpha;
+      desc.src_alpha_fac = BlendFactor::kOneMinusDestinationAlpha;
+      desc.src_color_fac = BlendFactor::kOneMinusDestinationAlpha;
+      break;
+  }
+  return desc;
+}
 
 }  // namespace sft
