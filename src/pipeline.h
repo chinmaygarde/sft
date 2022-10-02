@@ -45,12 +45,23 @@ enum class BlendFactor {
   kDestinationAlpha,
   kOneMinusDestinationAlpha,
   kSourceAlphaSaturated,
-  kBlendColor,
-  kOneMinusBlendColor,
-  kBlendAlpha,
-  kOneMinusBlendAlpha,
 };
 
+/// ```
+/// if (blending_enabled) {
+///   new_color.rgb = (src_color_blend_factor * src_color.rgb)
+///                             <color_blend_op>
+///                     (dst_color_blend_factor * dst_color.rgb);
+///   new_color.a = (src_alpha_blend_factor * src_color.a)
+///                             <alpha_blend_op>
+///                     (dst_alpha_blend_factor * dst_color.a);
+/// } else {
+///   new_color = src_color;
+/// }
+/// IMPORTANT: The write mask is applied irrespective of whether
+///            blending_enabled is set.
+/// new_color = new_color & write_mask;
+/// ```
 struct BlendDescriptor {
   bool enabled = false;
 
