@@ -255,11 +255,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           data.pipeline.stencil_desc.SelectOperation(depth_test_passes,   //
                                                      stencil_test_passes  //
           );
-      const auto stencil_val = StencilOperationPerform(
-          stencil_op,             // selected stencil operation
-          *stencil0_.Get(pos),    // current stencil value
-          data.stencil_reference  // stencil reference value
-      );
+      const auto stencil_val =
+          StencilOperationPerform(
+              stencil_op,  // selected stencil operation
+              *stencil0_.Get(pos) & data.pipeline.stencil_desc
+                                        .read_mask,  // current stencil value
+              data.stencil_reference                 // stencil reference value
+              ) &
+          data.pipeline.stencil_desc.write_mask;
 
       //------------------------------------------------------------------------
       // Update the stencil value.
