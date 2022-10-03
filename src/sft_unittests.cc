@@ -652,14 +652,23 @@ TEST_F(RasterizerTest, CanStencil) {
     Canvas canvas(context);
     Paint paint;
     paint.color = kColorRed;
+    paint.stencil = StencilAttachmentDescriptor{
+        .stencil_test_enabled = true,
+        .stencil_compare = CompareFunction::kAlways,
+        .depth_stencil_pass = StencilOperation::kIncrementClamp,
+    };
     canvas.Translate({10, 10});
-    canvas.DrawRect(rasterizer, Rect({100, 100}), paint);
+    const auto rect = Rect{{300, 300}};
+    const auto offset = glm::vec2{100, 100};
+    canvas.DrawRect(rasterizer, rect, paint);
     paint.color = kColorGreen;
-    canvas.Translate({100, 100});
-    canvas.DrawRect(rasterizer, Rect({100, 100}), paint);
+    canvas.Translate(offset);
+    canvas.DrawRect(rasterizer, rect, paint);
     paint.color = kColorBlue;
-    canvas.Translate({100, 100});
-    canvas.DrawRect(rasterizer, Rect({100, 100}), paint);
+    canvas.Translate(offset);
+    canvas.DrawRect(rasterizer, rect, paint);
+    stencil_tex = rasterizer.CaptureDebugStencilTexture();
+    DisplayTextureInHUD("Stencil Buffer", stencil_tex.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));

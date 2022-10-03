@@ -64,7 +64,7 @@ class Framebuffer {
       return nullptr;
     }
     for (size_t i = 0; i < GetLength(); i++) {
-      allocation[i] = transform(allocation_[i]);
+      allocation[i] = transform(allocation_[i]).BGRA2RGBA();
     }
     auto mapping = std::make_shared<Mapping>(
         reinterpret_cast<const uint8_t*>(allocation),  //

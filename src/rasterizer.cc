@@ -318,10 +318,10 @@ template <class T>
 constexpr Color CreateDebugColor(T val, T min, T max) {
   const auto full_range = max - min;
   const auto range = val - min;
-  if (full_range == 0.0) {
-    return kColorBlack;
+  if (full_range == 0) {
+    return kColorRed;
   }
-  const auto component = range / full_range;
+  const auto component = static_cast<ScalarF>(range) / full_range;
   return Color::FromComponentsF(component, component, component, 1.0);
 }
 

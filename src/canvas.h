@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "attachment.h"
 #include "geom.h"
 #include "invocation.h"
 #include "macros.h"
@@ -70,6 +71,7 @@ class CanvasContext {
 
 struct Paint {
   glm::vec4 color = kColorSkyBlue;
+  std::optional<StencilAttachmentDescriptor> stencil;
   uint32_t stencil_reference = 0;
 };
 
@@ -96,6 +98,9 @@ class Canvas {
         buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
 
     auto& pipeline = context_->GetPipeline();
+
+    pipeline.stencil_desc =
+        paint.stencil.value_or(StencilAttachmentDescriptor{});
 
     rasterizer.Draw(pipeline,                //
                     vertex_buffer,           //
