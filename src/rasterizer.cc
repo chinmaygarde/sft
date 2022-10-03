@@ -9,7 +9,7 @@
 namespace sft {
 
 Rasterizer::Rasterizer(glm::ivec2 size)
-    : color0_(size), depth0_(size), size_(size) {}
+    : color0_(size), depth0_(size), stencil0_(size), size_(size) {}
 
 Rasterizer::~Rasterizer() = default;
 
@@ -74,6 +74,7 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
 void Rasterizer::Clear(Color color) {
   color0_.Clear(color);
   depth0_.Clear(1);
+  stencil0_.Clear(0);
 }
 
 constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
@@ -221,6 +222,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
       const auto depth = NormalizeDepth(bary_pos.z);
       if (!FragmentPassesDepthTest(data.pipeline, pos, depth)) {
+        metrics_.early_fragment_test++;
         continue;
       }
 

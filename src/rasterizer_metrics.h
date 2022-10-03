@@ -11,6 +11,7 @@ struct RasterizerMetrics {
   size_t empty_primitive = 0;
   size_t scissor_culling = 0;
   size_t sample_point_culling = 0;
+  size_t early_fragment_test = 0;
   size_t vertex_invocations = 0;
   size_t fragment_invocations = 0;
 

@@ -13,6 +13,7 @@ void RasterizerMetrics::Display() const {
   ImGui::Text("Empty Primitive: %zu", empty_primitive);
   ImGui::Text("Scissor Culled: %zu", scissor_culling);
   ImGui::Text("Sample Point Culled: %zu", sample_point_culling);
+  ImGui::Text("Early Fragment Checks Tripped: %zu", early_fragment_test);
   ImGui::Text("Vertex Invocations: %zu", vertex_invocations);
   ImGui::Text("Fragment Invocations: %zu", fragment_invocations);
 
