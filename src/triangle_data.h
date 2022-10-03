@@ -24,19 +24,22 @@ struct TriangleData {
   const BufferView& uniform_buffer;
   const size_t varyings_stride;
   uint8_t* varyings = nullptr;
+  const uint32_t stencil_reference;
 
   TriangleData(const Pipeline& p_pipeline,
                const BufferView& p_vertex_buffer,
                const BufferView& p_index_buffer,
                const BufferView& p_uniform_buffer,
                size_t p_varyings_stride,
-               uint8_t* p_varyings)
+               uint8_t* p_varyings,
+               uint32_t p_stencil_reference)
       : pipeline(p_pipeline),
         vertex_buffer(p_vertex_buffer),
         index_buffer(p_index_buffer),
         uniform_buffer(p_uniform_buffer),
         varyings_stride(p_varyings_stride),
-        varyings(p_varyings) {}
+        varyings(p_varyings),
+        stencil_reference(p_stencil_reference) {}
 
   constexpr size_t GetVertexIndex(size_t index) const {
     if (!index_buffer) {

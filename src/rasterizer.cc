@@ -48,6 +48,25 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
   );
 }
 
+bool Rasterizer::FragmentPassesStencilTest(const Pipeline& pipeline,
+                                           glm::ivec2 pos,
+                                           uint32_t reference_value) const {
+  if (IsOOB(pos, size_)) {
+    return false;
+  }
+
+  if (!pipeline.stencil_desc.stencil_test_enabled) {
+    return true;
+  }
+
+  const auto current_value = *stencil0_.Get(pos);
+
+  return CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
+                               reference_value,                        //
+                               current_value                           //
+  );
+}
+
 void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   if (IsOOB(texel.pos, size_)) {
     return;
@@ -215,13 +234,43 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       }
 
       //------------------------------------------------------------------------
-      // If the depth test fails, short circuit processing the shader for the
-      // fragment.
+      // Perform the depth test.
       //------------------------------------------------------------------------
       const auto bary_pos =
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
       const auto depth = NormalizeDepth(bary_pos.z);
-      if (!FragmentPassesDepthTest(data.pipeline, pos, depth)) {
+      const auto depth_test_passes =
+          FragmentPassesDepthTest(data.pipeline, pos, depth);
+
+      //------------------------------------------------------------------------
+      // Perform the stencil test.
+      //------------------------------------------------------------------------
+      const auto stencil_test_passes =
+          FragmentPassesStencilTest(data.pipeline, pos, data.stencil_reference);
+
+      //------------------------------------------------------------------------
+      // Determine the new stencil value.
+      //------------------------------------------------------------------------
+      const auto stencil_op =
+          data.pipeline.stencil_desc.SelectOperation(depth_test_passes,   //
+                                                     stencil_test_passes  //
+          );
+      const auto stencil_val = StencilOperationPerform(
+          stencil_op,             // selected stencil operation
+          *stencil0_.Get(pos),    // current stencil value
+          data.stencil_reference  // stencil reference value
+      );
+
+      //------------------------------------------------------------------------
+      // Update the stencil value.
+      //------------------------------------------------------------------------
+      stencil0_.Set(stencil_val, pos);
+
+      //------------------------------------------------------------------------
+      // If either the depth stencil tests have failed, short circuit fragment
+      // processing.
+      //------------------------------------------------------------------------
+      if (!stencil_test_passes || !depth_test_passes) {
         metrics_.early_fragment_test++;
         continue;
       }
