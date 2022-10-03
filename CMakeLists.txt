@@ -29,6 +29,8 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
+  src/canvas.cc
+  src/canvas.h
   src/attachment.cc
   src/attachment.h
   src/blend.cc
