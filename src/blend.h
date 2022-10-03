@@ -27,6 +27,14 @@ enum class BlendFactor {
   kSourceAlphaSaturated,
 };
 
+enum ColorMask : uint8_t {
+  kRed = 1 << 0,
+  kGreen = 1 << 1,
+  kBlue = 1 << 2,
+  kAlpha = 1 << 3,
+  kAll = kRed | kGreen | kBlue | kAlpha,
+};
+
 /// Specify how new (src) fragments should be combined with fragments already in
 /// the framebuffer (dst).
 ///
@@ -55,6 +63,8 @@ struct BlendDescriptor {
   BlendFactor src_alpha_fac = BlendFactor::kSourceAlpha;
   BlendOp alpha_op = BlendOp::kAdd;
   BlendFactor dst_alpha_fac = BlendFactor::kOneMinusSourceAlpha;
+
+  uint8_t write_mask = ColorMask::kAll;
 
   static constexpr glm::vec3 ApplyFactorColor(BlendFactor factor,
                                               glm::vec4 src,
@@ -137,9 +147,18 @@ struct BlendDescriptor {
     return glm::vec3{color};
   }
 
+  static constexpr glm::vec4 Masked(glm::vec4 color, uint8_t mask) {
+    return glm::vec4{
+        mask & ColorMask::kRed ? color.r : 0.0f,    //
+        mask & ColorMask::kGreen ? color.g : 0.0f,  //
+        mask & ColorMask::kBlue ? color.b : 0.0f,   //
+        mask & ColorMask::kAlpha ? color.a : 0.0f,  //
+    };
+  }
+
   constexpr glm::vec4 Blend(glm::vec4 src, glm::vec4 dst) const {
     if (!enabled) {
-      return src;
+      return Masked(src, write_mask);
     }
     auto color =
         ApplyOp(color_op,                                              //
@@ -150,7 +169,7 @@ struct BlendDescriptor {
                          ApplyFactorAlpha(src_color_fac, src, dst) * src.a,  //
                          ApplyFactorAlpha(dst_color_fac, src, dst) * dst.a   //
     );
-    return glm::vec4{color.x, color.y, color.z, alpha};
+    return Masked(glm::vec4{color.x, color.y, color.z, alpha}, write_mask);
   }
 };
 
