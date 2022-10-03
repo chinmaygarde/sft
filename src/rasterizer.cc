@@ -255,6 +255,25 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           data.pipeline.stencil_desc.SelectOperation(depth_test_passes,   //
                                                      stencil_test_passes  //
           );
+      const auto stencil_val = StencilOperationPerform(
+          stencil_op,             // selected stencil operation
+          *stencil0_.Get(pos),    // current stencil value
+          data.stencil_reference  // stencil reference value
+      );
+
+      //------------------------------------------------------------------------
+      // Update the stencil value.
+      //------------------------------------------------------------------------
+      stencil0_.Set(stencil_val, pos);
+
+      //------------------------------------------------------------------------
+      // If either the depth stencil tests have failed, short circuit fragment
+      // processing.
+      //------------------------------------------------------------------------
+      if (!stencil_test_passes || !depth_test_passes) {
+        metrics_.early_fragment_test++;
+        continue;
+      }
 
       //------------------------------------------------------------------------
       // Shade the fragment.
