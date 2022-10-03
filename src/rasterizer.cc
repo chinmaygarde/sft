@@ -9,17 +9,12 @@
 namespace sft {
 
 Rasterizer::Rasterizer(glm::ivec2 size)
-    : color_buffer_(std::calloc(size.x * size.y, sizeof(Color))),
-      depth_buffer_(std::calloc(size.x * size.y, sizeof(ScalarF))),
-      size_(size) {}
+    : color0_(size), depth0_(size), size_(size) {}
 
-Rasterizer::~Rasterizer() {
-  std::free(depth_buffer_);
-  std::free(color_buffer_);
-}
+Rasterizer::~Rasterizer() = default;
 
-void* Rasterizer::GetPixels() const {
-  return color_buffer_;
+const void* Rasterizer::GetPixels() const {
+  return color0_.Get();
 }
 
 glm::ivec2 Rasterizer::GetSize() const {
@@ -45,9 +40,7 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
     return true;
   }
 
-  const auto offset = size_.x * pos.y + pos.x;
-  auto depth_ptr = reinterpret_cast<ScalarF*>(depth_buffer_) + offset;
-  const auto old_depth = depth_ptr[0];
+  const auto old_depth = *depth0_.Get(pos);
   if (depth < old_depth) {
     return false;
   }
@@ -59,26 +52,25 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
     return;
   }
 
-  const auto offset = size_.x * texel.pos.y + texel.pos.x;
-
   //----------------------------------------------------------------------------
   // Write to the color attachment.
   //----------------------------------------------------------------------------
-  auto color_ptr = reinterpret_cast<Color*>(color_buffer_) + offset;
-  *color_ptr = pipeline.color_desc.blend.Blend(texel.color, *color_ptr);
+  auto dst = *color0_.Get(texel.pos);
+  auto src = texel.color;
+  auto color = pipeline.color_desc.blend.Blend(src, dst);
+  color0_.Set(color, texel.pos);
 
   //----------------------------------------------------------------------------
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
   if (pipeline.depth_test_enabled) {
-    auto depth_ptr = reinterpret_cast<ScalarF*>(depth_buffer_) + offset;
-    *depth_ptr = texel.depth;
+    depth0_.Set(texel.depth, texel.pos);
   }
 }
 
 void Rasterizer::Clear(Color color) {
-  memset_pattern4(color_buffer_, &color, size_.x * size_.y * sizeof(Color));
-  bzero(depth_buffer_, size_.x * size_.y * sizeof(ScalarF));
+  color0_.Clear(color);
+  depth0_.Clear(0);
 }
 
 constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
@@ -267,7 +259,7 @@ std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
       reinterpret_cast<const uint8_t*>(debug_tex_buf),  //
       debug_tex_bytes,                                  //
       [debug_tex_buf]() { std::free(debug_tex_buf); });
-  auto depth_bytes = reinterpret_cast<ScalarF*>(depth_buffer_);
+  auto depth_bytes = depth0_.Get();
 
   ScalarF min = 1;
   ScalarF max = 0;

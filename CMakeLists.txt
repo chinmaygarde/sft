@@ -37,6 +37,8 @@ add_library(sft_lib
   src/buffer.h
   src/buffer_view.cc
   src/buffer_view.h
+  src/framebuffer.cc
+  src/framebuffer.h
   src/geom.cc
   src/geom.h
   src/imgui_impl_sft.cc

@@ -3,22 +3,22 @@
 namespace sft {
 
 SDLTextureNoCopyCaster::SDLTextureNoCopyCaster(SDL_Renderer* renderer,
-                                               void* pixels,
+                                               const void* pixels,
                                                int width,
                                                int height,
                                                int bytes_per_pixel) {
   if (pixels == nullptr) {
     return;
   }
-  auto surface = ::SDL_CreateRGBSurfaceFrom(pixels,                   //
-                                            width,                    //
-                                            height,                   //
-                                            bytes_per_pixel * 8,      //
-                                            width * bytes_per_pixel,  //
-                                            0,                        // r mask
-                                            0,                        // g mask
-                                            0,                        // b mask
-                                            0                         // a mask
+  auto surface = ::SDL_CreateRGBSurfaceFrom(const_cast<void*>(pixels),  //
+                                            width,                      //
+                                            height,                     //
+                                            bytes_per_pixel * 8,        //
+                                            width * bytes_per_pixel,    //
+                                            0,  // r mask
+                                            0,  // g mask
+                                            0,  // b mask
+                                            0   // a mask
   );
   if (surface == NULL) {
     return;

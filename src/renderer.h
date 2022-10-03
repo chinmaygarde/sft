@@ -8,7 +8,7 @@ class Renderer {
  public:
   virtual ~Renderer() {}
 
-  virtual void* GetPixels() const = 0;
+  virtual const void* GetPixels() const = 0;
 
   virtual glm::ivec2 GetSize() const = 0;
 
