@@ -59,7 +59,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
   auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "boston.jpg");
   auto texture3 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "kalimba.jpg");
   pipeline->shader = shader;
-  pipeline->blend.enabled = true;
+  pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -131,7 +131,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "embarcadero.jpg");
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend.enabled = true;
+  pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt16;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
@@ -188,10 +188,11 @@ TEST_F(RasterizerTest, CanBlendWithDifferentModes) {
     static int selected = static_cast<int>(BlendMode::kSourceOver);
     ImGui::Combo("Blend Mode", &selected, items,
                  sizeof(items) / sizeof(const char*));
-    ImGui::Text(
+    ImGui::TextWrapped(
         "Compare outputs to "
         "https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators");
-    pipeline->blend = BlendDescriptorForMode(static_cast<BlendMode>(selected));
+    pipeline->color_desc.blend =
+        BlendDescriptorForMode(static_cast<BlendMode>(selected));
     rasterizer.Draw(*pipeline, dst_vertex, index_buffer, dst_uniform, 6);
     rasterizer.Draw(*pipeline, src_vertex, index_buffer, src_uniform, 6);
     return true;
@@ -233,7 +234,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
   auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend.enabled = true;
+  pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt32;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
@@ -278,7 +279,7 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
   auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
   texture2->SetSampler({.min_mag_filter = Filter::kNearest});
   pipeline->shader = shader;
-  pipeline->blend.enabled = true;
+  pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -345,7 +346,7 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
   texture1->SetSampler(sampler);
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend.enabled = true;
+  pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -394,7 +395,7 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
   texture1->SetSampler(sampler);
   shader->SetTexture(texture1);
   pipeline->shader = shader;
-  pipeline->blend.enabled = true;
+  pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {

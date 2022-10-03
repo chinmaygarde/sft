@@ -29,10 +29,12 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
-  src/buffer.cc
-  src/buffer.h
+  src/attachment.cc
+  src/attachment.h
   src/blend.cc
   src/blend.h
+  src/buffer.cc
+  src/buffer.h
   src/buffer_view.cc
   src/buffer_view.h
   src/geom.cc
@@ -51,6 +53,8 @@ add_library(sft_lib
   src/rasterizer.h
   src/rasterizer_application.cc
   src/rasterizer_application.h
+  src/rasterizer_metrics.cc
+  src/rasterizer_metrics.h
   src/ray_tracer.cc
   src/ray_tracer.h
   src/ray_tracer_application.cc
@@ -77,8 +81,6 @@ add_library(sft_lib
   src/timing.h
   src/triangle_data.cc
   src/triangle_data.h
-  src/rasterizer_metrics.cc
-  src/rasterizer_metrics.h
   src/vertex_descriptor.cc
   src/vertex_descriptor.h
   third_party/imgui/backends/imgui_impl_sdl.cpp
