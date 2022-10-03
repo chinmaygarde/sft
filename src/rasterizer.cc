@@ -22,7 +22,7 @@ glm::ivec2 Rasterizer::GetSize() const {
 }
 
 size_t Rasterizer::GetBytesPerPixel() const {
-  return sizeof(uint32_t);
+  return color0_.GetBytesPerPixel();
 }
 
 constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
@@ -31,7 +31,7 @@ constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
 
 bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
                                          glm::ivec2 pos,
-                                         ScalarF depth) const {
+                                         ScalarF new_value) const {
   if (IsOOB(pos, size_)) {
     return false;
   }
@@ -40,11 +40,12 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
     return true;
   }
 
-  const auto old_depth = *depth0_.Get(pos);
-  if (depth < old_depth) {
-    return false;
-  }
-  return true;
+  const auto current_value = *depth0_.Get(pos);
+
+  return CompareFunctionPasses(pipeline.depth_desc.depth_compare,  //
+                               new_value,                          //
+                               current_value                       //
+  );
 }
 
 void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
@@ -64,13 +65,15 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
   if (pipeline.depth_desc.depth_test_enabled) {
-    depth0_.Set(texel.depth, texel.pos);
+    if (pipeline.depth_desc.depth_write_enabled) {
+      depth0_.Set(texel.depth, texel.pos);
+    }
   }
 }
 
 void Rasterizer::Clear(Color color) {
   color0_.Clear(color);
-  depth0_.Clear(0);
+  depth0_.Clear(1);
 }
 
 constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
@@ -124,7 +127,7 @@ constexpr bool ShouldCullFace(CullFace face,
 /// @return     The depth value in unit-scale.
 ///
 constexpr ScalarF NormalizeDepth(ScalarF z_depth) {
-  return 1.0 - glm::clamp((z_depth + 1.0) / 2.0, 0.0, 1.0);
+  return glm::clamp((z_depth + 1.0) / 2.0, 0.0, 1.0);
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {

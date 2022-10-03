@@ -25,6 +25,31 @@ enum class CompareFunction {
   kGreaterEqual,
 };
 
+template <class T>
+constexpr bool CompareFunctionPasses(CompareFunction comp,
+                                     const T& new_value,
+                                     const T& current_value) {
+  switch (comp) {
+    case CompareFunction::kNever:
+      return false;
+    case CompareFunction::kAlways:
+      return true;
+    case CompareFunction::kLess:
+      return new_value < current_value;
+    case CompareFunction::kEqual:
+      return new_value == current_value;
+    case CompareFunction::kLessEqual:
+      return new_value <= current_value;
+    case CompareFunction::kGreater:
+      return new_value > current_value;
+    case CompareFunction::kNotEqual:
+      return new_value != current_value;
+    case CompareFunction::kGreaterEqual:
+      return new_value >= current_value;
+  }
+  return true;
+}
+
 enum class StencilOperation {
   /// Don't modify the current stencil value.
   kKeep,
@@ -49,18 +74,27 @@ struct ColorAttachmentDescriptor {
 };
 
 struct DepthAttachmentDescriptor {
+  //----------------------------------------------------------------------------
+  /// Indicates if the depth test must be performed. If disabled, all access to
+  /// the depth buffer is disabled.
+  ///
   bool depth_test_enabled = false;
   //----------------------------------------------------------------------------
   /// Indicates how to compare the value with that in the depth buffer.
   ///
-  CompareFunction depth_compare = CompareFunction::kAlways;
+  CompareFunction depth_compare = CompareFunction::kLessEqual;
   //----------------------------------------------------------------------------
   /// Indicates when writes must be performed to the depth buffer.
   ///
-  bool depth_write_enabled = false;
+  bool depth_write_enabled = true;
 };
 
 struct StencilAttachmentDescriptor {
+  //----------------------------------------------------------------------------
+  /// Indicates if the stencil test must be performed. If disabled, all access
+  /// to the stencil buffer is disabled.
+  ///
+  bool stencil_test_enabled = false;
   //----------------------------------------------------------------------------
   /// Indicates the operation to perform between the reference value and the
   /// value in the stencil buffer. Both values have the read_mask applied to

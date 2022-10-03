@@ -1,11 +1,13 @@
 #pragma once
 
+#include <type_traits>
+
 #include "geom.h"
 #include "macros.h"
 
 namespace sft {
 
-template <class T>
+template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
 class Framebuffer {
  public:
   Framebuffer(glm::ivec2 size)
@@ -32,6 +34,8 @@ class Framebuffer {
       allocation_[i] = val;
     }
   }
+
+  constexpr size_t GetBytesPerPixel() const { return sizeof(T); }
 
  private:
   T* allocation_ = nullptr;
