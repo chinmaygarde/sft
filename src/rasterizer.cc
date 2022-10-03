@@ -314,31 +314,29 @@ const RasterizerMetrics& Rasterizer::GetMetrics() const {
   return metrics_;
 }
 
-std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
-  const auto texel_count = size_.x * size_.y;
-  const auto debug_tex_bytes = texel_count * sizeof(Color);
-  auto debug_tex_buf = reinterpret_cast<Color*>(std::malloc(debug_tex_bytes));
-  if (!debug_tex_buf) {
-    return nullptr;
+template <class T>
+constexpr Color CreateDebugColor(T val, T min, T max) {
+  const auto full_range = max - min;
+  const auto range = val - min;
+  if (full_range == 0.0) {
+    return kColorBlack;
   }
-  auto debug_tex_mapping = std::make_shared<Mapping>(
-      reinterpret_cast<const uint8_t*>(debug_tex_buf),  //
-      debug_tex_bytes,                                  //
-      [debug_tex_buf]() { std::free(debug_tex_buf); });
-  auto depth_bytes = depth0_.Get();
+  const auto component = range / full_range;
+  return Color::FromComponentsF(component, component, component, 1.0);
+}
 
-  ScalarF min = 1;
-  ScalarF max = 0;
-  for (auto i = 0; i < texel_count; i++) {
-    ScalarF level = depth_bytes[i];
-    min = glm::min(min, level);
-    max = glm::max(max, level);
-  }
-  for (auto i = 0; i < texel_count; i++) {
-    const auto level = glm::lerp(min, max, depth_bytes[i]);
-    debug_tex_buf[i] = Color::FromComponentsF(level, level, level, 1.0);
-  }
-  return std::make_shared<Texture>(std::move(debug_tex_mapping), size_);
+std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
+  const auto min_max = depth0_.GetMinMaxValue();
+  return depth0_.CreateTexture([&min_max](const ScalarF& val) -> Color {
+    return CreateDebugColor(val, min_max.first, min_max.second);
+  });
+}
+
+std::shared_ptr<Texture> Rasterizer::CaptureDebugStencilTexture() const {
+  const auto min_max = stencil0_.GetMinMaxValue();
+  return stencil0_.CreateTexture([&min_max](const uint32_t& val) -> Color {
+    return CreateDebugColor(val, min_max.first, min_max.second);
+  });
 }
 
 }  // namespace sft

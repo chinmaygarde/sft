@@ -119,6 +119,8 @@ class Rasterizer final : public Renderer {
 
   std::shared_ptr<Texture> CaptureDebugDepthTexture() const;
 
+  std::shared_ptr<Texture> CaptureDebugStencilTexture() const;
+
  private:
   Framebuffer<Color> color0_;
   Framebuffer<ScalarF> depth0_;

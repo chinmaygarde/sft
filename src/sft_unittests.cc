@@ -643,5 +643,28 @@ TEST_F(RasterizerTest, CanvasCanDrawStuff) {
   ASSERT_TRUE(Run(application));
 }
 
+TEST_F(RasterizerTest, CanStencil) {
+  RasterizerApplication application;
+  auto context = std::make_shared<CanvasContext>();
+  static std::shared_ptr<Texture> stencil_tex;
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorWhite);
+    Canvas canvas(context);
+    Paint paint;
+    paint.color = kColorRed;
+    canvas.Translate({10, 10});
+    canvas.DrawRect(rasterizer, Rect({100, 100}), paint);
+    paint.color = kColorGreen;
+    canvas.Translate({100, 100});
+    canvas.DrawRect(rasterizer, Rect({100, 100}), paint);
+    paint.color = kColorBlue;
+    canvas.Translate({100, 100});
+    canvas.DrawRect(rasterizer, Rect({100, 100}), paint);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+  stencil_tex = nullptr;
+}
+
 }  // namespace testing
 }  // namespace sft
