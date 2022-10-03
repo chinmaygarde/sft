@@ -147,18 +147,20 @@ struct BlendDescriptor {
     return glm::vec3{color};
   }
 
-  static constexpr glm::vec4 Masked(glm::vec4 color, uint8_t mask) {
+  static constexpr glm::vec4 Masked(glm::vec4 src,
+                                    glm::vec4 dst,
+                                    uint8_t mask) {
     return glm::vec4{
-        mask & ColorMask::kRed ? color.r : 0.0f,    //
-        mask & ColorMask::kGreen ? color.g : 0.0f,  //
-        mask & ColorMask::kBlue ? color.b : 0.0f,   //
-        mask & ColorMask::kAlpha ? color.a : 0.0f,  //
+        mask & ColorMask::kRed ? src.r : dst.r,    //
+        mask & ColorMask::kGreen ? src.g : dst.g,  //
+        mask & ColorMask::kBlue ? src.b : dst.b,   //
+        mask & ColorMask::kAlpha ? src.a : dst.a,  //
     };
   }
 
   constexpr glm::vec4 Blend(glm::vec4 src, glm::vec4 dst) const {
     if (!enabled) {
-      return Masked(src, write_mask);
+      return Masked(src, dst, write_mask);
     }
     auto color =
         ApplyOp(color_op,                                              //
@@ -169,7 +171,7 @@ struct BlendDescriptor {
                          ApplyFactorAlpha(src_color_fac, src, dst) * src.a,  //
                          ApplyFactorAlpha(dst_color_fac, src, dst) * dst.a   //
     );
-    return Masked(glm::vec4{color.x, color.y, color.z, alpha}, write_mask);
+    return Masked(glm::vec4{color.x, color.y, color.z, alpha}, dst, write_mask);
   }
 };
 
