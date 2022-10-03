@@ -40,24 +40,28 @@ class Rasterizer final : public Renderer {
   void Draw(const Pipeline& pipeline,
             const BufferView& vertex_buffer,
             const BufferView& uniform_buffer,
-            size_t count) {
-    return Draw(pipeline, vertex_buffer, {}, uniform_buffer, count);
+            size_t count,
+            uint32_t stencil_refernece = 0) {
+    return Draw(pipeline, vertex_buffer, {}, uniform_buffer, count,
+                stencil_refernece);
   }
 
   void Draw(const Pipeline& pipeline,
             const BufferView& vertex_buffer,
             const BufferView& index_buffer,
             const BufferView& uniform_buffer,
-            size_t count) {
+            size_t count,
+            uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
     const auto varyings_size = pipeline.shader->GetVaryingsSize();
     auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
-    TriangleData data(pipeline,        //
-                      vertex_buffer,   //
-                      index_buffer,    //
-                      uniform_buffer,  //
-                      varyings_size,   //
-                      varyings         //
+    TriangleData data(pipeline,          //
+                      vertex_buffer,     //
+                      index_buffer,      //
+                      uniform_buffer,    //
+                      varyings_size,     //
+                      varyings,          //
+                      stencil_reference  //
     );
     const auto vtx_offset = pipeline.vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
@@ -125,6 +129,10 @@ class Rasterizer final : public Renderer {
   bool FragmentPassesDepthTest(const Pipeline& pipeline,
                                glm::ivec2 pos,
                                ScalarF depth) const;
+
+  bool FragmentPassesStencilTest(const Pipeline& pipeline,
+                                 glm::ivec2 pos,
+                                 uint32_t reference_value) const;
 
   void UpdateTexel(const Pipeline& pipeline, Texel texel);
 

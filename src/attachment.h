@@ -1,5 +1,8 @@
 #pragma once
 
+#include <limits>
+#include <type_traits>
+
 #include "blend.h"
 #include "geom.h"
 #include "macros.h"
@@ -69,6 +72,47 @@ enum class StencilOperation {
   kDecrementWrap,
 };
 
+template <class T, class = std::enable_if_t<std::is_unsigned_v<T>>>
+T StencilOperationPerform(StencilOperation op,
+                          const T& current_value,
+                          const T& reference_value) {
+  switch (op) {
+    case StencilOperation::kKeep:
+      return current_value;
+    case StencilOperation::kZero:
+      return {0};
+    case StencilOperation::kSetToReferenceValue:
+      return reference_value;
+    case StencilOperation::kIncrementClamp:
+      if (current_value == std::numeric_limits<T>::max()) {
+        return std::numeric_limits<T>::max();
+      } else {
+        return current_value + 1;
+      }
+    case StencilOperation::kDecrementClamp:
+      if (current_value == 0) {
+        return 0;
+      } else {
+        return current_value - 1;
+      }
+    case StencilOperation::kInvert:
+      return ~current_value;
+    case StencilOperation::kIncrementWrap:
+      if (current_value == std::numeric_limits<T>::max()) {
+        return 0;
+      } else {
+        return current_value + 1;
+      }
+    case StencilOperation::kDecrementWrap:
+      if (current_value == 0) {
+        return std::numeric_limits<T>::max();
+      } else {
+        return current_value - 1;
+      }
+  }
+  return current_value;
+}
+
 struct ColorAttachmentDescriptor {
   BlendDescriptor blend;
 };
@@ -124,6 +168,19 @@ struct StencilAttachmentDescriptor {
   /// stencil buffer.
   ///
   uint32_t write_mask = ~0;
+
+  constexpr StencilOperation SelectOperation(bool depth_pass,
+                                             bool stencil_pass) const {
+    if (stencil_pass) {
+      if (depth_pass) {
+        return depth_stencil_pass;
+      } else {
+        return depth_failure;
+      }
+    } else {
+      return stencil_failure;
+    }
+  }
 };
 
 }  // namespace sft
