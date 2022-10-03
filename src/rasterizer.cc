@@ -48,9 +48,11 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
   );
 }
 
-bool Rasterizer::FragmentPassesStencilTest(const Pipeline& pipeline,
-                                           glm::ivec2 pos,
-                                           uint32_t reference_value) const {
+bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
+    const Pipeline& pipeline,
+    glm::ivec2 pos,
+    bool depth_test_passes,
+    uint32_t reference_value) {
   if (IsOOB(pos, size_)) {
     return false;
   }
@@ -61,10 +63,34 @@ bool Rasterizer::FragmentPassesStencilTest(const Pipeline& pipeline,
 
   const auto current_value = *stencil0_.Get(pos);
 
-  return CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
-                               reference_value,                        //
-                               current_value                           //
-  );
+  const auto stencil_test_passes =
+      CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
+                            reference_value,                        //
+                            current_value                           //
+      );
+
+  //------------------------------------------------------------------------
+  // Determine the new stencil value.
+  //------------------------------------------------------------------------
+  const auto stencil_op =
+      pipeline.stencil_desc.SelectOperation(depth_test_passes,   //
+                                            stencil_test_passes  //
+      );
+  const auto stencil_val =
+      StencilOperationPerform(
+          stencil_op,  // selected stencil operation
+          *stencil0_.Get(pos) &
+              pipeline.stencil_desc.read_mask,  // current stencil value
+          reference_value                       // stencil reference value
+          ) &
+      pipeline.stencil_desc.write_mask;
+
+  //------------------------------------------------------------------------
+  // Update the stencil value.
+  //------------------------------------------------------------------------
+  stencil0_.Set(stencil_val, pos);
+
+  return stencil_test_passes;
 }
 
 void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
@@ -246,28 +272,11 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       // Perform the stencil test.
       //------------------------------------------------------------------------
       const auto stencil_test_passes =
-          FragmentPassesStencilTest(data.pipeline, pos, data.stencil_reference);
-
-      //------------------------------------------------------------------------
-      // Determine the new stencil value.
-      //------------------------------------------------------------------------
-      const auto stencil_op =
-          data.pipeline.stencil_desc.SelectOperation(depth_test_passes,   //
-                                                     stencil_test_passes  //
+          UpdateAndCheckFragmentPassesStencilTest(data.pipeline,          //
+                                                  pos,                    //
+                                                  depth_test_passes,      //
+                                                  data.stencil_reference  //
           );
-      const auto stencil_val =
-          StencilOperationPerform(
-              stencil_op,  // selected stencil operation
-              *stencil0_.Get(pos) & data.pipeline.stencil_desc
-                                        .read_mask,  // current stencil value
-              data.stencil_reference                 // stencil reference value
-              ) &
-          data.pipeline.stencil_desc.write_mask;
-
-      //------------------------------------------------------------------------
-      // Update the stencil value.
-      //------------------------------------------------------------------------
-      stencil0_.Set(stencil_val, pos);
 
       //------------------------------------------------------------------------
       // If either the depth stencil tests have failed, short circuit fragment
