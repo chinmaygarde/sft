@@ -36,7 +36,7 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
     return false;
   }
 
-  if (!pipeline.depth_test_enabled) {
+  if (!pipeline.depth_desc.depth_test_enabled) {
     return true;
   }
 
@@ -63,7 +63,7 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline, Texel texel) {
   //----------------------------------------------------------------------------
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
-  if (pipeline.depth_test_enabled) {
+  if (pipeline.depth_desc.depth_test_enabled) {
     depth0_.Set(texel.depth, texel.pos);
   }
 }

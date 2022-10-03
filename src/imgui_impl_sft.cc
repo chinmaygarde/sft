@@ -46,7 +46,6 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   shader->SetTexture(font_atlas.get());
   io.Fonts->SetTexID(font_atlas.get());
 
-  pipeline->depth_test_enabled = false;
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset =

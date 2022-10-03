@@ -24,7 +24,6 @@ struct Pipeline {
   ColorAttachmentDescriptor color_desc;
   DepthAttachmentDescriptor depth_desc;
   StencilAttachmentDescriptor stencil_desc;
-  bool depth_test_enabled = false;
   std::optional<glm::ivec2> viewport;
   std::shared_ptr<Shader> shader;
   VertexDescriptor vertex_descriptor;

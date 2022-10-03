@@ -91,7 +91,7 @@ Model::Model(std::string path, std::string base_dir)
   vertex_buffer_->Emplace(std::move(vertices));
 
   pipeline_ = std::make_shared<Pipeline>();
-  pipeline_->depth_test_enabled = true;
+  pipeline_->depth_desc.depth_test_enabled = true;
   pipeline_->cull_face = CullFace::kBack;
   pipeline_->winding = Winding::kCounterClockwise;
   model_shader_ = std::make_shared<ModelShader>();

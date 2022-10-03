@@ -49,6 +49,7 @@ struct ColorAttachmentDescriptor {
 };
 
 struct DepthAttachmentDescriptor {
+  bool depth_test_enabled = false;
   //----------------------------------------------------------------------------
   /// Indicates how to compare the value with that in the depth buffer.
   ///

@@ -546,7 +546,7 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
   pipeline.shader = std::make_shared<ColorShader>();
   pipeline.vertex_descriptor.offset = offsetof(VD, position);
   pipeline.vertex_descriptor.stride = sizeof(VD);
-  pipeline.depth_test_enabled = true;
+  pipeline.depth_desc.depth_test_enabled = true;
   auto vertex_buffer = Buffer::Create();
   auto uniform_buffer = Buffer::Create();
   vertex_buffer->Emplace(std::vector<VD>{
@@ -600,7 +600,7 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
   static std::shared_ptr<Texture> depth_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
-    pipeline.depth_test_enabled = true;
+    pipeline.depth_desc.depth_test_enabled = true;
     rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
     rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
     depth_tex = rasterizer.CaptureDebugDepthTexture();
