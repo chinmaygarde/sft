@@ -1,6 +1,12 @@
-# A Toy Software Renderer
+# A Software Renderer
 
-![demo](assets/demo.png)
+| Depth Buffers            |  Stencil Buffers           |
+:-------------------------:|:---------------------------:
+![](assets/demo/demo1.png) | ![](assets/demo/demo5.png) |
+| ImGUI Integration        |  Instrumentation           |
+![](assets/demo/demo2.png) | ![](assets/demo/demo4.png) |
+| Texture Sampling         |  Blending                  |
+![](assets/demo/demo3.png) | ![](assets/demo/demo6.png) |
 
 ## Dependencies
 
