@@ -250,10 +250,9 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
-  for (auto y = 0; y < box.size.height; y++) {
-    for (auto x = 0; x < box.size.width; x++) {
-      const auto pos =
-          glm::vec2{x + 1.0f + box.origin.x, y + 1.0f + box.origin.y};
+  for (auto y = 0.5f; y < box.size.height + 1.0f; y++) {
+    for (auto x = 0.5f; x < box.size.width + 1.0f; x++) {
+      const auto pos = glm::vec2{x + box.origin.x, y + box.origin.y};
       const auto bary = GetBaryCentricCoordinates(pos, p1, p2, p3);
       //------------------------------------------------------------------------
       // Check if the fragment falls within the triangle.
