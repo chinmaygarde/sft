@@ -247,6 +247,8 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
     return;
   }
 
+  metrics_.primitives_processed++;
+
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------

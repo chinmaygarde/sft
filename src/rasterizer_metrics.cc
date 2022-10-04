@@ -9,6 +9,8 @@ void RasterizerMetrics::Display() const {
 
   ImGui::Text("Draw Count: %zu", draw_count);
   ImGui::Text("Primitives: %zu", primitive_count);
+  ImGui::Text("Primitives Processed: %zu (%.0f%%)", primitives_processed,
+              primitives_processed * 100.f / primitive_count);
   ImGui::Text("Back Faces Culled: %zu (%.0f%%)", face_culling,
               face_culling * 100.f / primitive_count);
   ImGui::Text("Empty Primitive: %zu (%.0f%%)", empty_primitive,
