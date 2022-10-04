@@ -9,10 +9,14 @@ void RasterizerMetrics::Display() const {
 
   ImGui::Text("Draw Count: %zu", draw_count);
   ImGui::Text("Primitives: %zu", primitive_count);
-  ImGui::Text("Back Faces Culled: %zu", face_culling);
-  ImGui::Text("Empty Primitive: %zu", empty_primitive);
-  ImGui::Text("Scissor Culled: %zu", scissor_culling);
-  ImGui::Text("Sample Point Culled: %zu", sample_point_culling);
+  ImGui::Text("Back Faces Culled: %zu (%.0f%%)", face_culling,
+              face_culling * 100.f / primitive_count);
+  ImGui::Text("Empty Primitive: %zu (%.0f%%)", empty_primitive,
+              empty_primitive * 100.f / primitive_count);
+  ImGui::Text("Scissor Culled: %zu (%.0f%%)", scissor_culling,
+              scissor_culling * 100.f / primitive_count);
+  ImGui::Text("Sample Point Culled: %zu (%.0f%%)", sample_point_culling,
+              sample_point_culling * 100.f / primitive_count);
   ImGui::Text("Early Fragment Checks Tripped: %zu", early_fragment_test);
   ImGui::Text("Vertex Invocations: %zu", vertex_invocations);
   ImGui::Text("Fragment Invocations: %zu", fragment_invocations);
