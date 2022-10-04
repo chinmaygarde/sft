@@ -688,9 +688,6 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
 
     // Paint the clip.
     paint.color = kColorRed;
-    paint.color_desc = ColorAttachmentDescriptor{
-        .blend.write_mask = 0,
-    };
     paint.stencil_desc = StencilAttachmentDescriptor{
         .stencil_test_enabled = true,
         .stencil_compare = CompareFunction::kAlways,
