@@ -10,15 +10,24 @@
 
 namespace sft {
 
+class FramebufferBase {
+ public:
+  FramebufferBase() = default;
+
+  virtual ~FramebufferBase() = default;
+
+  virtual glm::ivec2 GetSize() const = 0;
+};
+
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
-class Framebuffer {
+class Framebuffer final : public FramebufferBase {
  public:
   Framebuffer(glm::ivec2 size)
       : Framebuffer(
             reinterpret_cast<T*>(std::calloc(size.x * size.y, sizeof(T))),
             size) {}
 
-  ~Framebuffer() { std::free(allocation_); }
+  ~Framebuffer() override { std::free(allocation_); }
 
   bool IsValid() const { return allocation_ != nullptr; }
 
@@ -73,6 +82,8 @@ class Framebuffer {
     );
     return std::make_shared<Texture>(mapping, size_);
   }
+
+  glm::ivec2 GetSize() const override { return size_; }
 
  private:
   T* allocation_ = nullptr;

@@ -29,8 +29,6 @@ include(GoogleTest)
 add_library(sft_lib
   src/application.cc
   src/application.h
-  src/canvas.cc
-  src/canvas.h
   src/attachment.cc
   src/attachment.h
   src/blend.cc
@@ -39,6 +37,12 @@ add_library(sft_lib
   src/buffer.h
   src/buffer_view.cc
   src/buffer_view.h
+  src/canvas.cc
+  src/canvas.h
+  src/command_buffer.cc
+  src/command_buffer.h
+  src/command_encoder.cc
+  src/command_encoder.h
   src/framebuffer.cc
   src/framebuffer.h
   src/geom.cc
@@ -63,6 +67,8 @@ add_library(sft_lib
   src/ray_tracer.h
   src/ray_tracer_application.cc
   src/ray_tracer_application.h
+  src/render_pass.cc
+  src/render_pass.h
   src/renderer.cc
   src/renderer.h
   src/sampler.cc
