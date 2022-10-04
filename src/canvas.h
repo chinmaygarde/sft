@@ -71,7 +71,9 @@ class CanvasContext {
 
 struct Paint {
   glm::vec4 color = kColorSkyBlue;
-  std::optional<StencilAttachmentDescriptor> stencil;
+  std::optional<ColorAttachmentDescriptor> color_desc;
+  std::optional<DepthAttachmentDescriptor> depth_desc;
+  std::optional<StencilAttachmentDescriptor> stencil_desc;
   uint32_t stencil_reference = 0;
 };
 
@@ -99,8 +101,14 @@ class Canvas {
 
     auto& pipeline = context_->GetPipeline();
 
+    pipeline.color_desc =
+        paint.color_desc.value_or(ColorAttachmentDescriptor{});
+
+    pipeline.depth_desc =
+        paint.depth_desc.value_or(DepthAttachmentDescriptor{});
+
     pipeline.stencil_desc =
-        paint.stencil.value_or(StencilAttachmentDescriptor{});
+        paint.stencil_desc.value_or(StencilAttachmentDescriptor{});
 
     rasterizer.Draw(pipeline,                //
                     vertex_buffer,           //

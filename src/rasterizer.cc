@@ -61,12 +61,15 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
     return true;
   }
 
+  const auto read_mask = pipeline.stencil_desc.read_mask;
+  const auto write_mask = pipeline.stencil_desc.write_mask;
+
   const auto current_value = *stencil0_.Get(pos);
 
   const auto stencil_test_passes =
       CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
-                            reference_value,                        //
-                            current_value                           //
+                            read_mask & reference_value,            //
+                            read_mask & current_value               //
       );
 
   //------------------------------------------------------------------------
@@ -76,19 +79,19 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
       pipeline.stencil_desc.SelectOperation(depth_test_passes,   //
                                             stencil_test_passes  //
       );
-  const auto stencil_val =
+
+  const auto new_stencil_value =
       StencilOperationPerform(
-          stencil_op,  // selected stencil operation
-          *stencil0_.Get(pos) &
-              pipeline.stencil_desc.read_mask,  // current stencil value
-          reference_value                       // stencil reference value
+          stencil_op,                  // selected stencil operation
+          read_mask & current_value,   // current stencil value
+          read_mask & reference_value  // stencil reference value
           ) &
-      pipeline.stencil_desc.write_mask;
+      write_mask;
 
   //------------------------------------------------------------------------
   // Update the stencil value.
   //------------------------------------------------------------------------
-  stencil0_.Set(stencil_val, pos);
+  stencil0_.Set(new_stencil_value, pos);
 
   return stencil_test_passes;
 }

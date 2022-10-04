@@ -652,7 +652,7 @@ TEST_F(RasterizerTest, CanStencil) {
     Canvas canvas(context);
     Paint paint;
     paint.color = kColorRed;
-    paint.stencil = StencilAttachmentDescriptor{
+    paint.stencil_desc = StencilAttachmentDescriptor{
         .stencil_test_enabled = true,
         .stencil_compare = CompareFunction::kAlways,
         .depth_stencil_pass = StencilOperation::kIncrementClamp,
@@ -667,6 +667,52 @@ TEST_F(RasterizerTest, CanStencil) {
     paint.color = kColorBlue;
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
+    stencil_tex = rasterizer.CaptureDebugStencilTexture();
+    DisplayTextureInHUD("Stencil Buffer", stencil_tex.get(), 0.25);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+  stencil_tex = nullptr;
+}
+
+TEST_F(RasterizerTest, CanClipWithStencils) {
+  RasterizerApplication application;
+  auto context = std::make_shared<CanvasContext>();
+  static std::shared_ptr<Texture> stencil_tex;
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorWhite);
+    Canvas canvas(context);
+    canvas.Translate({10, 10});
+
+    Paint paint;
+
+    // Paint the clip.
+    paint.color = kColorRed;
+    paint.color_desc = ColorAttachmentDescriptor{
+        .blend.write_mask = 0,
+    };
+    paint.stencil_desc = StencilAttachmentDescriptor{
+        .stencil_test_enabled = true,
+        .stencil_compare = CompareFunction::kAlways,
+        .depth_stencil_pass = StencilOperation::kIncrementClamp,
+    };
+
+    const auto rect = Rect{{300, 300}};
+    const auto offset = glm::vec2{150, 100};
+    canvas.DrawRect(rasterizer, rect, paint);
+
+    // Draw the box into the clip region.
+    paint.color_desc = std::nullopt;
+    paint.stencil_desc = StencilAttachmentDescriptor{
+        .stencil_test_enabled = true,
+        .stencil_compare = CompareFunction::kGreaterEqual,
+        .depth_stencil_pass = StencilOperation::kKeep,
+    };
+    paint.stencil_reference = 1;
+    paint.color = kColorGreen;
+    canvas.Translate(offset);
+    canvas.DrawRect(rasterizer, rect, paint);
+
     stencil_tex = rasterizer.CaptureDebugStencilTexture();
     DisplayTextureInHUD("Stencil Buffer", stencil_tex.get(), 0.25);
     return true;
