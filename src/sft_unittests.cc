@@ -698,7 +698,7 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
     };
 
     const auto rect = Rect{{300, 300}};
-    const auto offset = glm::vec2{150, 100};
+    const auto offset = glm::vec2{200, 100};
     canvas.DrawRect(rasterizer, rect, paint);
 
     // Draw the box into the clip region.

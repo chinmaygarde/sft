@@ -68,8 +68,8 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
 
   const auto stencil_test_passes =
       CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
-                            read_mask & reference_value,            //
-                            read_mask & current_value               //
+                            read_mask & current_value,              //
+                            read_mask & reference_value             //
       );
 
   //------------------------------------------------------------------------

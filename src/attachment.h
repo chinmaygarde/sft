@@ -30,25 +30,25 @@ enum class CompareFunction {
 
 template <class T>
 constexpr bool CompareFunctionPasses(CompareFunction comp,
-                                     const T& new_value,
-                                     const T& current_value) {
+                                     const T& lhs,
+                                     const T& rhs) {
   switch (comp) {
     case CompareFunction::kNever:
       return false;
     case CompareFunction::kAlways:
       return true;
     case CompareFunction::kLess:
-      return new_value < current_value;
+      return lhs < rhs;
     case CompareFunction::kEqual:
-      return new_value == current_value;
+      return lhs == rhs;
     case CompareFunction::kLessEqual:
-      return new_value <= current_value;
+      return lhs <= rhs;
     case CompareFunction::kGreater:
-      return new_value > current_value;
+      return lhs > rhs;
     case CompareFunction::kNotEqual:
-      return new_value != current_value;
+      return lhs != rhs;
     case CompareFunction::kGreaterEqual:
-      return new_value >= current_value;
+      return lhs >= rhs;
   }
   return true;
 }
