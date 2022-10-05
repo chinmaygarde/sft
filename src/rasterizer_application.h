@@ -21,6 +21,8 @@ class RasterizerApplication final : public Application {
 
   void OnTouchEvent(TouchEventType type, glm::vec2 pos) override;
 
+  bool OnWindowSizeChanged(glm::ivec2 size) override;
+
   Rasterizer* GetHUDRasterizer() const override;
 
  private:

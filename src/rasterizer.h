@@ -121,11 +121,13 @@ class Rasterizer final : public Renderer {
 
   std::shared_ptr<Texture> CaptureDebugStencilTexture() const;
 
+  [[nodiscard]] bool Resize(glm::ivec2 size);
+
  private:
   Framebuffer<Color> color0_;
   Framebuffer<ScalarF> depth0_;
   Framebuffer<uint32_t> stencil0_;
-  const glm::ivec2 size_;
+  glm::ivec2 size_;
   RasterizerMetrics metrics_;
 
   bool FragmentPassesDepthTest(const Pipeline& pipeline,

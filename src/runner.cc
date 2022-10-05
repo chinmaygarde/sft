@@ -58,6 +58,19 @@ bool Runner::Run(Application& application) const {
         case SDL_QUIT:
           is_running = false;
           break;
+        case SDL_WINDOWEVENT:
+          switch (event.window.event) {
+            case SDL_WINDOWEVENT_RESIZED:
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
+              if (!application.OnWindowSizeChanged(
+                      {event.window.data1, event.window.data2})) {
+                std::cout << "Window resizing failed." << std::endl;
+                is_running = false;
+              }
+
+              break;
+          }
+          break;
       }
     }
   }

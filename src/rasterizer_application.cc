@@ -32,4 +32,8 @@ Rasterizer* RasterizerApplication::GetHUDRasterizer() const {
   return GetRasterizer();
 }
 
+bool RasterizerApplication::OnWindowSizeChanged(glm::ivec2 size) {
+  return GetRasterizer()->Resize(std::move(size));
+}
+
 }  // namespace sft

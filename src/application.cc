@@ -34,6 +34,7 @@ Application::Application(std::shared_ptr<Renderer> renderer)
   Uint32 window_flags = 0;
 
   // window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  window_flags |= SDL_WINDOW_RESIZABLE;
 
   sdl_window_ = ::SDL_CreateWindow(CreateWindowTitle(MillisecondsF{0}).c_str(),
                                    SDL_WINDOWPOS_CENTERED,  //
@@ -168,6 +169,10 @@ SecondsF Application::GetTimeSinceLaunch() const {
 
 Rasterizer* Application::GetHUDRasterizer() const {
   return nullptr;
+}
+
+bool Application::OnWindowSizeChanged(glm::ivec2 size) {
+  return true;
 }
 
 }  // namespace sft

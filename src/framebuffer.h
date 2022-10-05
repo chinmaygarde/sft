@@ -31,6 +31,18 @@ class Framebuffer final : public FramebufferBase {
 
   bool IsValid() const { return allocation_ != nullptr; }
 
+  [[nodiscard]] bool Resize(glm::ivec2 size) {
+    auto new_allocation =
+        std::realloc(allocation_, size.x * size.y * sizeof(T));
+    if (!new_allocation) {
+      // The old allocation is still valid. Nothing has changed.
+      return false;
+    }
+    allocation_ = reinterpret_cast<T*>(new_allocation);
+    size_ = size;
+    return true;
+  }
+
   void Set(const T& val, glm::ivec2 pos) {
     const auto offset = size_.x * pos.y + pos.x;
     std::memcpy(allocation_ + offset, &val, sizeof(T));

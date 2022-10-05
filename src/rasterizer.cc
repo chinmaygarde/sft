@@ -343,4 +343,18 @@ std::shared_ptr<Texture> Rasterizer::CaptureDebugStencilTexture() const {
   });
 }
 
+bool Rasterizer::Resize(glm::ivec2 size) {
+  if (size_ == size) {
+    return true;
+  }
+
+  if (!color0_.Resize(size) || !depth0_.Resize(size) ||
+      !stencil0_.Resize(size)) {
+    return false;
+  }
+
+  size_ = size;
+  return true;
+}
+
 }  // namespace sft

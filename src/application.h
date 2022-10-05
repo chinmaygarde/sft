@@ -27,6 +27,8 @@ class Application {
 
   virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
 
+  virtual bool OnWindowSizeChanged(glm::ivec2 size);
+
   SecondsF GetTimeSinceLaunch() const;
 
   virtual Rasterizer* GetHUDRasterizer() const;
