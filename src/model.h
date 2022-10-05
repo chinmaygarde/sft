@@ -32,6 +32,8 @@ class Model {
 
   void SetLightDirection(glm::vec3 dir);
 
+  Pipeline& GetPipeline();
+
  private:
   std::shared_ptr<ModelShader> model_shader_;
   std::shared_ptr<Pipeline> pipeline_;

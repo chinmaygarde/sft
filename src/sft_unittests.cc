@@ -450,8 +450,14 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
       std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png");
   texture->SetSampler({.min_mag_filter = Filter::kNearest});
   model.SetTexture(texture);
+  model.GetPipeline().stencil_desc = StencilAttachmentDescriptor{
+      .stencil_test_enabled = true,
+      .stencil_compare = CompareFunction::kAlways,
+      .depth_stencil_pass = StencilOperation::kIncrementClamp,
+  };
   ASSERT_TRUE(model.IsValid());
   static std::shared_ptr<Texture> depth_tex;
+  static std::shared_ptr<Texture> overdraw_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
     static float rotation = 45;
@@ -462,11 +468,14 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
     model.SetScale(scale);
     model.RenderTo(rasterizer);
     depth_tex = rasterizer.CaptureDebugDepthTexture();
-    DisplayTextureInHUD("Depth Texture", depth_tex.get(), 0.25);
+    overdraw_tex = rasterizer.CaptureDebugStencilTexture();
+    DisplayTextureInHUD("Depth Buffer", depth_tex.get(), 0.25);
+    DisplayTextureInHUD("Overdraw", overdraw_tex.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
   depth_tex = nullptr;
+  overdraw_tex = nullptr;
 }
 
 TEST_F(RasterizerTest, CanCullFaces) {

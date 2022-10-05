@@ -153,4 +153,8 @@ void Model::SetLightDirection(glm::vec3 dir) {
   light_direction_ = glm::normalize(dir);
 }
 
+Pipeline& Model::GetPipeline() {
+  return *pipeline_;
+}
+
 }  // namespace sft
