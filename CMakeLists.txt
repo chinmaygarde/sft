@@ -129,8 +129,8 @@ target_include_directories(sft_lib
 
 add_executable(sft_unittests
   src/sft_unittests.cc
-  src/runner.h
-  src/runner.cc
+  src/test_runner.h
+  src/test_runner.cc
 )
 
 target_link_libraries(sft_unittests sft_lib gtest_main)

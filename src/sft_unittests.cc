@@ -9,15 +9,15 @@
 #include "rasterizer.h"
 #include "rasterizer_application.h"
 #include "ray_tracer_application.h"
-#include "runner.h"
 #include "shaders/color_shader.h"
 #include "shaders/texture_shader.h"
+#include "test_runner.h"
 
 namespace sft {
 namespace testing {
 
-using RayTracerTest = Runner;
-using RasterizerTest = Runner;
+using RayTracerTest = TestRunner;
+using RasterizerTest = TestRunner;
 
 TEST_F(RasterizerTest, CanClearRasterizer) {
   RasterizerApplication application;

@@ -1,4 +1,4 @@
-#include "runner.h"
+#include "test_runner.h"
 
 #include <SDL.h>
 
@@ -8,15 +8,15 @@
 
 namespace sft {
 
-Runner::Runner() : start_time_(Clock::now()) {
+TestRunner::TestRunner() : start_time_(Clock::now()) {
   SFT_ASSERT(::SDL_Init(SDL_INIT_VIDEO) == 0);
 }
 
-SecondsF Runner::ElapsedTime() const {
+SecondsF TestRunner::ElapsedTime() const {
   return Clock::now() - start_time_;
 }
 
-bool Runner::Run(Application& application) const {
+bool TestRunner::Run(Application& application) const {
   bool is_running = true;
   bool success = true;
   while (is_running) {
@@ -77,7 +77,7 @@ bool Runner::Run(Application& application) const {
   return success;
 }
 
-Runner::~Runner() {
+TestRunner::~TestRunner() {
   ::SDL_Quit();
 }
 

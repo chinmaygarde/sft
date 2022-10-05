@@ -8,11 +8,11 @@ namespace sft {
 
 class Application;
 
-class Runner : public ::testing::Test {
+class TestRunner : public ::testing::Test {
  public:
-  Runner();
+  TestRunner();
 
-  ~Runner();
+  ~TestRunner();
 
   bool Run(Application& application) const;
 
@@ -21,7 +21,7 @@ class Runner : public ::testing::Test {
  private:
   TimePoint start_time_;
 
-  SFT_DISALLOW_COPY_AND_ASSIGN(Runner);
+  SFT_DISALLOW_COPY_AND_ASSIGN(TestRunner);
 };
 
 }  // namespace sft
