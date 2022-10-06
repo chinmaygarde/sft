@@ -10,30 +10,28 @@
 
 namespace sft {
 
-class FramebufferBase {
- public:
-  FramebufferBase() = default;
-
-  virtual ~FramebufferBase() = default;
-
-  virtual glm::ivec2 GetSize() const = 0;
+enum class SampleCount : uint8_t {
+  kOne = 1,
 };
 
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
-class Framebuffer final : public FramebufferBase {
+class Framebuffer {
  public:
-  Framebuffer(glm::ivec2 size)
-      : Framebuffer(
-            reinterpret_cast<T*>(std::calloc(size.x * size.y, sizeof(T))),
-            size) {}
+  Framebuffer(glm::ivec2 size, SampleCount samples = SampleCount::kOne)
+      : Framebuffer(reinterpret_cast<T*>(std::calloc(
+                        size.x * size.y * static_cast<uint8_t>(samples),
+                        sizeof(T))),
+                    size,
+                    samples) {}
 
-  ~Framebuffer() override { std::free(allocation_); }
+  ~Framebuffer() { std::free(allocation_); }
 
   bool IsValid() const { return allocation_ != nullptr; }
 
   [[nodiscard]] bool Resize(glm::ivec2 size) {
     auto new_allocation =
-        std::realloc(allocation_, size.x * size.y * sizeof(T));
+        std::realloc(allocation_, size.x * size.y * sizeof(T) *
+                                      static_cast<uint8_t>(sample_count_));
     if (!new_allocation) {
       // The old allocation is still valid. Nothing has changed.
       return false;
@@ -43,18 +41,23 @@ class Framebuffer final : public FramebufferBase {
     return true;
   }
 
-  void Set(const T& val, glm::ivec2 pos) {
-    const auto offset = size_.x * pos.y + pos.x;
+  void Set(const T& val, glm::ivec2 pos, size_t sample_index = 0) {
+    const auto sample_count = static_cast<uint8_t>(sample_count_);
+    const auto offset = ((size_.x * pos.y + pos.x) * sample_count) +
+                        (sample_index % sample_count);
     std::memcpy(allocation_ + offset, &val, sizeof(T));
   }
 
-  const T* Get(glm::ivec2 pos = {0, 0}) const {
-    const auto offset = size_.x * pos.y + pos.x;
+  const T* Get(glm::ivec2 pos = {0, 0}, size_t sample_index = 0) const {
+    const auto sample_count = static_cast<uint8_t>(sample_count_);
+    const auto offset = ((size_.x * pos.y + pos.x) * sample_count) +
+                        (sample_index % sample_count);
     return allocation_ + offset;
   }
 
   void Clear(const T& val) {
-    for (auto i = 0; i < size_.x * size_.y; i++) {
+    for (auto i = 0;
+         i < size_.x * size_.y * static_cast<uint8_t>(sample_count_); i++) {
       allocation_[i] = val;
     }
   }
@@ -65,9 +68,14 @@ class Framebuffer final : public FramebufferBase {
     return GetLength() * GetBytesPerPixel();
   }
 
-  constexpr size_t GetLength() const { return size_.x * size_.y; }
+  constexpr size_t GetLength() const {
+    return size_.x * size_.y * static_cast<uint8_t>(sample_count_);
+  }
 
   std::pair<T, T> GetMinMaxValue() const {
+    if (sample_count_ != SampleCount::kOne) {
+      return {};
+    }
     auto min = std::numeric_limits<T>::max();
     auto max = std::numeric_limits<T>::min();
     for (size_t i = 0, count = GetLength(); i < count; i++) {
@@ -79,6 +87,9 @@ class Framebuffer final : public FramebufferBase {
 
   std::shared_ptr<Texture> CreateTexture(
       std::function<Color(const T&)> transform) const {
+    if (sample_count_ != SampleCount::kOne) {
+      return nullptr;
+    }
     const auto size = GetLength() * sizeof(Color);
     auto* allocation = reinterpret_cast<Color*>(std::malloc(size));
     if (!allocation) {
@@ -95,14 +106,17 @@ class Framebuffer final : public FramebufferBase {
     return std::make_shared<Texture>(mapping, size_);
   }
 
-  glm::ivec2 GetSize() const override { return size_; }
+  glm::ivec2 GetSize() const { return size_; }
+
+  SampleCount GetSampleCount() const { return sample_count_; }
 
  private:
   T* allocation_ = nullptr;
   glm::ivec2 size_ = {};
+  const SampleCount sample_count_;
 
-  Framebuffer(T* allocation, glm::ivec2 size)
-      : allocation_(allocation), size_(size) {}
+  Framebuffer(T* allocation, glm::ivec2 size, SampleCount sample_count)
+      : allocation_(allocation), size_(size), sample_count_(sample_count) {}
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Framebuffer);
 };
