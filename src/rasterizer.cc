@@ -255,8 +255,8 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   for (auto y = 0.5f; y < box.size.height + 1.0f; y++) {
     for (auto x = 0.5f; x < box.size.width + 1.0f; x++) {
-      const auto pos = glm::vec2{x + box.origin.x, y + box.origin.y};
-      const auto bary = GetBaryCentricCoordinates(pos, p1, p2, p3);
+      const auto fragment = glm::vec2{x + box.origin.x, y + box.origin.y};
+      const auto bary = GetBaryCentricCoordinates(fragment, p1, p2, p3);
       //------------------------------------------------------------------------
       // Check if the fragment falls within the triangle.
       //------------------------------------------------------------------------
@@ -271,14 +271,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
       const auto depth = NormalizeDepth(bary_pos.z);
       const auto depth_test_passes =
-          FragmentPassesDepthTest(data.pipeline, pos, depth);
+          FragmentPassesDepthTest(data.pipeline, fragment, depth);
 
       //------------------------------------------------------------------------
       // Perform the stencil test.
       //------------------------------------------------------------------------
       const auto stencil_test_passes =
           UpdateAndCheckFragmentPassesStencilTest(data.pipeline,          //
-                                                  pos,                    //
+                                                  fragment,               //
                                                   depth_test_passes,      //
                                                   data.stencil_reference  //
           );
@@ -303,7 +303,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       // Update the texel.
       //------------------------------------------------------------------------
       Texel texel;
-      texel.pos = pos;
+      texel.pos = fragment;
       texel.depth = depth;
       texel.color = color;
       UpdateTexel(data.pipeline, texel);
