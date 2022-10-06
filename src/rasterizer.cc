@@ -126,10 +126,10 @@ void Rasterizer::Clear(Color color) {
   metrics_.area = color0_.GetSize();
 }
 
-constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
+constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::vec2& viewport) {
   return {
-      (viewport.x / 2.0) * (nd_pos.x + 1.0),  //
-      (viewport.y / 2.0) * (nd_pos.y + 1.0),  //
+      (viewport.x / 2.0f) * (nd_pos.x + 1.0f),  //
+      (viewport.y / 2.0f) * (nd_pos.y + 1.0f),  //
   };
 }
 
@@ -253,9 +253,9 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
-  for (auto y = 0.5f; y < box.size.height + 1.0f; y++) {
-    for (auto x = 0.5f; x < box.size.width + 1.0f; x++) {
-      const auto fragment = glm::vec2{x + box.origin.x, y + box.origin.y};
+  for (auto y = box.origin.y; y <= box.origin.y + box.size.height; y++) {
+    for (auto x = box.origin.x; x <= box.origin.x + box.size.width; x++) {
+      const auto fragment = glm::vec2{x + 0.5f, y + 0.5f};
       const auto bary = GetBaryCentricCoordinates(fragment, p1, p2, p3);
       //------------------------------------------------------------------------
       // Check if the fragment falls within the triangle.
