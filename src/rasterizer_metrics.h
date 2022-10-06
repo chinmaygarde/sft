@@ -1,10 +1,12 @@
 #pragma once
 
+#include "geom.h"
 #include "macros.h"
 
 namespace sft {
 
 struct RasterizerMetrics {
+  glm::ivec2 area;
   size_t draw_count = 0;
   size_t primitive_count = 0;
   size_t primitives_processed = 0;

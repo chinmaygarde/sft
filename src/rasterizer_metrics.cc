@@ -7,6 +7,7 @@ namespace sft {
 void RasterizerMetrics::Display() const {
   ImGui::Begin("Rasterizer Metrics");
 
+  ImGui::Text("Size: %d x %d", area.x, area.y);
   ImGui::Text("Draw Count: %zu", draw_count);
   ImGui::Text("Primitives: %zu", primitive_count);
   ImGui::Text("Primitives Processed: %zu (%.0f%%)", primitives_processed,
@@ -21,7 +22,8 @@ void RasterizerMetrics::Display() const {
               sample_point_culling * 100.f / primitive_count);
   ImGui::Text("Early Fragment Checks Tripped: %zu", early_fragment_test);
   ImGui::Text("Vertex Invocations: %zu", vertex_invocations);
-  ImGui::Text("Fragment Invocations: %zu", fragment_invocations);
+  ImGui::Text("Fragment Invocations: %zu (%.2fx)", fragment_invocations,
+              static_cast<ScalarF>(fragment_invocations) / (area.x * area.y));
 
   ImGui::End();
 }

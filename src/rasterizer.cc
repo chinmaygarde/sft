@@ -123,6 +123,7 @@ void Rasterizer::Clear(Color color) {
   color0_.Clear(color);
   depth0_.Clear(1);
   stencil0_.Clear(0);
+  metrics_.area = color0_.GetSize();
 }
 
 constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::ivec2& viewport) {
