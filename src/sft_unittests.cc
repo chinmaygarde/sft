@@ -432,13 +432,47 @@ static void DisplayTextureInHUD(const char* title,
     return;
   }
   ImGui::Text(title, "");
-  ImGui::Image(tex,                                                         //
-               ImVec2(tex->GetSize().x * scale, tex->GetSize().y * scale),  //
-               ImVec2(0, 1),        // uv0
-               ImVec2(1, 0),        // uv1
-               ImVec4(1, 1, 1, 1),  // tint color
-               ImVec4(1, 1, 1, 1)   // border color
+  const auto tint_color = ImVec4(1, 1, 1, 1);
+  const auto border_color = ImVec4(1, 1, 1, 1);
+  const auto tex_size = tex->GetSize();
+  const auto image_pos = ImGui::GetCursorScreenPos();
+  const auto image_size = glm::vec2{tex_size.x * scale, tex_size.y * scale};
+  ImGui::Image(tex,                                 //
+               ImVec2(image_size.x, image_size.y),  //
+               ImVec2(0, 1),                        // uv0
+               ImVec2(1, 0),                        // uv1
+               tint_color,                          // tint color
+               border_color                         // border color
   );
+  auto& io = ImGui::GetIO();
+  if (ImGui::IsItemHovered()) {
+    ImGui::BeginTooltip();
+    constexpr auto min_uv = glm::vec2{0.0f, 0.0f};
+    constexpr auto max_uv = glm::vec2{1.0f, 1.0f};
+    auto uv = glm::clamp(
+        glm::vec2{io.MousePos.x - image_pos.x, io.MousePos.y - image_pos.y} /
+            image_size,
+        min_uv, max_uv);
+    constexpr auto zoom_factor = 40.0f;
+    auto zoom_uv_correction = glm::vec2{1.f / zoom_factor};
+    auto uv1 = glm::clamp(uv - zoom_uv_correction, min_uv, max_uv);
+    auto uv2 = glm::clamp(uv + zoom_uv_correction, min_uv, max_uv);
+    uv.y = 1.f - uv.y;
+    uv1.y = 1.f - uv1.y;
+    uv2.y = 1.f - uv2.y;
+    const auto tooltip_image_size = image_size / 2.0f;
+    auto sampled = tex->Sample(uv);
+    ImGui::ColorEdit4("Color", (float*)&sampled);
+    ImGui::Text("%s (%.2fx)", title, zoom_factor);
+    ImGui::Image(tex,                                                 // texture
+                 ImVec2(tooltip_image_size.x, tooltip_image_size.y),  // size
+                 ImVec2{uv1.x, uv1.y},                                // uv1
+                 ImVec2{uv2.x, uv2.y},                                // uv2
+                 tint_color,   // tint color
+                 border_color  // border color
+    );
+    ImGui::EndTooltip();
+  }
 }
 
 TEST_F(RasterizerTest, CanDrawHelmet) {
