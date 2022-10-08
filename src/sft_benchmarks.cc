@@ -46,7 +46,7 @@ static void BM_SampleLinear(benchmark::State& state) {
   while (state.KeepRunning()) {
     for (auto i = 0.0f; i <= 1.0f; i += 0.001f) {
       for (auto j = 0.0f; j <= 1.0f; j += 0.001f) {
-        auto value = texture->Sample({i, j});
+        auto value = texture->Sample({j, i});
         benchmark::DoNotOptimize(value);
       }
     }
@@ -61,7 +61,7 @@ static void BM_SampleNearest(benchmark::State& state) {
   while (state.KeepRunning()) {
     for (auto i = 0.0f; i <= 1.0f; i += 0.001f) {
       for (auto j = 0.0f; j <= 1.0f; j += 0.001f) {
-        auto value = texture->Sample({i, j});
+        auto value = texture->Sample({j, i});
         benchmark::DoNotOptimize(value);
       }
     }
