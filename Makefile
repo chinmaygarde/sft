@@ -6,6 +6,9 @@
 run: build/sft_unittests
 	./build/sft_unittests
 
+bench: build/sft_benchmarks
+	./build/sft_benchmarks
+
 debug:
 	mkdir -p build/debug
 	cmake -G Ninja -B build/debug -DCMAKE_BUILD_TYPE=Debug
@@ -16,6 +19,9 @@ test: build/sft_unittests
 
 build/sft_unittests: build/build.ninja
 	ninja -C build
+
+build/sft_benchmarks: build/build.ninja
+	ninja -C build sft_benchmarks
 
 build/build.ninja:
 	mkdir -p build

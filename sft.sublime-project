@@ -2,7 +2,7 @@
   "build_systems": [
     {
       "name": "SFT Build All",
-      "shell_cmd": "ninja sft_unittests && ./sft_unittests --gtest_filter=\"*\"",
+      "shell_cmd": "ninja && ./sft_benchmarks",
       "working_dir": "${project_path}/build",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,

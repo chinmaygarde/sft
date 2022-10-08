@@ -140,3 +140,10 @@ configure_file(src/fixtures_location.h.in fixtures_location.h @ONLY)
 target_include_directories(sft_unittests PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 gtest_discover_tests(sft_unittests)
+
+add_executable(sft_benchmarks
+  src/sft_benchmarks.cc
+)
+
+target_link_libraries(sft_benchmarks sft_lib benchmark::benchmark)
+target_include_directories(sft_benchmarks PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
