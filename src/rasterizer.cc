@@ -229,14 +229,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   // Convert NDC points returned by the shader into screen-space.
   //----------------------------------------------------------------------------
-  const auto p1 = ToTexelPos(ndc_p1, viewport);
-  const auto p2 = ToTexelPos(ndc_p2, viewport);
-  const auto p3 = ToTexelPos(ndc_p3, viewport);
+  const auto frag_p1 = ToTexelPos(ndc_p1, viewport);
+  const auto frag_p2 = ToTexelPos(ndc_p2, viewport);
+  const auto frag_p3 = ToTexelPos(ndc_p3, viewport);
 
   //----------------------------------------------------------------------------
   // Find bounding box and apply scissor.
   //----------------------------------------------------------------------------
-  const auto bounding_box = GetBoundingBox(p1, p2, p3);
+  const auto bounding_box = GetBoundingBox(frag_p1, frag_p2, frag_p3);
 
   if (bounding_box.size.IsEmpty()) {
     metrics_.empty_primitive++;
@@ -269,8 +269,9 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   for (auto y = box.origin.y; y <= box.origin.y + box.size.height; y++) {
     for (auto x = box.origin.x; x <= box.origin.x + box.size.width; x++) {
-      const auto fragment = glm::vec2{x + 0.5f, y + 0.5f};
-      const auto bary = GetBaryCentricCoordinates(fragment, p1, p2, p3);
+      const auto frag = glm::vec2{x + 0.5f, y + 0.5f};
+      const auto bary =
+          GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
       //------------------------------------------------------------------------
       // Check if the fragment falls within the triangle.
       //------------------------------------------------------------------------
@@ -285,14 +286,14 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
           BarycentricInterpolation(clip_p1, clip_p2, clip_p3, bary);
       const auto depth = NormalizeDepth(bary_pos.z);
       const auto depth_test_passes =
-          FragmentPassesDepthTest(data.pipeline, fragment, depth);
+          FragmentPassesDepthTest(data.pipeline, frag, depth);
 
       //------------------------------------------------------------------------
       // Perform the stencil test.
       //------------------------------------------------------------------------
       const auto stencil_test_passes =
           UpdateAndCheckFragmentPassesStencilTest(data.pipeline,          //
-                                                  fragment,               //
+                                                  frag,                   //
                                                   depth_test_passes,      //
                                                   data.stencil_reference  //
           );
@@ -317,7 +318,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       // Update the texel.
       //------------------------------------------------------------------------
       Texel texel;
-      texel.pos = fragment;
+      texel.pos = frag;
       texel.depth = depth;
       texel.color = color;
       UpdateTexel(data.pipeline, texel);
