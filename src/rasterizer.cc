@@ -126,10 +126,17 @@ void Rasterizer::Clear(Color color) {
   metrics_.area = color0_.GetSize();
 }
 
-constexpr glm::vec2 ToTexelPos(glm::vec3 nd_pos, const glm::vec2& viewport) {
+constexpr glm::vec3 ToNDC(const glm::vec4& clip) {
+  auto ndc = glm::vec3{clip};
+  ndc /= clip.w;
+  return ndc;
+}
+
+constexpr glm::vec2 ToTexelPos(const glm::vec3& ndc,
+                               const glm::vec2& viewport) {
   return {
-      (viewport.x / 2.0f) * (nd_pos.x + 1.0f),  //
-      (viewport.y / 2.0f) * (nd_pos.y + 1.0f),  //
+      (viewport.x / 2.0f) * (ndc.x + 1.0f),  //
+      (viewport.y / 2.0f) * (ndc.y + 1.0f),  //
   };
 }
 
@@ -186,16 +193,23 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   auto viewport = data.pipeline.viewport.value_or(size_);
 
   //----------------------------------------------------------------------------
-  // Invoke vertex shaders.
+  // Invoke vertex shaders. The clip-space coordinates returned are specified by
+  // homogenous 4D vectors.
   //----------------------------------------------------------------------------
   VertexInvocation vertex_invocation(*this, data, data.base_vertex_id);
-  const auto ndc_p1 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  const auto clip_p1 = data.pipeline.shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
-  const auto ndc_p2 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  const auto clip_p2 = data.pipeline.shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
-  const auto ndc_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
-
+  const auto clip_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
   metrics_.vertex_invocations += 3;
+
+  //----------------------------------------------------------------------------
+  // Convert clip space coordinates into NDC coordinates (divide by w).
+  //----------------------------------------------------------------------------
+  const auto ndc_p1 = ToNDC(clip_p1);
+  const auto ndc_p2 = ToNDC(clip_p2);
+  const auto ndc_p3 = ToNDC(clip_p3);
 
   //----------------------------------------------------------------------------
   // Cull faces.
@@ -268,7 +282,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       // Perform the depth test.
       //------------------------------------------------------------------------
       const auto bary_pos =
-          BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary);
+          BarycentricInterpolation(clip_p1, clip_p2, clip_p3, bary);
       const auto depth = NormalizeDepth(bary_pos.z);
       const auto depth_test_passes =
           FragmentPassesDepthTest(data.pipeline, fragment, depth);
