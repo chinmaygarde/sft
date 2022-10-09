@@ -176,17 +176,6 @@ constexpr bool ShouldCullFace(CullFace face,
   return dir < 0;
 }
 
-//------------------------------------------------------------------------------
-/// @brief      Normalizes the Z value in the NDC cube to unit-scale.
-///
-/// @param[in]  z_depth  The z depth in the NDC cube.
-///
-/// @return     The depth value in unit-scale.
-///
-constexpr ScalarF NormalizeDepth(ScalarF z_depth) {
-  return glm::clamp((z_depth + 1.0) / 2.0, 0.0, 1.0);
-}
-
 void Rasterizer::DrawTriangle(const TriangleData& data) {
   metrics_.primitive_count++;
 
@@ -282,9 +271,8 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       //------------------------------------------------------------------------
       // Perform the depth test.
       //------------------------------------------------------------------------
-      const auto bary_pos =
-          BarycentricInterpolation(clip_p1, clip_p2, clip_p3, bary);
-      const auto depth = NormalizeDepth(bary_pos.z);
+      const auto depth =
+          BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
       const auto depth_test_passes =
           FragmentPassesDepthTest(data.pipeline, frag, depth);
 

@@ -93,7 +93,6 @@ Model::Model(std::string path, std::string base_dir)
   pipeline_ = std::make_shared<Pipeline>();
   pipeline_->depth_desc.depth_test_enabled = true;
   pipeline_->cull_face = CullFace::kBack;
-  pipeline_->winding = Winding::kCounterClockwise;
   model_shader_ = std::make_shared<ModelShader>();
   pipeline_->shader = model_shader_;
   pipeline_->vertex_descriptor.offset =
@@ -116,16 +115,17 @@ void Model::RenderTo(Rasterizer& rasterizer) {
 
   glm::vec2 size = rasterizer.GetSize();
 
-  glm::mat4 proj = glm::ortho(0.0f, size.x, 0.0f, size.y, -100.0f, 100.0f);
-  glm::mat4 view =
-      glm::translate(glm::identity<glm::mat4>(), {size.x / 2, size.y / 2, 0.0});
-  glm::mat4 scale =
-      glm::scale(glm::identity<glm::mat4>(), glm::vec3(scale_, scale_, 1.0));
-  glm::mat4 rotate =
-      glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation_),
-                  glm::vec3(0.0, 1.0, 0.0));
-
-  const auto mvp = proj * view * scale * rotate;
+  auto proj =
+      glm::perspectiveLH_ZO(glm::radians(90.f), size.x / size.y, 0.1f, 1000.0f);
+  auto view = glm::lookAtLH(glm::vec3{0, 5, -10},  // eye
+                            glm::vec3{0, 0, 0},    // center
+                            glm::vec3{0, 1, 0}     // up
+  );
+  auto scale = glm::scale(glm::mat4{1.0f}, glm::vec3{scale_, scale_, scale_});
+  auto rotation =
+      glm::rotate(glm::mat4{1.0f}, glm::radians(rotation_), {0, 1, 0});
+  auto model = scale * rotation;
+  const auto mvp = proj * view * model;
 
   auto uniform_buffer = Buffer::Create();
   uniform_buffer->Emplace(ModelShader::Uniforms{

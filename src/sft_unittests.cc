@@ -411,7 +411,7 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   RasterizerApplication application;
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
-  model.SetScale(4);
+  model.SetScale(0.075);
   auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
   texture->SetSampler({.min_mag_filter = Filter::kLinear});
   model.SetTexture(texture);
@@ -494,10 +494,10 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   static std::shared_ptr<Texture> overdraw_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
-    static float rotation = 45;
-    static float scale = 300;
+    static float rotation = 45 + 90;
+    static float scale = 4;
     ImGui::SliderFloat("Rotation", &rotation, 0, 360);
-    ImGui::SliderFloat("Scale", &scale, 50, 900);
+    ImGui::SliderFloat("Scale", &scale, 0.1f, 25.0f);
     model.SetRotation(rotation);
     model.SetScale(scale);
     model.RenderTo(rasterizer);
