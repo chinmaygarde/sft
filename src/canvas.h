@@ -31,7 +31,7 @@ class CanvasShader final : public Shader {
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
+  glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
     auto size = UNIFORM(size);
     auto projection = glm::ortho(0.f, size.x, size.y, 0.f);
     auto ctm = UNIFORM(ctm);

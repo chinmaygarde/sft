@@ -29,13 +29,13 @@ class TextureShader final : public Shader {
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
+  glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(texture_coords, texture_coords);
     auto position = VTX(position);
     auto offset = UNIFORM(offset);
     position.x += offset.x;
     position.y += offset.y;
-    return position;
+    return {position, 1};
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {

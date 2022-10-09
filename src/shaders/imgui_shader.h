@@ -32,7 +32,7 @@ class ImGuiShader final : public Shader {
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
+  glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(texture_coordinates, texture_coordinates);
     FORWARD(vertex_color, vertex_color);
     auto pos = glm::vec4{VTX(vertex_position), 0.0, 1.0};

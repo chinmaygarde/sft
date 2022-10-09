@@ -22,8 +22,8 @@ class ColorShader final : public Shader {
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
-    return VTX(position);
+  glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
+    return {VTX(position), 1.0};
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {

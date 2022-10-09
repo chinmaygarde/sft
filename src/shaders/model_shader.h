@@ -29,7 +29,7 @@ class ModelShader final : public Shader {
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
-  glm::vec3 ProcessVertex(const VertexInvocation& inv) const override {
+  glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
     FORWARD(normal, normal);
     FORWARD(texture_coord, texture_coord);
     const auto mvp = UNIFORM(mvp);
