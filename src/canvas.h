@@ -20,30 +20,35 @@ class CanvasShader final : public Shader {
   };
 
   struct Uniforms {
-    glm::vec2 size;
-    glm::mat4 ctm;
+    glm::mat4 xformation;
     glm::vec4 color;
   };
 
-  struct Varyings {};
+  struct Varyings {
+    glm::vec2 uv;
+  };
 
   CanvasShader() = default;
 
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
-    auto size = UNIFORM(size);
-    auto projection = glm::ortho(0.f, size.x, size.y, 0.f);
-    auto ctm = UNIFORM(ctm);
-    return projection * ctm * glm::vec4(VTX(position), 0.0, 1.0);
+    FORWARD(uv, uv);
+    return UNIFORM(xformation) * glm::vec4(VTX(position), 0.0, 1.0);
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
-    return UNIFORM(color);
+    auto color = UNIFORM(color);
+    if (texture_) {
+      color *= texture_->Sample(VARYING_LOAD(uv));
+    }
+    return color;
   }
 
+  void SetTexture(const Texture* texture) { texture_ = texture; }
+
  private:
-  // Texture* texture_;
+  const Texture* texture_;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(CanvasShader);
 };
@@ -51,7 +56,8 @@ class CanvasShader final : public Shader {
 class CanvasContext {
  public:
   CanvasContext() {
-    pipeline_.shader = std::make_shared<CanvasShader>();
+    shader_ = std::make_shared<CanvasShader>();
+    pipeline_.shader = shader_;
     pipeline_.vertex_descriptor.stride = sizeof(CanvasShader::VertexData);
     pipeline_.vertex_descriptor.offset =
         offsetof(CanvasShader::VertexData, position);
@@ -64,17 +70,22 @@ class CanvasContext {
 
   Pipeline& GetPipeline() { return pipeline_; }
 
+  void SetTexture(const Texture* texture) { shader_->SetTexture(texture); }
+
  private:
+  std::shared_ptr<CanvasShader> shader_;
   Pipeline pipeline_;
   SFT_DISALLOW_COPY_AND_ASSIGN(CanvasContext);
 };
 
 struct Paint {
-  glm::vec4 color = kColorSkyBlue;
+  glm::vec4 color = kColorWhite;
   std::optional<ColorAttachmentDescriptor> color_desc;
   std::optional<DepthAttachmentDescriptor> depth_desc;
   std::optional<StencilAttachmentDescriptor> stencil_desc;
+  std::shared_ptr<Texture> texture;
   uint32_t stencil_reference = 0;
+  bool perspective_projection = false;
 };
 
 class Canvas {
@@ -87,15 +98,23 @@ class Canvas {
     using Uniforms = CanvasShader::Uniforms;
     auto buffer = Buffer::Create();
     auto vertex_buffer = buffer->Emplace(std::vector<VD>{
-        VD{.position = rect.origin, .uv = {}},
-        VD{.position = rect.origin + glm::vec2{rect.size.width, 0.0}, .uv = {}},
+        VD{.position = rect.origin, .uv = {0, 0}},
+        VD{.position = rect.origin + glm::vec2{rect.size.width, 0.0},
+           .uv = {1, 0}},
         VD{.position =
                rect.origin + glm::vec2{rect.size.width, rect.size.height},
-           .uv = {}},
-        VD{.position = rect.origin + glm::vec2{0, rect.size.height}, .uv = {}},
+           .uv = {1, 1}},
+        VD{.position = rect.origin + glm::vec2{0, rect.size.height},
+           .uv = {0, 1}},
     });
-    auto uniform_buffer = buffer->Emplace<Uniforms>(Uniforms{
-        .size = rasterizer.GetSize(), .color = paint.color, .ctm = ctm_});
+
+    auto size = glm::vec2{rasterizer.GetSize()};
+    auto projection = paint.perspective_projection
+                          ? glm::perspectiveLH_ZO(glm::radians(90.f),
+                                                  size.x / size.y, 0.1f, 100.f)
+                          : glm::ortho(0.f, size.x, size.y, 0.f);
+    auto uniform_buffer = buffer->Emplace<Uniforms>(
+        Uniforms{.color = paint.color, .xformation = projection * ctm_});
     auto index_buffer =
         buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
 
@@ -110,6 +129,8 @@ class Canvas {
     pipeline.stencil_desc =
         paint.stencil_desc.value_or(StencilAttachmentDescriptor{});
 
+    context_->SetTexture(paint.texture.get());
+
     rasterizer.Draw(pipeline,                //
                     vertex_buffer,           //
                     index_buffer,            //
@@ -117,11 +138,15 @@ class Canvas {
                     6,                       //
                     paint.stencil_reference  //
     );
+
+    context_->SetTexture(nullptr);
   }
 
   void Translate(glm::vec2 tx) {
     ctm_ = glm::translate(ctm_, glm::vec3{tx, 0.0});
   }
+
+  void Concat(const glm::mat4& xform) { ctm_ *= xform; }
 
  private:
   std::shared_ptr<CanvasContext> context_;

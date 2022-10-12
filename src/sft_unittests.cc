@@ -761,5 +761,23 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
   stencil_tex = nullptr;
 }
 
+TEST_F(RasterizerTest, CanShowPerpectiveDepthInterpolation) {
+  RasterizerApplication application;
+  auto context = std::make_shared<CanvasContext>();
+  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "tile.png");
+  ASSERT_TRUE(texture);
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorWhite);
+    Canvas canvas(context);
+    Paint paint;
+    paint.texture = texture;
+    canvas.Concat(glm::rotate(glm::mat4{1}, glm::radians(45.f),
+                              glm::vec3{1.0, 0.0, 0.0}));
+    canvas.DrawRect(rasterizer, Rect({800, 800}), paint);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 }  // namespace testing
 }  // namespace sft
