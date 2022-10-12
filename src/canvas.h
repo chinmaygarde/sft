@@ -85,7 +85,6 @@ struct Paint {
   std::optional<StencilAttachmentDescriptor> stencil_desc;
   std::shared_ptr<Texture> texture;
   uint32_t stencil_reference = 0;
-  bool perspective_projection = false;
 };
 
 class Canvas {
@@ -109,10 +108,7 @@ class Canvas {
     });
 
     auto size = glm::vec2{rasterizer.GetSize()};
-    auto projection = paint.perspective_projection
-                          ? glm::perspectiveLH_ZO(glm::radians(90.f),
-                                                  size.x / size.y, 0.1f, 100.f)
-                          : glm::ortho(0.f, size.x, size.y, 0.f);
+    auto projection = glm::ortho(0.f, size.x, size.y, 0.f);
     auto uniform_buffer = buffer->Emplace<Uniforms>(
         Uniforms{.color = paint.color, .xformation = projection * ctm_});
     auto index_buffer =
