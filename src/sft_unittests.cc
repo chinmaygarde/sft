@@ -694,7 +694,8 @@ TEST_F(RasterizerTest, CanStencil) {
     rasterizer.Clear(kColorWhite);
     Canvas canvas(context);
     Paint paint;
-    paint.color = kColorRed;
+    paint.color = kColorRed.WithAlpha(128);
+    paint.color_desc = ColorAttachmentDescriptor{.blend.enabled = true};
     paint.stencil_desc = StencilAttachmentDescriptor{
         .stencil_test_enabled = true,
         .stencil_compare = CompareFunction::kAlways,
@@ -704,10 +705,10 @@ TEST_F(RasterizerTest, CanStencil) {
     const auto rect = Rect{{300, 300}};
     const auto offset = glm::vec2{100, 100};
     canvas.DrawRect(rasterizer, rect, paint);
-    paint.color = kColorGreen;
+    paint.color = kColorGreen.WithAlpha(128);
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
-    paint.color = kColorBlue;
+    paint.color = kColorBlue.WithAlpha(128);
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
     stencil_tex = rasterizer.CaptureDebugStencilTexture();
