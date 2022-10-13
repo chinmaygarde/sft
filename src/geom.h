@@ -15,6 +15,8 @@ namespace sft {
 using Scalar = int32_t;
 using ScalarF = float;
 
+constexpr ScalarF kEpsilon = 1e-5;
+
 struct ColorF {
   ScalarF red = 0.0;
   ScalarF green = 0.0;

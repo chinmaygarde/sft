@@ -176,6 +176,73 @@ constexpr bool ShouldCullFace(CullFace face,
   return dir < 0;
 }
 
+//------------------------------------------------------------------------------
+/// @brief      Return if a point `p` is on the left, right or on the line from
+///             `v0` to `v1`.
+///
+/// @param[in]  v0    The point v0.
+/// @param[in]  v1    The point v1.
+/// @param[in]  p     The point p.
+///
+/// @return     Less than 0 if on the left, greater than zero if one the right
+///             and zero if on the line.
+///
+constexpr ScalarF EdgeFunction(const glm::vec2& v0,
+                               const glm::vec2& v1,
+                               const glm::vec2& p) {
+  return (p.x - v0.x) * (v1.y - v0.y) - (p.y - v0.y) * (v1.x - v0.x);
+}
+
+constexpr bool IsTopLeftEdge(const glm::vec2& edge) {
+  // Top edges are flat (y == 0) and go right (x == 0).
+  const auto is_top =
+      glm::epsilonEqual(edge.y, 0.0f, kEpsilon) && edge.x > 0.0f;
+
+  // Left edges are ones that go up.
+  const auto is_left = edge.y > 0.0f;
+
+  return is_top || is_left;
+}
+
+constexpr bool PointInside(const glm::vec2& a,
+                           const glm::vec2& b,
+                           const glm::vec2& c,
+                           const glm::vec2& p) {
+  const auto edge_ab = EdgeFunction(a, b, p);
+  const auto edge_bc = EdgeFunction(b, c, p);
+  const auto edge_ca = EdgeFunction(c, a, p);
+
+  // The point is clearly not in the triangle or an edge.
+  if (edge_ab < -kEpsilon || edge_bc < -kEpsilon || edge_ca < -kEpsilon) {
+    return false;
+  }
+
+  // Check if the triangle is on the edge. If it is, we need to apply the
+  // Top-Left rule.
+  // https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-rasterizer-stage-rules
+  const auto on_ab = glm::epsilonEqual(edge_ab, 0.0f, kEpsilon);
+  const auto on_bc = glm::epsilonEqual(edge_bc, 0.0f, kEpsilon);
+  const auto on_ca = glm::epsilonEqual(edge_ca, 0.0f, kEpsilon);
+
+  const auto ab = b - a;
+  const auto bc = c - b;
+  const auto ca = a - c;
+
+  if (on_ab && !IsTopLeftEdge(ab)) {
+    return false;
+  }
+
+  if (on_bc && !IsTopLeftEdge(bc)) {
+    return false;
+  }
+
+  if (on_ca && !IsTopLeftEdge(ca)) {
+    return false;
+  }
+
+  return true;
+}
+
 void Rasterizer::DrawTriangle(const TriangleData& data) {
   metrics_.primitive_count++;
 
@@ -259,18 +326,16 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   for (auto y = box.origin.y; y <= box.origin.y + box.size.height; y++) {
     for (auto x = box.origin.x; x <= box.origin.x + box.size.width; x++) {
       const auto frag = glm::vec2{x + 0.5f, y + 0.5f};
-      const auto bary =
-          GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
-      //------------------------------------------------------------------------
-      // Check if the fragment falls within the triangle.
-      //------------------------------------------------------------------------
-      if (bary.x < 0 || bary.y < 0 || bary.z < 0) {
+
+      if (!PointInside(frag_p1, frag_p2, frag_p3, frag)) {
         continue;
       }
 
       //------------------------------------------------------------------------
       // Perform the depth test.
       //------------------------------------------------------------------------
+      const auto bary =
+          GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
       const auto depth =
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
       const auto depth_test_passes =
