@@ -63,10 +63,6 @@ add_library(sft_lib
   src/rasterizer_application.h
   src/rasterizer_metrics.cc
   src/rasterizer_metrics.h
-  src/ray_tracer.cc
-  src/ray_tracer.h
-  src/ray_tracer_application.cc
-  src/ray_tracer_application.h
   src/render_pass.cc
   src/render_pass.h
   src/renderer.cc
@@ -83,8 +79,6 @@ add_library(sft_lib
   src/shaders/model_shader.h
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
-  src/sphere.cc
-  src/sphere.h
   src/texture.cc
   src/texture.h
   src/timing.cc

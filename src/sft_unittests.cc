@@ -8,7 +8,6 @@
 #include "pipeline.h"
 #include "rasterizer.h"
 #include "rasterizer_application.h"
-#include "ray_tracer_application.h"
 #include "shaders/color_shader.h"
 #include "shaders/texture_shader.h"
 #include "test_runner.h"
@@ -568,15 +567,6 @@ TEST_F(RasterizerTest, CanApplyScissor) {
     rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
     return true;
   });
-  ASSERT_TRUE(Run(application));
-}
-
-TEST_F(RayTracerTest, CanRunRaytracer) {
-  RayTracerApplication application;
-  Sphere sphere;
-  sphere.center = {0.0, 0.0, -1.0};
-  sphere.radius = 0.5;
-  application.GetRayTracer()->AddShape(sphere);
   ASSERT_TRUE(Run(application));
 }
 
