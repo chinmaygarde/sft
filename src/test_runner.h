@@ -18,6 +18,8 @@ class TestRunner : public ::testing::Test {
 
   SecondsF ElapsedTime() const;
 
+  void SetUp() override;
+
  private:
   TimePoint start_time_;
 

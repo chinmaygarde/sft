@@ -16,6 +16,8 @@ SecondsF TestRunner::ElapsedTime() const {
   return Clock::now() - start_time_;
 }
 
+static bool gSkipRemainingTests = false;
+
 bool TestRunner::Run(Application& application) const {
   bool is_running = true;
   bool success = true;
@@ -49,6 +51,12 @@ bool TestRunner::Run(Application& application) const {
           switch (event.key.keysym.sym) {
             case SDL_KeyCode::SDLK_q:
             case SDL_KeyCode::SDLK_ESCAPE:
+              if ((event.key.keysym.mod & KMOD_LSHIFT) ||
+                  (event.key.keysym.mod & KMOD_RSHIFT) ||
+                  (event.key.keysym.mod & KMOD_LCTRL) ||
+                  (event.key.keysym.mod & KMOD_RCTRL)) {
+                gSkipRemainingTests = true;
+              }
               is_running = false;
               break;
             default:
@@ -79,6 +87,12 @@ bool TestRunner::Run(Application& application) const {
 
 TestRunner::~TestRunner() {
   ::SDL_Quit();
+}
+
+void TestRunner::SetUp() {
+  if (gSkipRemainingTests) {
+    GTEST_SKIP();
+  }
 }
 
 }  // namespace sft
