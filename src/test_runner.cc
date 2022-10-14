@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 
+#include <sstream>
+
 #include "application.h"
 #include "backends/imgui_impl_sdl.h"
 #include "imgui.h"
@@ -16,11 +18,22 @@ SecondsF TestRunner::ElapsedTime() const {
   return Clock::now() - start_time_;
 }
 
+static std::string CreateTestName() {
+  std::stringstream stream;
+  stream << ::testing::UnitTest::GetInstance()
+                ->current_test_info()
+                ->test_suite_name();
+  stream << ".";
+  stream << ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  return stream.str();
+}
+
 static bool gSkipRemainingTests = false;
 
 bool TestRunner::Run(Application& application) const {
   bool is_running = true;
   bool success = true;
+  application.SetTitle(CreateTestName());
   while (is_running) {
     success = is_running = application.Render();
     ::SDL_Event event;

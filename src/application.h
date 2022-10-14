@@ -23,6 +23,8 @@ class Application {
 
   bool Render();
 
+  void SetTitle(std::string title);
+
   virtual bool Update();
 
   virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
@@ -45,6 +47,7 @@ class Application {
   std::chrono::time_point<Clock> launch_time_;
   std::chrono::time_point<Clock> last_title_update_;
   std::chrono::nanoseconds last_update_duration_;
+  std::string title_;
   bool is_valid_ = false;
 
   bool OnRender();

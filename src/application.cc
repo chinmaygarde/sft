@@ -9,19 +9,25 @@
 
 namespace sft {
 
-std::string CreateWindowTitle(MillisecondsF frame_time) {
+std::string CreateWindowTitle(MillisecondsF frame_time,
+                              const std::string& title) {
   std::stringstream stream;
   stream.precision(2);
   stream.setf(std::ios::fixed, std::ios::floatfield);
-  stream << "SFT Sandbox (";
+  if (!title.empty()) {
+    stream << title;
+  } else {
+    stream << "SFT Sandbox";
+  }
+  stream << " ";
 #ifndef NDEBUG
-  stream << "Debug Build";
+  stream << "DEBUG";
 #else
-  stream << "Release Build";
+  stream << "RELEASE";
 #endif
-  stream << ") (";
+  stream << " (";
   stream << frame_time.count();
-  stream << " ms) (Press \"q\" or ESC to quit)";
+  stream << " ms)";
   return stream.str();
 }
 
@@ -36,13 +42,14 @@ Application::Application(std::shared_ptr<Renderer> renderer)
   // window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
   window_flags |= SDL_WINDOW_RESIZABLE;
 
-  sdl_window_ = ::SDL_CreateWindow(CreateWindowTitle(MillisecondsF{0}).c_str(),
-                                   SDL_WINDOWPOS_CENTERED,  //
-                                   SDL_WINDOWPOS_CENTERED,  //
-                                   window_size_.x,          //
-                                   window_size_.y,          //
-                                   window_flags             //
-  );
+  sdl_window_ =
+      ::SDL_CreateWindow(CreateWindowTitle(MillisecondsF{0}, "").c_str(),
+                         SDL_WINDOWPOS_CENTERED,  //
+                         SDL_WINDOWPOS_CENTERED,  //
+                         window_size_.x,          //
+                         window_size_.y,          //
+                         window_flags             //
+      );
   if (!sdl_window_) {
     return;
   }
@@ -82,7 +89,8 @@ bool Application::Render() {
     ::SDL_SetWindowTitle(
         sdl_window_,
         CreateWindowTitle(
-            std::chrono::duration_cast<MillisecondsF>(last_update_duration_))
+            std::chrono::duration_cast<MillisecondsF>(last_update_duration_),
+            title_)
             .c_str());
     last_title_update_ = now;
   }
@@ -173,6 +181,10 @@ Rasterizer* Application::GetHUDRasterizer() const {
 
 bool Application::OnWindowSizeChanged(glm::ivec2 size) {
   return true;
+}
+
+void Application::SetTitle(std::string title) {
+  title_ = std::move(title);
 }
 
 }  // namespace sft
