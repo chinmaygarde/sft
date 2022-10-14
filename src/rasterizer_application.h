@@ -1,6 +1,7 @@
 #pragma once
 
 #include "application.h"
+#include "framebuffer.h"
 #include "macros.h"
 
 namespace sft {
@@ -9,7 +10,7 @@ class Rasterizer;
 
 class RasterizerApplication final : public Application {
  public:
-  RasterizerApplication();
+  RasterizerApplication(SampleCount sample_count = SampleCount::kOne);
 
   ~RasterizerApplication() override;
 

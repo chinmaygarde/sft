@@ -21,7 +21,7 @@ class Texture;
 
 class Rasterizer final : public Renderer {
  public:
-  Rasterizer(glm::ivec2 size);
+  Rasterizer(glm::ivec2 size, SampleCount sample_count);
 
   // |Renderer|
   ~Rasterizer() override;
@@ -132,14 +132,16 @@ class Rasterizer final : public Renderer {
 
   bool FragmentPassesDepthTest(const Pipeline& pipeline,
                                glm::ivec2 pos,
-                               ScalarF depth) const;
+                               ScalarF depth,
+                               size_t sample) const;
 
   bool UpdateAndCheckFragmentPassesStencilTest(const Pipeline& pipeline,
                                                glm::ivec2 pos,
                                                bool depth_test_passes,
-                                               uint32_t reference_value);
+                                               uint32_t reference_value,
+                                               size_t sample);
 
-  void UpdateTexel(const Pipeline& pipeline, Texel texel);
+  void UpdateTexel(const Pipeline& pipeline, Texel texel, size_t sample);
 
   void DrawTriangle(const TriangleData& data);
 

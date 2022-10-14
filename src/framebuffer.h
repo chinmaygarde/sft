@@ -12,6 +12,7 @@ namespace sft {
 
 enum class SampleCount : uint8_t {
   kOne = 1,
+  kFour = 4,
 };
 
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
@@ -41,14 +42,14 @@ class Framebuffer {
     return true;
   }
 
-  void Set(const T& val, glm::ivec2 pos, size_t sample_index = 0) {
+  void Set(const T& val, glm::ivec2 pos, size_t sample_index) {
     const auto sample_count = static_cast<uint8_t>(sample_count_);
     const auto offset = ((size_.x * pos.y + pos.x) * sample_count) +
                         (sample_index % sample_count);
     std::memcpy(allocation_ + offset, &val, sizeof(T));
   }
 
-  const T* Get(glm::ivec2 pos = {0, 0}, size_t sample_index = 0) const {
+  const T* Get(glm::ivec2 pos, size_t sample_index) const {
     const auto sample_count = static_cast<uint8_t>(sample_count_);
     const auto offset = ((size_.x * pos.y + pos.x) * sample_count) +
                         (sample_index % sample_count);

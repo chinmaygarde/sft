@@ -511,6 +511,24 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   overdraw_tex = nullptr;
 }
 
+TEST_F(RasterizerTest, CanMSAA) {
+  RasterizerApplication application(SampleCount::kFour);
+  Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
+              SFT_ASSETS_LOCATION "teapot");
+  model.SetScale(0.075);
+  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
+  texture->SetSampler({.min_mag_filter = Filter::kLinear});
+  model.SetTexture(texture);
+  ASSERT_TRUE(model.IsValid());
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorGray);
+    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
+    model.RenderTo(rasterizer);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 TEST_F(RasterizerTest, CanCullFaces) {
   RasterizerApplication application;
 

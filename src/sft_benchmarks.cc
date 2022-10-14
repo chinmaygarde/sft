@@ -7,7 +7,7 @@ namespace sft {
 
 static void BM_RasterizerCreation(benchmark::State& state) {
   while (state.KeepRunning()) {
-    Rasterizer rasterizer({1024, 768});
+    Rasterizer rasterizer({1024, 768}, SampleCount::kOne);
   }
 }
 BENCHMARK(BM_RasterizerCreation)->Unit(benchmark::TimeUnit::kMillisecond);
@@ -21,7 +21,7 @@ static void BM_LoadModel(benchmark::State& state) {
 BENCHMARK(BM_LoadModel)->Unit(benchmark::TimeUnit::kMillisecond);
 
 static void BM_RenderHelmet(benchmark::State& state) {
-  Rasterizer rasterizer({1024, 768});
+  Rasterizer rasterizer({1024, 768}, SampleCount::kOne);
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
   model.SetRotation(45);
