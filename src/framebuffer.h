@@ -30,6 +30,8 @@ constexpr std::array<glm::vec2, 4u> kSampleLocationsFour = {
     glm::vec2{0.625f, 0.875f},
 };
 
+// From: Multisampling: Standard sample locations
+// https://registry.khronos.org/vulkan/specs/1.3-khr-extensions/html/vkspec.html#primsrast-multisampling
 constexpr glm::vec2 GetSampleLocation(SampleCount sample_count,
                                       size_t location) {
   switch (sample_count) {
