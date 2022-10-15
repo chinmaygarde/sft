@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "event.h"
+#include "framebuffer.h"
 #include "geom.h"
 #include "macros.h"
 #include "sdl_utils.h"
@@ -16,7 +17,10 @@ class Rasterizer;
 
 class Application {
  public:
-  virtual ~Application();
+  Application(glm::ivec2 size = {1024, 768},
+              SampleCount sample_count = SampleCount::kOne);
+
+  ~Application();
 
   bool IsValid() const;
 
@@ -24,22 +28,22 @@ class Application {
 
   void SetTitle(std::string title);
 
-  virtual bool Update();
+  bool Update();
 
-  virtual void OnTouchEvent(TouchEventType type, glm::vec2 pos);
+  void OnTouchEvent(TouchEventType type, glm::vec2 pos);
 
-  virtual bool OnWindowSizeChanged(glm::ivec2 size);
+  bool OnWindowSizeChanged(glm::ivec2 size);
 
   SecondsF GetTimeSinceLaunch() const;
 
-  virtual Rasterizer* GetHUDRasterizer() const;
+  Rasterizer* GetHUDRasterizer() const;
 
- protected:
-  Application(std::shared_ptr<Rasterizer> renderer);
+  using RasterizerCallback = std::function<bool(Rasterizer&)>;
 
-  const std::shared_ptr<Rasterizer> renderer_;
+  void SetRasterizerCallback(RasterizerCallback callback);
 
  private:
+  const std::shared_ptr<Rasterizer> rasterizer_;
   glm::ivec2 window_size_;
   SDL_Window* sdl_window_ = nullptr;
   SDL_Renderer* sdl_renderer_ = nullptr;
@@ -47,6 +51,7 @@ class Application {
   std::chrono::time_point<Clock> last_title_update_;
   std::chrono::nanoseconds last_update_duration_;
   std::string title_;
+  RasterizerCallback rasterizer_callback_;
   bool is_valid_ = false;
 
   bool OnRender();

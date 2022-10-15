@@ -59,8 +59,6 @@ add_library(sft_lib
   src/pipeline.h
   src/rasterizer.cc
   src/rasterizer.h
-  src/rasterizer_application.cc
-  src/rasterizer_application.h
   src/rasterizer_metrics.cc
   src/rasterizer_metrics.h
   src/render_pass.cc

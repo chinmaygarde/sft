@@ -31,11 +31,12 @@ std::string CreateWindowTitle(MillisecondsF frame_time,
   return stream.str();
 }
 
-Application::Application(std::shared_ptr<Rasterizer> renderer)
-    : renderer_(std::move(renderer)), launch_time_(Clock::now()) {
-  SFT_ASSERT(renderer_ && renderer_->GetPixels());
+Application::Application(glm::ivec2 size, SampleCount sample_count)
+    : rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
+      launch_time_(Clock::now()) {
+  SFT_ASSERT(rasterizer_ && rasterizer_->GetPixels());
 
-  window_size_ = renderer_->GetSize();
+  window_size_ = rasterizer_->GetSize();
 
   Uint32 window_flags = 0;
 
@@ -104,7 +105,10 @@ bool Application::IsValid() const {
 }
 
 bool Application::Update() {
-  return true;
+  if (!rasterizer_callback_) {
+    return false;
+  }
+  return rasterizer_callback_(*rasterizer_);
 }
 
 bool Application::OnRender() {
@@ -142,13 +146,13 @@ bool Application::OnRender() {
 
   last_update_duration_ = update_end - update_start;
 
-  const auto size = renderer_->GetSize();
+  const auto size = rasterizer_->GetSize();
 
-  SDLTextureNoCopyCaster color_attachment(sdl_renderer_,                 //
-                                          renderer_->GetPixels(),        //
-                                          size.x,                        //
-                                          size.y,                        //
-                                          renderer_->GetBytesPerPixel()  //
+  SDLTextureNoCopyCaster color_attachment(sdl_renderer_,                   //
+                                          rasterizer_->GetPixels(),        //
+                                          size.x,                          //
+                                          size.y,                          //
+                                          rasterizer_->GetBytesPerPixel()  //
   );
 
   SDL_Rect dest = {};
@@ -176,15 +180,22 @@ SecondsF Application::GetTimeSinceLaunch() const {
 }
 
 Rasterizer* Application::GetHUDRasterizer() const {
-  return nullptr;
+  return rasterizer_.get();
 }
 
 bool Application::OnWindowSizeChanged(glm::ivec2 size) {
-  return true;
+  if (!rasterizer_) {
+    return false;
+  }
+  return rasterizer_->Resize(size);
 }
 
 void Application::SetTitle(std::string title) {
   title_ = std::move(title);
+}
+
+void Application::SetRasterizerCallback(RasterizerCallback callback) {
+  rasterizer_callback_ = callback;
 }
 
 }  // namespace sft

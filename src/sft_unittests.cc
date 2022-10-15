@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "application.h"
 #include "buffer.h"
 #include "canvas.h"
 #include "fixtures_location.h"
@@ -7,7 +8,6 @@
 #include "model.h"
 #include "pipeline.h"
 #include "rasterizer.h"
-#include "rasterizer_application.h"
 #include "shaders/color_shader.h"
 #include "shaders/texture_shader.h"
 #include "test_runner.h"
@@ -19,7 +19,7 @@ using RayTracerTest = TestRunner;
 using RasterizerTest = TestRunner;
 
 TEST_F(RasterizerTest, CanClearRasterizer) {
-  RasterizerApplication application;
+  Application application;
   application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFuchsia);
     return true;
@@ -28,7 +28,7 @@ TEST_F(RasterizerTest, CanClearRasterizer) {
 }
 
 TEST_F(RasterizerTest, CanDrawTexturedImage) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
@@ -97,7 +97,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
 }
 
 TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
@@ -146,7 +146,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
 // Compare with the outputs of
 // https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
 TEST_F(RasterizerTest, CanBlendWithDifferentModes) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = ColorShader::VertexData;
   using Uniforms = ColorShader::Uniforms;
@@ -201,7 +201,7 @@ TEST_F(RasterizerTest, CanBlendWithDifferentModes) {
 }
 
 TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
@@ -247,7 +247,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
 }
 
 TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
@@ -309,7 +309,7 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
 }
 
 TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
@@ -358,7 +358,7 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
 }
 
 TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = TextureShader::VertexData;
   using Uniforms = TextureShader::Uniforms;
@@ -407,7 +407,7 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
 }
 
 TEST_F(RasterizerTest, CanDrawTeapot) {
-  RasterizerApplication application;
+  Application application;
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
   model.SetScale(0.075);
@@ -475,7 +475,7 @@ static void DisplayTextureInHUD(const char* title,
 }
 
 TEST_F(RasterizerTest, CanDrawHelmet) {
-  RasterizerApplication application;
+  Application application;
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
 
@@ -512,7 +512,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
 }
 
 TEST_F(RasterizerTest, CanMSAA) {
-  RasterizerApplication application(SampleCount::kFour);
+  Application application({1024, 768}, SampleCount::kFour);
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
   model.SetScale(0.075);
@@ -530,7 +530,7 @@ TEST_F(RasterizerTest, CanMSAA) {
 }
 
 TEST_F(RasterizerTest, CanCullFaces) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = ColorShader::VertexData;
   using Uniforms = ColorShader::Uniforms;
@@ -560,7 +560,7 @@ TEST_F(RasterizerTest, CanCullFaces) {
 }
 
 TEST_F(RasterizerTest, CanApplyScissor) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = ColorShader::VertexData;
   using Uniforms = ColorShader::Uniforms;
@@ -589,7 +589,7 @@ TEST_F(RasterizerTest, CanApplyScissor) {
 }
 
 TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = ColorShader::VertexData;
   using Uniforms = ColorShader::Uniforms;
@@ -622,7 +622,7 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
 }
 
 TEST_F(RasterizerTest, CanPerformDepthTest) {
-  RasterizerApplication application;
+  Application application;
 
   using VD = ColorShader::VertexData;
   using Uniforms = ColorShader::Uniforms;
@@ -664,7 +664,7 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
 }
 
 TEST_F(RasterizerTest, CanShowHUD) {
-  RasterizerApplication application;
+  Application application;
   application.SetRasterizerCallback([](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
     ImGui::ShowDemoWindow();
@@ -674,7 +674,7 @@ TEST_F(RasterizerTest, CanShowHUD) {
 }
 
 TEST_F(RasterizerTest, CanvasCanDrawStuff) {
-  RasterizerApplication application;
+  Application application;
   auto context = std::make_shared<CanvasContext>();
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
@@ -695,7 +695,7 @@ TEST_F(RasterizerTest, CanvasCanDrawStuff) {
 }
 
 TEST_F(RasterizerTest, CanStencil) {
-  RasterizerApplication application;
+  Application application;
   auto context = std::make_shared<CanvasContext>();
   static std::shared_ptr<Texture> stencil_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
@@ -728,7 +728,7 @@ TEST_F(RasterizerTest, CanStencil) {
 }
 
 TEST_F(RasterizerTest, CanClipWithStencils) {
-  RasterizerApplication application;
+  Application application;
   auto context = std::make_shared<CanvasContext>();
   static std::shared_ptr<Texture> stencil_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
