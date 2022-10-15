@@ -12,28 +12,23 @@
 #include "geom.h"
 #include "pipeline.h"
 #include "rasterizer_metrics.h"
-#include "renderer.h"
 #include "triangle_data.h"
 
 namespace sft {
 
 class Texture;
 
-class Rasterizer final : public Renderer {
+class Rasterizer {
  public:
   Rasterizer(glm::ivec2 size, SampleCount sample_count);
 
-  // |Renderer|
-  ~Rasterizer() override;
+  ~Rasterizer();
 
-  // |Renderer|
-  const void* GetPixels() const override;
+  const void* GetPixels() const;
 
-  // |Renderer|
-  glm::ivec2 GetSize() const override;
+  glm::ivec2 GetSize() const;
 
-  // |Renderer|
-  size_t GetBytesPerPixel() const override;
+  size_t GetBytesPerPixel() const;
 
   void Clear(Color color);
 

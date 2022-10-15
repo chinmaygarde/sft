@@ -65,8 +65,6 @@ add_library(sft_lib
   src/rasterizer_metrics.h
   src/render_pass.cc
   src/render_pass.h
-  src/renderer.cc
-  src/renderer.h
   src/sampler.cc
   src/sampler.h
   src/sdl_utils.cc

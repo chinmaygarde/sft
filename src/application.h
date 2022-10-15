@@ -7,7 +7,6 @@
 #include "event.h"
 #include "geom.h"
 #include "macros.h"
-#include "renderer.h"
 #include "sdl_utils.h"
 #include "timing.h"
 
@@ -36,9 +35,9 @@ class Application {
   virtual Rasterizer* GetHUDRasterizer() const;
 
  protected:
-  Application(std::shared_ptr<Renderer> renderer);
+  Application(std::shared_ptr<Rasterizer> renderer);
 
-  const std::shared_ptr<Renderer> renderer_;
+  const std::shared_ptr<Rasterizer> renderer_;
 
  private:
   glm::ivec2 window_size_;

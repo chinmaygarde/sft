@@ -31,7 +31,7 @@ std::string CreateWindowTitle(MillisecondsF frame_time,
   return stream.str();
 }
 
-Application::Application(std::shared_ptr<Renderer> renderer)
+Application::Application(std::shared_ptr<Rasterizer> renderer)
     : renderer_(std::move(renderer)), launch_time_(Clock::now()) {
   SFT_ASSERT(renderer_ && renderer_->GetPixels());
 
