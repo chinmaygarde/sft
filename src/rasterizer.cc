@@ -9,24 +9,22 @@
 namespace sft {
 
 Rasterizer::Rasterizer(glm::ivec2 size, SampleCount sample_count)
-    : color0_(size, sample_count),
-      resolve0_(size, SampleCount::kOne),
-      depth0_(size, sample_count),
-      stencil0_(size, sample_count),
-      size_(size) {}
+    : pass_(size, sample_count) {
+  size_ = pass_.GetSize();
+}
 
 Rasterizer::~Rasterizer() = default;
 
 const void* Rasterizer::GetPixels() const {
-  return color0_.Get({}, 0);
+  return pass_.color.texture->Get({}, 0);
 }
 
 glm::ivec2 Rasterizer::GetSize() const {
-  return size_;
+  return pass_.GetSize();
 }
 
 size_t Rasterizer::GetBytesPerPixel() const {
-  return color0_.GetBytesPerPixel();
+  return pass_.color.texture->GetBytesPerPixel();
 }
 
 constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
@@ -45,7 +43,7 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
     return true;
   }
 
-  const auto current_value = *depth0_.Get(pos, sample);
+  const auto current_value = *pass_.depth.texture->Get(pos, sample);
 
   return CompareFunctionPasses(pipeline.depth_desc.depth_compare,  //
                                new_value,                          //
@@ -70,7 +68,7 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
   const auto read_mask = pipeline.stencil_desc.read_mask;
   const auto write_mask = pipeline.stencil_desc.write_mask;
 
-  const auto current_value = *stencil0_.Get(pos, sample);
+  const auto current_value = *pass_.stencil.texture->Get(pos, sample);
 
   const auto stencil_test_passes =
       CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
@@ -97,7 +95,7 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
   //------------------------------------------------------------------------
   // Update the stencil value.
   //------------------------------------------------------------------------
-  stencil0_.Set(new_stencil_value, pos, sample);
+  pass_.stencil.texture->Set(new_stencil_value, pos, sample);
 
   return stencil_test_passes;
 }
@@ -112,26 +110,25 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline,
   //----------------------------------------------------------------------------
   // Write to the color attachment.
   //----------------------------------------------------------------------------
-  auto dst = *color0_.Get(texel.pos, sample);
+  auto dst = *pass_.color.texture->Get(texel.pos, sample);
   auto src = texel.color;
   auto color = pipeline.color_desc.blend.Blend(src, dst);
-  color0_.Set(color, texel.pos, sample);
+  pass_.color.texture->Set(color, texel.pos, sample);
 
   //----------------------------------------------------------------------------
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
   if (pipeline.depth_desc.depth_test_enabled) {
     if (pipeline.depth_desc.depth_write_enabled) {
-      depth0_.Set(texel.depth, texel.pos, sample);
+      pass_.depth.texture->Set(texel.depth, texel.pos, sample);
     }
   }
 }
 
 void Rasterizer::Clear(Color color) {
-  color0_.Clear(color);
-  depth0_.Clear(1);
-  stencil0_.Clear(0);
-  metrics_.area = color0_.GetSize();
+  pass_.color.clear_color = color;
+  pass_.Begin();
+  metrics_.area = pass_.GetSize();
 }
 
 constexpr glm::vec3 ToNDC(const glm::vec4& clip) {
@@ -409,15 +406,17 @@ constexpr Color CreateDebugColor(T val, T min, T max) {
 }
 
 std::shared_ptr<Texture> Rasterizer::CaptureDebugDepthTexture() const {
-  const auto min_max = depth0_.GetMinMaxValue();
-  return depth0_.CreateTexture([&min_max](const ScalarF& val) -> Color {
+  auto texture = pass_.depth.texture;
+  const auto min_max = texture->GetMinMaxValue();
+  return texture->CreateTexture([&min_max](const ScalarF& val) -> Color {
     return CreateDebugColor(val, min_max.first, min_max.second);
   });
 }
 
 std::shared_ptr<Texture> Rasterizer::CaptureDebugStencilTexture() const {
-  const auto min_max = stencil0_.GetMinMaxValue();
-  return stencil0_.CreateTexture([&min_max](const uint32_t& val) -> Color {
+  auto texture = pass_.stencil.texture;
+  const auto min_max = texture->GetMinMaxValue();
+  return texture->CreateTexture([&min_max](const uint32_t& val) -> Color {
     return CreateDebugColor(val, min_max.first, min_max.second);
   });
 }
@@ -426,12 +425,9 @@ bool Rasterizer::Resize(glm::ivec2 size) {
   if (size_ == size) {
     return true;
   }
-
-  if (!color0_.Resize(size) || !depth0_.Resize(size) ||
-      !stencil0_.Resize(size)) {
+  if (!pass_.Resize(size)) {
     return false;
   }
-
   size_ = size;
   return true;
 }

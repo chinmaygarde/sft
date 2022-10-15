@@ -12,6 +12,7 @@
 #include "geom.h"
 #include "pipeline.h"
 #include "rasterizer_metrics.h"
+#include "render_pass.h"
 #include "triangle_data.h"
 
 namespace sft {
@@ -119,10 +120,7 @@ class Rasterizer {
   [[nodiscard]] bool Resize(glm::ivec2 size);
 
  private:
-  Framebuffer<Color> color0_;
-  Framebuffer<Color> resolve0_;
-  Framebuffer<ScalarF> depth0_;
-  Framebuffer<uint32_t> stencil0_;
+  RenderPass pass_;
   glm::ivec2 size_;
   RasterizerMetrics metrics_;
 

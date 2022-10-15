@@ -3,7 +3,6 @@
 #include "framebuffer.h"
 #include "geom.h"
 #include "macros.h"
-#include "rasterizer.h"
 
 namespace sft {
 
@@ -19,7 +18,7 @@ enum class StoreAction {
 };
 
 struct PassAttachment {
-  LoadAction load_action = LoadAction::kDontCare;
+  LoadAction load_action = LoadAction::kClear;
   StoreAction store_action = StoreAction::kDontCare;
 
   virtual glm::ivec2 GetSize() const = 0;
@@ -34,10 +33,36 @@ struct PassAttachment {
 struct ColorPassAttachment final : public PassAttachment {
   glm::vec4 clear_color = {0.0, 0.0, 0.0, 1.0};
   std::shared_ptr<Framebuffer<Color>> texture;
+  std::shared_ptr<Framebuffer<Color>> resolve;
+
+  ColorPassAttachment(glm::ivec2 size, SampleCount sample_count) {
+    texture = std::make_shared<Framebuffer<Color>>(size, sample_count);
+    if (sample_count != SampleCount::kOne) {
+      resolve = std::make_shared<Framebuffer<Color>>(size, SampleCount::kOne);
+    }
+  }
 
   glm::ivec2 GetSize() const override { return texture->GetSize(); }
 
-  bool IsValid() const override { return !!texture; }
+  [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    if (!IsValid()) {
+      return false;
+    }
+    if (size == GetSize()) {
+      return true;
+    }
+    return texture->Resize(size) && resolve->Resize(size);
+  }
+
+  bool IsValid() const override {
+    if (!texture) {
+      return false;
+    }
+    if (texture->GetSampleCount() != SampleCount::kOne) {
+      return resolve && resolve->GetSampleCount() == SampleCount::kOne;
+    }
+    return true;
+  }
 
   void Load() override {
     switch (load_action) {
@@ -57,9 +82,23 @@ struct DepthPassAttachment : public PassAttachment {
   ScalarF clear_depth = 1.0;
   std::shared_ptr<Framebuffer<ScalarF>> texture;
 
+  DepthPassAttachment(const glm::ivec2& size) {
+    texture = std::make_shared<Framebuffer<ScalarF>>(size);
+  }
+
   glm::ivec2 GetSize() const override { return texture->GetSize(); }
 
   bool IsValid() const override { return !!texture; }
+
+  [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    if (!IsValid()) {
+      return false;
+    }
+    if (size == GetSize()) {
+      return true;
+    }
+    return texture->Resize(size);
+  }
 
   void Load() override {
     switch (load_action) {
@@ -79,9 +118,23 @@ struct StencilPassAttachment : public PassAttachment {
   uint32_t clear_stencil = 0;
   std::shared_ptr<Framebuffer<uint32_t>> texture;
 
+  StencilPassAttachment(const glm::ivec2& size) {
+    texture = std::make_shared<Framebuffer<uint32_t>>(size);
+  }
+
   glm::ivec2 GetSize() const override { return texture->GetSize(); }
 
   bool IsValid() const override { return !!texture; }
+
+  [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    if (!IsValid()) {
+      return false;
+    }
+    if (size == GetSize()) {
+      return true;
+    }
+    return texture->Resize(size);
+  }
 
   void Load() override {
     switch (load_action) {
@@ -102,6 +155,20 @@ struct RenderPass {
   DepthPassAttachment depth;
   StencilPassAttachment stencil;
 
+  RenderPass(const glm::ivec2& size, SampleCount sample_count)
+      : color(size, sample_count), depth(size), stencil(size) {}
+
+  [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    return color.Resize(size) && depth.Resize(size) && stencil.Resize(size);
+  }
+
+  glm::ivec2 GetSize() const {
+    if (!color.IsValid()) {
+      return {};
+    }
+    return color.GetSize();
+  }
+
   bool IsValid() const {
     if (!color.IsValid() || !depth.IsValid() || !stencil.IsValid()) {
       return false;
@@ -112,20 +179,14 @@ struct RenderPass {
     return texture_size == depth_size && texture_size == stencil_size;
   }
 
-  [[nodiscard]] bool Begin() {
-    if (!IsValid()) {
-      return false;
-    }
+  bool Begin() {
     color.Load();
     depth.Load();
     stencil.Load();
     return true;
   }
 
-  [[nodiscard]] bool End() {
-    if (!IsValid()) {
-      return false;
-    }
+  bool End() {
     color.Store();
     depth.Store();
     stencil.Store();
