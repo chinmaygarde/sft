@@ -424,6 +424,24 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   ASSERT_TRUE(Run(application));
 }
 
+TEST_F(RasterizerTest, CanMSAA) {
+  Application application({1024, 768}, SampleCount::kFour);
+  Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
+              SFT_ASSETS_LOCATION "teapot");
+  model.SetScale(0.075);
+  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
+  texture->SetSampler({.min_mag_filter = Filter::kLinear});
+  model.SetTexture(texture);
+  ASSERT_TRUE(model.IsValid());
+  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    rasterizer.Clear(kColorGray);
+    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
+    model.RenderTo(rasterizer);
+    return true;
+  });
+  ASSERT_TRUE(Run(application));
+}
+
 static void DisplayTextureInHUD(const char* title,
                                 Texture* tex,
                                 ScalarF scale) {
@@ -509,24 +527,6 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   ASSERT_TRUE(Run(application));
   depth_tex = nullptr;
   overdraw_tex = nullptr;
-}
-
-TEST_F(RasterizerTest, CanMSAA) {
-  Application application({1024, 768}, SampleCount::kFour);
-  Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
-              SFT_ASSETS_LOCATION "teapot");
-  model.SetScale(0.075);
-  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
-  texture->SetSampler({.min_mag_filter = Filter::kLinear});
-  model.SetTexture(texture);
-  ASSERT_TRUE(model.IsValid());
-  application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
-    rasterizer.Clear(kColorGray);
-    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
-    model.RenderTo(rasterizer);
-    return true;
-  });
-  ASSERT_TRUE(Run(application));
 }
 
 TEST_F(RasterizerTest, CanCullFaces) {

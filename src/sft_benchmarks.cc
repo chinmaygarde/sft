@@ -33,7 +33,7 @@ static void BM_RenderHelmet(benchmark::State& state) {
   while (state.KeepRunning()) {
     rasterizer.Clear(kColorGray);
     model.RenderTo(rasterizer);
-    auto pixels = rasterizer.GetPixels();
+    auto pixels = rasterizer.GetRenderPass().color.texture->Get({}, 0);
     benchmark::DoNotOptimize(pixels);
   }
 }

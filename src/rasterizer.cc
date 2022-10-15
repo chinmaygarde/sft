@@ -15,16 +15,8 @@ Rasterizer::Rasterizer(glm::ivec2 size, SampleCount sample_count)
 
 Rasterizer::~Rasterizer() = default;
 
-const void* Rasterizer::GetPixels() const {
-  return pass_.color.texture->Get({}, 0);
-}
-
 glm::ivec2 Rasterizer::GetSize() const {
   return pass_.GetSize();
-}
-
-size_t Rasterizer::GetBytesPerPixel() const {
-  return pass_.color.texture->GetBytesPerPixel();
 }
 
 constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
@@ -442,6 +434,10 @@ bool Rasterizer::Resize(glm::ivec2 size) {
   }
   size_ = size;
   return true;
+}
+
+RenderPass& Rasterizer::GetRenderPass() {
+  return pass_;
 }
 
 }  // namespace sft

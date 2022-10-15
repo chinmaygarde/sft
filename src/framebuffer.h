@@ -13,7 +13,10 @@ namespace sft {
 
 enum class SampleCount : uint8_t {
   kOne = 1,
+  kTwo = 2,
   kFour = 4,
+  kEight = 8,
+  kSixteen = 16,
 };
 
 constexpr size_t GetSampleCount(SampleCount count) {
@@ -23,11 +26,34 @@ constexpr size_t GetSampleCount(SampleCount count) {
 constexpr std::array<glm::vec2, 1u> kSampleLocationsOne = {
     glm::vec2{0.5f, 0.5f}};
 
+constexpr std::array<glm::vec2, 2u> kSampleLocationsTwo = {
+    glm::vec2{0.75f, 0.75f},
+    glm::vec2{0.25f, 0.25f},
+};
+
 constexpr std::array<glm::vec2, 4u> kSampleLocationsFour = {
     glm::vec2{0.375f, 0.125f},
     glm::vec2{0.875f, 0.375f},
     glm::vec2{0.125f, 0.625f},
     glm::vec2{0.625f, 0.875f},
+};
+
+constexpr std::array<glm::vec2, 8u> kSampleLocationsEight = {
+    glm::vec2{0.5625, 0.3125}, glm::vec2{0.4375, 0.6875},
+    glm::vec2{0.8125, 0.5625}, glm::vec2{0.3125, 0.1875},
+    glm::vec2{0.1875, 0.8125}, glm::vec2{0.0625, 0.4375},
+    glm::vec2{0.6875, 0.9375}, glm::vec2{0.9375, 0.0625},
+};
+
+constexpr std::array<glm::vec2, 16u> kSampleLocationsSixteen = {
+    glm::vec2{0.5625f, 0.5625f}, glm::vec2{0.4375f, 0.3125f},
+    glm::vec2{0.3125f, 0.625f},  glm::vec2{0.75f, 0.4375f},
+    glm::vec2{0.1875f, 0.375f},  glm::vec2{0.625f, 0.8125f},
+    glm::vec2{0.8125f, 0.6875f}, glm::vec2{0.6875f, 0.1875f},
+    glm::vec2{0.375f, 0.875f},   glm::vec2{0.5f, 0.0625f},
+    glm::vec2{0.25f, 0.125f},    glm::vec2{0.125f, 0.75f},
+    glm::vec2{0.0f, 0.5f},       glm::vec2{0.9375f, 0.25f},
+    glm::vec2{0.875f, 0.9375f},  glm::vec2{0.0625f, 0.0f},
 };
 
 // From: Multisampling: Standard sample locations
@@ -36,15 +62,35 @@ constexpr glm::vec2 GetSampleLocation(SampleCount sample_count,
                                       size_t location) {
   switch (sample_count) {
     case SampleCount::kOne:
-      return kSampleLocationsOne[0];
+      return kSampleLocationsOne[location % 1];
+    case SampleCount::kTwo:
+      return kSampleLocationsTwo[location % 2];
     case SampleCount::kFour:
       return kSampleLocationsFour[location % 4];
+    case SampleCount::kEight:
+      return kSampleLocationsEight[location % 8];
+    case SampleCount::kSixteen:
+      return kSampleLocationsSixteen[location % 16];
   }
   return {0.5, 0.5};
 }
 
-template <class Type>
-Type Resolve(const Type* samples, SampleCount sample_count);
+inline Color PerformResolve2(Color a, Color b) {
+  return Color{(a.color & b.color) + (((a.color ^ b.color) >> 1) & 0x7F7F7F7F) +
+               ((a.color ^ b.color) & 0x01010101)};
+}
+
+inline Color PerformResolve(const Color* samples, uint8_t count) {
+  if (count == 1) {
+    return samples[0];
+  }
+  auto* intermediates =
+      reinterpret_cast<Color*>(alloca(sizeof(Color) * count / 2));
+  for (size_t i = 0; i < count; i += 2) {
+    intermediates[i / 2] = PerformResolve2(samples[i], samples[i + 1]);
+  }
+  return PerformResolve(intermediates, count / 2);
+}
 
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
 class Framebuffer {
@@ -153,9 +199,11 @@ class Framebuffer {
       for (auto y = 0; y < size_.y; y++) {
         const auto position = glm::ivec2{x, y};
         const auto* samples = Get(position, 0);
-        to.Set(Resolve(samples, sample_count_));
+        to.Set(PerformResolve(samples, static_cast<uint8_t>(sample_count_)),
+               position, 0);
       }
     }
+    return true;
   }
 
  private:

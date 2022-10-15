@@ -25,11 +25,9 @@ class Rasterizer {
 
   ~Rasterizer();
 
-  const void* GetPixels() const;
+  RenderPass& GetRenderPass();
 
   glm::ivec2 GetSize() const;
-
-  size_t GetBytesPerPixel() const;
 
   void Clear(Color color);
 

@@ -34,7 +34,7 @@ std::string CreateWindowTitle(MillisecondsF frame_time,
 Application::Application(glm::ivec2 size, SampleCount sample_count)
     : rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
       launch_time_(Clock::now()) {
-  SFT_ASSERT(rasterizer_ && rasterizer_->GetPixels());
+  SFT_ASSERT(rasterizer_);
 
   window_size_ = rasterizer_->GetSize();
 
@@ -140,11 +140,22 @@ bool Application::OnRender() {
 
   const auto size = rasterizer_->GetSize();
 
-  SDLTextureNoCopyCaster color_attachment(sdl_renderer_,                   //
-                                          rasterizer_->GetPixels(),        //
-                                          size.x,                          //
-                                          size.y,                          //
-                                          rasterizer_->GetBytesPerPixel()  //
+  auto& pass = rasterizer_->GetRenderPass();
+  std::shared_ptr<Framebuffer<Color>> texture;
+  if (pass.color.texture->GetSampleCount() == SampleCount::kOne) {
+    texture = pass.color.texture;
+  } else {
+    if (!pass.color.texture->Resolve(*pass.color.resolve)) {
+      return false;
+    }
+    texture = pass.color.resolve;
+  }
+
+  SDLTextureNoCopyCaster color_attachment(sdl_renderer_,               //
+                                          texture->Get({}, 0),         //
+                                          size.x,                      //
+                                          size.y,                      //
+                                          texture->GetBytesPerPixel()  //
   );
 
   SDL_Rect dest = {};
