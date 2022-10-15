@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <type_traits>
 
@@ -17,6 +18,27 @@ enum class SampleCount : uint8_t {
 
 constexpr size_t GetSampleCount(SampleCount count) {
   return static_cast<uint8_t>(count);
+}
+
+constexpr std::array<glm::vec2, 1u> kSampleLocationsOne = {
+    glm::vec2{0.5f, 0.5f}};
+
+constexpr std::array<glm::vec2, 4u> kSampleLocationsFour = {
+    glm::vec2{0.375f, 0.125f},
+    glm::vec2{0.875f, 0.375f},
+    glm::vec2{0.125f, 0.625f},
+    glm::vec2{0.625f, 0.875f},
+};
+
+constexpr glm::vec2 GetSampleLocation(SampleCount sample_count,
+                                      size_t location) {
+  switch (sample_count) {
+    case SampleCount::kOne:
+      return kSampleLocationsOne[0];
+    case SampleCount::kFour:
+      return kSampleLocationsFour[location % 4];
+  }
+  return {0.5, 0.5};
 }
 
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>

@@ -325,17 +325,25 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
 
   metrics_.primitives_processed++;
 
+  const auto sample_count = pass_.color.texture->GetSampleCount();
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
   for (auto y = box.origin.y; y <= box.origin.y + box.size.height; y++) {
     for (auto x = box.origin.x; x <= box.origin.x + box.size.width; x++) {
-      size_t sample = 0;
-      const auto frag = glm::vec2{x + 0.5f, y + 0.5f};
+      const auto pixel = glm::vec2{x, y};
 
-      if (!PointInside(frag_p1, frag_p2, frag_p3, frag)) {
+      uint32_t samples_found = 0;
+      for (size_t s = 0; s < GetSampleCount(sample_count); s++) {
+        const auto sample_frag = pixel + GetSampleLocation(sample_count, s);
+        if (PointInside(frag_p1, frag_p2, frag_p3, sample_frag)) {
+          samples_found |= (1 << s);
+        }
+      }
+      if (samples_found == 0) {
         continue;
       }
+      const auto frag = pixel + glm::vec2{0.5f, 0.5f};
 
       //------------------------------------------------------------------------
       // Perform the depth test.
@@ -345,7 +353,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       const auto depth =
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
       const auto depth_test_passes =
-          FragmentPassesDepthTest(data.pipeline, frag, depth, sample);
+          FragmentPassesDepthTest(data.pipeline, frag, depth, 0);
 
       //------------------------------------------------------------------------
       // Perform the stencil test.
@@ -355,7 +363,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
                                                   frag,                    //
                                                   depth_test_passes,       //
                                                   data.stencil_reference,  //
-                                                  sample                   //
+                                                  0                        //
           );
 
       //------------------------------------------------------------------------
@@ -381,7 +389,11 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       texel.pos = frag;
       texel.depth = depth;
       texel.color = color;
-      UpdateTexel(data.pipeline, texel, sample);
+      for (size_t s = 0; s < GetSampleCount(sample_count); s++) {
+        if (samples_found & (1 << s)) {
+          UpdateTexel(data.pipeline, texel, s);
+        }
+      }
     }
   }
 }
