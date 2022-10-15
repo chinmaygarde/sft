@@ -116,31 +116,23 @@ bool Application::OnRender() {
     return false;
   }
 
-  auto rasterizer = GetHUDRasterizer();
-
   const auto update_start = Clock::now();
 
   ImGui_ImplSFT_NewFrame();
   ImGui::NewFrame();
 
-  if (rasterizer) {
-    rasterizer->ResetMetrics();
-  }
+  rasterizer_->ResetMetrics();
 
   if (!Update()) {
     return false;
   }
 
-  if (rasterizer) {
-    rasterizer->GetMetrics().Display();
-    rasterizer->ResetMetrics();
-  }
+  rasterizer_->GetMetrics().Display();
+  rasterizer_->ResetMetrics();
 
   ImGui::Render();
 
-  if (rasterizer) {
-    ImGui_ImplSFT_RenderDrawData(rasterizer, ImGui::GetDrawData());
-  }
+  ImGui_ImplSFT_RenderDrawData(rasterizer_.get(), ImGui::GetDrawData());
 
   const auto update_end = Clock::now();
 
@@ -177,10 +169,6 @@ bool Application::OnRender() {
 
 SecondsF Application::GetTimeSinceLaunch() const {
   return Clock::now() - launch_time_;
-}
-
-Rasterizer* Application::GetHUDRasterizer() const {
-  return rasterizer_.get();
 }
 
 bool Application::OnWindowSizeChanged(glm::ivec2 size) {

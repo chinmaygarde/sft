@@ -36,8 +36,6 @@ class Application {
 
   SecondsF GetTimeSinceLaunch() const;
 
-  Rasterizer* GetHUDRasterizer() const;
-
   using RasterizerCallback = std::function<bool(Rasterizer&)>;
 
   void SetRasterizerCallback(RasterizerCallback callback);
