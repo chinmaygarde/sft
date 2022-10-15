@@ -10,6 +10,7 @@ namespace sft {
 
 Rasterizer::Rasterizer(glm::ivec2 size, SampleCount sample_count)
     : color0_(size, sample_count),
+      resolve0_(size, SampleCount::kOne),
       depth0_(size, sample_count),
       stencil0_(size, sample_count),
       size_(size) {}

@@ -15,6 +15,10 @@ enum class SampleCount : uint8_t {
   kFour = 4,
 };
 
+constexpr size_t GetSampleCount(SampleCount count) {
+  return static_cast<uint8_t>(count);
+}
+
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
 class Framebuffer {
  public:

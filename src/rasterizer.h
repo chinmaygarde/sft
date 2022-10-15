@@ -125,6 +125,7 @@ class Rasterizer final : public Renderer {
 
  private:
   Framebuffer<Color> color0_;
+  Framebuffer<Color> resolve0_;
   Framebuffer<ScalarF> depth0_;
   Framebuffer<uint32_t> stencil0_;
   glm::ivec2 size_;
