@@ -43,6 +43,9 @@ constexpr glm::vec2 GetSampleLocation(SampleCount sample_count,
   return {0.5, 0.5};
 }
 
+template <class Type>
+Type Resolve(const Type* samples, SampleCount sample_count);
+
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
 class Framebuffer {
  public:
@@ -138,6 +141,22 @@ class Framebuffer {
   glm::ivec2 GetSize() const { return size_; }
 
   SampleCount GetSampleCount() const { return sample_count_; }
+
+  [[nodiscard]] bool Resolve(Framebuffer<T>& to) const {
+    if (to.GetSize() != GetSize()) {
+      return false;
+    }
+    if (to.GetSampleCount() != SampleCount::kOne) {
+      return false;
+    }
+    for (auto x = 0; x < size_.x; x++) {
+      for (auto y = 0; y < size_.y; y++) {
+        const auto position = glm::ivec2{x, y};
+        const auto* samples = Get(position, 0);
+        to.Set(Resolve(samples, sample_count_));
+      }
+    }
+  }
 
  private:
   T* allocation_ = nullptr;
