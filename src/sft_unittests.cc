@@ -428,14 +428,63 @@ TEST_F(RasterizerTest, CanMSAA) {
   Application application({1024, 768}, SampleCount::kFour);
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
-  model.SetScale(0.075);
   auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
   texture->SetSampler({.min_mag_filter = Filter::kLinear});
   model.SetTexture(texture);
   ASSERT_TRUE(model.IsValid());
+  const char* msaa_items[] = {
+      "No MSAA",  //
+      "2x MSAA",  //
+      "4x MSAA",  //
+      "8x MSAA",  //
+      "16x MSAA"  //
+  };
+  auto to_sample_count = [](int option) -> SampleCount {
+    switch (option) {
+      case 0:
+        return SampleCount::kOne;
+      case 1:
+        return SampleCount::kTwo;
+      case 2:
+        return SampleCount::kFour;
+      case 3:
+        return SampleCount::kEight;
+      case 4:
+        return SampleCount::kSixteen;
+    }
+    return SampleCount::kOne;
+  };
+  using VD = ColorShader::VertexData;
+  using Uniforms = ColorShader::Uniforms;
+
+  Pipeline pipeline;
+  pipeline.shader = std::make_shared<ColorShader>();
+  pipeline.vertex_descriptor.offset = offsetof(VD, position);
+  pipeline.vertex_descriptor.stride = sizeof(VD);
+  auto buffer = Buffer::Create();
+  auto vertex_buffer = buffer->Emplace(std::vector<VD>{
+      VD{.position = {-1.0, -1.0, 0.0}},
+      VD{.position = {0.0, 1.0, 0.0}},
+      VD{.position = {1.0, -1.0, 0.0}},
+  });
+  auto uniform_buffer = buffer->Emplace(Uniforms{
+      .color = kColorFirebrick,
+  });
+
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
+    static int msaa_current = 2;
+    ImGui::ListBox("MSAA Options", &msaa_current, msaa_items,
+                   IM_ARRAYSIZE(msaa_items));
+    SFT_ASSERT(rasterizer.GetRenderPass().SetSampleCount(
+        to_sample_count(msaa_current)));
     rasterizer.Clear(kColorGray);
-    model.SetRotation(application.GetTimeSinceLaunch().count() * 45);
+    static ScalarF rotation = 48.132;
+    static ScalarF scale = 0.088;
+    ImGui::SliderFloat("Rotation", &rotation, 0.f, 360.f);
+    ImGui::SliderFloat("Scale", &scale, 0.075f / 2.0f, 0.075 * 2.0f);
+    model.SetRotation(rotation);
+    model.SetScale(scale);
+    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 3u);
     model.RenderTo(rasterizer);
     return true;
   });

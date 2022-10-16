@@ -57,6 +57,13 @@ struct ColorPassAttachment final : public PassAttachment {
     return texture->Resize(size);
   }
 
+  [[nodiscard]] bool SetSampleCount(SampleCount count) {
+    if (!IsValid()) {
+      return false;
+    }
+    return texture->UpdateSampleCount(count);
+  }
+
   bool IsValid() const override {
     if (!texture) {
       return false;
@@ -103,6 +110,8 @@ struct DepthPassAttachment : public PassAttachment {
     return texture->Resize(size);
   }
 
+  [[nodiscard]] bool SetSampleCount(SampleCount count) { return true; }
+
   void Load() override {
     switch (load_action) {
       case LoadAction::kDontCare:
@@ -139,6 +148,8 @@ struct StencilPassAttachment : public PassAttachment {
     return texture->Resize(size);
   }
 
+  [[nodiscard]] bool SetSampleCount(SampleCount count) { return true; }
+
   void Load() override {
     switch (load_action) {
       case LoadAction::kDontCare:
@@ -163,6 +174,11 @@ struct RenderPass {
 
   [[nodiscard]] bool Resize(const glm::ivec2& size) {
     return color.Resize(size) && depth.Resize(size) && stencil.Resize(size);
+  }
+
+  [[nodiscard]] bool SetSampleCount(SampleCount count) {
+    return color.SetSampleCount(count) && depth.SetSampleCount(count) &&
+           stencil.SetSampleCount(count);
   }
 
   glm::ivec2 GetSize() const {

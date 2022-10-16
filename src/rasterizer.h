@@ -117,6 +117,8 @@ class Rasterizer {
 
   [[nodiscard]] bool Resize(glm::ivec2 size);
 
+  [[nodiscard]] bool ResizeSamples(SampleCount count);
+
  private:
   RenderPass pass_;
   glm::ivec2 size_;

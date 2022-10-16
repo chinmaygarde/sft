@@ -119,6 +119,15 @@ class Framebuffer {
     return true;
   }
 
+  [[nodiscard]] bool UpdateSampleCount(SampleCount sample_count) {
+    if (sample_count_ == sample_count) {
+      return true;
+    }
+
+    sample_count_ = sample_count;
+    return Resize(size_);
+  }
+
   void Set(const T& val, glm::ivec2 pos, size_t sample_index) {
     const auto sample_count = static_cast<uint8_t>(sample_count_);
     const auto offset = ((size_.x * pos.y + pos.x) * sample_count) +
@@ -209,7 +218,7 @@ class Framebuffer {
  private:
   T* allocation_ = nullptr;
   glm::ivec2 size_ = {};
-  const SampleCount sample_count_;
+  SampleCount sample_count_;
 
   Framebuffer(T* allocation, glm::ivec2 size, SampleCount sample_count)
       : allocation_(allocation), size_(size), sample_count_(sample_count) {}
