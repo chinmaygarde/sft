@@ -110,7 +110,12 @@ struct DepthPassAttachment : public PassAttachment {
     return texture->Resize(size);
   }
 
-  [[nodiscard]] bool SetSampleCount(SampleCount count) { return true; }
+  [[nodiscard]] bool SetSampleCount(SampleCount count) {
+    if (!IsValid()) {
+      return false;
+    }
+    return texture->UpdateSampleCount(count);
+  }
 
   void Load() override {
     switch (load_action) {
@@ -148,7 +153,12 @@ struct StencilPassAttachment : public PassAttachment {
     return texture->Resize(size);
   }
 
-  [[nodiscard]] bool SetSampleCount(SampleCount count) { return true; }
+  [[nodiscard]] bool SetSampleCount(SampleCount count) {
+    if (!IsValid()) {
+      return false;
+    }
+    return texture->UpdateSampleCount(count);
+  }
 
   void Load() override {
     switch (load_action) {

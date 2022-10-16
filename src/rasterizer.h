@@ -126,12 +126,14 @@ class Rasterizer {
 
   bool FragmentPassesDepthTest(const Pipeline& pipeline,
                                glm::ivec2 pos,
-                               ScalarF depth) const;
+                               ScalarF depth,
+                               size_t sample) const;
 
   bool UpdateAndCheckFragmentPassesStencilTest(const Pipeline& pipeline,
                                                glm::ivec2 pos,
                                                bool depth_test_passes,
-                                               uint32_t reference_value);
+                                               uint32_t reference_value,
+                                               size_t sample);
 
   void UpdateTexel(const Pipeline& pipeline, Texel texel, size_t sample);
 
