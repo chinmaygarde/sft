@@ -25,8 +25,7 @@ constexpr bool IsOOB(glm::ivec2 pos, glm::ivec2 size) {
 
 bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
                                          glm::ivec2 pos,
-                                         ScalarF new_value,
-                                         size_t sample) const {
+                                         ScalarF new_value) const {
   if (IsOOB(pos, size_)) {
     return false;
   }
@@ -35,7 +34,7 @@ bool Rasterizer::FragmentPassesDepthTest(const Pipeline& pipeline,
     return true;
   }
 
-  const auto current_value = *pass_.depth.texture->Get(pos, sample);
+  const auto current_value = *pass_.depth.texture->Get(pos, 0);
 
   return CompareFunctionPasses(pipeline.depth_desc.depth_compare,  //
                                new_value,                          //
@@ -47,8 +46,7 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
     const Pipeline& pipeline,
     glm::ivec2 pos,
     bool depth_test_passes,
-    uint32_t reference_value,
-    size_t sample) {
+    uint32_t reference_value) {
   if (IsOOB(pos, size_)) {
     return false;
   }
@@ -60,7 +58,7 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
   const auto read_mask = pipeline.stencil_desc.read_mask;
   const auto write_mask = pipeline.stencil_desc.write_mask;
 
-  const auto current_value = *pass_.stencil.texture->Get(pos, sample);
+  const auto current_value = *pass_.stencil.texture->Get(pos, 0);
 
   const auto stencil_test_passes =
       CompareFunctionPasses(pipeline.stencil_desc.stencil_compare,  //
@@ -87,7 +85,7 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
   //------------------------------------------------------------------------
   // Update the stencil value.
   //------------------------------------------------------------------------
-  pass_.stencil.texture->Set(new_stencil_value, pos, sample);
+  pass_.stencil.texture->Set(new_stencil_value, pos, 0);
 
   return stencil_test_passes;
 }
@@ -110,7 +108,7 @@ void Rasterizer::UpdateTexel(const Pipeline& pipeline,
   //----------------------------------------------------------------------------
   // Write to the depth attachment.
   //----------------------------------------------------------------------------
-  if (pipeline.depth_desc.depth_test_enabled) {
+  if (pipeline.depth_desc.depth_test_enabled && sample == 0) {
     if (pipeline.depth_desc.depth_write_enabled) {
       pass_.depth.texture->Set(texel.depth, texel.pos, sample);
     }
@@ -345,17 +343,16 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       const auto depth =
           BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
       const auto depth_test_passes =
-          FragmentPassesDepthTest(data.pipeline, frag, depth, 0);
+          FragmentPassesDepthTest(data.pipeline, frag, depth);
 
       //------------------------------------------------------------------------
       // Perform the stencil test.
       //------------------------------------------------------------------------
       const auto stencil_test_passes =
-          UpdateAndCheckFragmentPassesStencilTest(data.pipeline,           //
-                                                  frag,                    //
-                                                  depth_test_passes,       //
-                                                  data.stencil_reference,  //
-                                                  0                        //
+          UpdateAndCheckFragmentPassesStencilTest(data.pipeline,          //
+                                                  frag,                   //
+                                                  depth_test_passes,      //
+                                                  data.stencil_reference  //
           );
 
       //------------------------------------------------------------------------
