@@ -17,6 +17,8 @@ using ScalarF = float;
 
 constexpr ScalarF kEpsilon = 1e-5;
 
+constexpr glm::vec2 kSampleMidpoint = {0.5f, 0.5f};
+
 struct ColorF {
   ScalarF red = 0.0;
   ScalarF green = 0.0;

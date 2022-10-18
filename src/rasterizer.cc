@@ -327,63 +327,77 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   for (auto y = box.origin.y; y <= box.origin.y + box.size.height; y++) {
     for (auto x = box.origin.x; x <= box.origin.x + box.size.width; x++) {
       const auto pixel = glm::vec2{x, y};
-
       uint32_t samples_found = 0;
-      for (size_t s = 0; s < GetSampleCount(sample_count); s++) {
-        const auto sample_frag = pixel + GetSampleLocation(sample_count, s);
-        if (PointInside(frag_p1, frag_p2, frag_p3, sample_frag)) {
-          samples_found |= (1 << s);
+
+      for (size_t sample = 0; sample < GetSampleCount(sample_count); sample++) {
+        const auto frag = pixel + GetSampleLocation(sample_count, sample);
+
+        if (!PointInside(frag_p1, frag_p2, frag_p3, frag)) {
+          continue;
         }
+
+        //----------------------------------------------------------------------
+        // Perform the depth test.
+        //----------------------------------------------------------------------
+        const auto bary =
+            GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
+        const auto depth =
+            BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
+        const auto depth_test_passes =
+            FragmentPassesDepthTest(data.pipeline, frag, depth, sample);
+
+        //----------------------------------------------------------------------
+        // Perform the stencil test.
+        //----------------------------------------------------------------------
+        const auto stencil_test_passes =
+            UpdateAndCheckFragmentPassesStencilTest(data.pipeline,           //
+                                                    frag,                    //
+                                                    depth_test_passes,       //
+                                                    data.stencil_reference,  //
+                                                    sample                   //
+            );
+
+        //----------------------------------------------------------------------
+        // If either the depth stencil tests have failed, short circuit fragment
+        // processing.
+        //----------------------------------------------------------------------
+        if (!stencil_test_passes || !depth_test_passes) {
+          metrics_.early_fragment_test++;
+          continue;
+        }
+
+        //----------------------------------------------------------------------
+        // Update the depth values.
+        //----------------------------------------------------------------------
+        UpdateDepth(data.pipeline.depth_desc, frag, depth, sample);
+
+        //----------------------------------------------------------------------
+        // This sample location needs a color value.
+        //----------------------------------------------------------------------
+        samples_found |= (1 << sample);
       }
+
       if (samples_found == 0) {
         continue;
       }
-      const auto frag = pixel + glm::vec2{0.5f, 0.5f};
 
       //------------------------------------------------------------------------
-      // Perform the depth test.
+      // Shade the fragment. But just once for all samples.
       //------------------------------------------------------------------------
+      const auto frag = pixel + kSampleMidpoint;
       const auto bary =
           GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
-      const auto depth =
-          BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
-      const auto depth_test_passes =
-          FragmentPassesDepthTest(data.pipeline, frag, depth, 0);
-
-      //------------------------------------------------------------------------
-      // Perform the stencil test.
-      //------------------------------------------------------------------------
-      const auto stencil_test_passes =
-          UpdateAndCheckFragmentPassesStencilTest(data.pipeline,           //
-                                                  frag,                    //
-                                                  depth_test_passes,       //
-                                                  data.stencil_reference,  //
-                                                  0                        //
-          );
-
-      //------------------------------------------------------------------------
-      // If either the depth stencil tests have failed, short circuit fragment
-      // processing.
-      //------------------------------------------------------------------------
-      if (!stencil_test_passes || !depth_test_passes) {
-        metrics_.early_fragment_test++;
-        continue;
-      }
-
-      //------------------------------------------------------------------------
-      // Shade the fragment.
-      //------------------------------------------------------------------------
       const auto color =
           Color{data.pipeline.shader->ProcessFragment({bary, *this, data})};
       metrics_.fragment_invocations++;
 
       //------------------------------------------------------------------------
-      // Update the texel.
+      // Blend in the color for found samples.
       //------------------------------------------------------------------------
-      for (size_t s = 0; s < GetSampleCount(sample_count); s++) {
-        if (samples_found & (1 << s)) {
-          UpdateColor(data.pipeline.color_desc, frag, color, s);
-          UpdateDepth(data.pipeline.depth_desc, frag, depth, s);
+      for (size_t sample = 0; sample < GetSampleCount(sample_count); sample++) {
+        if (samples_found & (1 << sample)) {
+          const auto frag = pixel + GetSampleLocation(sample_count, sample);
+          UpdateColor(data.pipeline.color_desc, frag, color, sample);
         }
       }
     }
