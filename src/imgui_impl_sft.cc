@@ -72,11 +72,13 @@ ImGuiShader::VertexData ToShaderVertexData(const ImDrawVert& v) {
   return result;
 }
 
-constexpr Rect ToScissorRect(const ImVec2& display_size, const ImVec4& clip) {
-  return Rect::MakeLTRB(clip.x,                   //
-                        display_size.y - clip.y,  //
-                        clip.z,                   //
-                        display_size.y - clip.w   //
+constexpr Rect ToScissorRect(const ImVec2& display_size,
+                             const ImVec4& clip,
+                             const ImVec2& scale) {
+  return Rect::MakeLTRB(clip.x * scale.x,                     //
+                        (display_size.y - clip.y) * scale.y,  //
+                        clip.z * scale.x,                     //
+                        (display_size.y - clip.w) * scale.y   //
   );
 }
 
@@ -122,8 +124,8 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
       SFT_ASSERT(cmd.VtxOffset == 0);
       SFT_ASSERT(cmd.ElemCount % 3 == 0);
 
-      user_data->pipeline->scissor =
-          ToScissorRect(draw->DisplaySize, cmd.ClipRect);
+      user_data->pipeline->scissor = ToScissorRect(
+          draw->DisplaySize, cmd.ClipRect, io.DisplayFramebufferScale);
 
       size_t index_offset = cmd.IdxOffset;
 
