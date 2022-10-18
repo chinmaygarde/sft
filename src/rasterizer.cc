@@ -99,9 +99,13 @@ void Rasterizer::UpdateColor(const ColorAttachmentDescriptor& color_desc,
   if (IsOOB(pos, size_)) {
     return;
   }
-  auto dst = *pass_.color.texture->Get(pos, sample);
-  auto color = color_desc.blend.Blend(src, dst);
-  pass_.color.texture->Set(color, pos, sample);
+  if (color_desc.blend.enabled) {
+    auto dst = *pass_.color.texture->Get(pos, sample);
+    auto color = color_desc.blend.Blend(src, dst);
+    pass_.color.texture->Set(color, pos, sample);
+  } else {
+    pass_.color.texture->Set(src, pos, sample);
+  }
 }
 
 void Rasterizer::UpdateDepth(const DepthAttachmentDescriptor& depth_desc,
