@@ -434,7 +434,7 @@ std::shared_ptr<Image> Rasterizer::CaptureDebugDepthTexture() const {
 std::shared_ptr<Image> Rasterizer::CaptureDebugStencilTexture() const {
   auto texture = pass_.stencil.texture;
   const auto min_max = texture->GetMinMaxValue();
-  return texture->CreateImage([&min_max](const uint32_t& val) -> Color {
+  return texture->CreateImage([&min_max](const uint8_t& val) -> Color {
     return CreateDebugColor(val, min_max.first, min_max.second);
   });
 }

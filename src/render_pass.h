@@ -133,10 +133,10 @@ struct DepthPassAttachment : public PassAttachment {
 
 struct StencilPassAttachment : public PassAttachment {
   uint32_t clear_stencil = 0;
-  std::shared_ptr<Texture<uint32_t>> texture;
+  std::shared_ptr<Texture<uint8_t>> texture;
 
   StencilPassAttachment(const glm::ivec2& size) {
-    texture = std::make_shared<Texture<uint32_t>>(size);
+    texture = std::make_shared<Texture<uint8_t>>(size);
   }
 
   glm::ivec2 GetSize() const override { return texture->GetSize(); }
