@@ -141,7 +141,7 @@ bool Application::OnRender() {
   const auto size = rasterizer_->GetSize();
 
   auto& pass = rasterizer_->GetRenderPass();
-  std::shared_ptr<Framebuffer<Color>> texture;
+  std::shared_ptr<Texture<Color>> texture;
   if (pass.color.texture->GetSampleCount() == SampleCount::kOne) {
     texture = pass.color.texture;
   } else {

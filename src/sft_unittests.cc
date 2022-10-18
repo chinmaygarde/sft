@@ -55,9 +55,9 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
       {tl, p1},
   });
 
-  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
-  auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "boston.jpg");
-  auto texture3 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "kalimba.jpg");
+  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image2 = std::make_shared<Image>(SFT_ASSETS_LOCATION "boston.jpg");
+  auto image3 = std::make_shared<Image>(SFT_ASSETS_LOCATION "kalimba.jpg");
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
@@ -70,7 +70,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
           .alpha = 0.75,
           .offset = {0, 0},
       });
-      shader->SetTexture(texture1);
+      shader->SetTexture(image1);
       rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     {
@@ -79,7 +79,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
           .alpha = 0.75,
           .offset = {0.2, 0.2},
       });
-      shader->SetTexture(texture2);
+      shader->SetTexture(image2);
       rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     {
@@ -88,7 +88,7 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
           .alpha = 0.75,
           .offset = {0.4, 0.4},
       });
-      shader->SetTexture(texture3);
+      shader->SetTexture(image3);
       rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     return true;
@@ -127,9 +127,8 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
       .offset = {0, 0},
   });
   auto index_buffer = buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
-  auto texture1 =
-      std::make_shared<Texture>(SFT_ASSETS_LOCATION "embarcadero.jpg");
-  shader->SetTexture(texture1);
+  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "embarcadero.jpg");
+  shader->SetTexture(image1);
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt16;
@@ -231,8 +230,8 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
       .offset = {0, 0},
   });
   auto index_buffer = buffer->Emplace(std::vector<uint32_t>{0, 1, 2, 2, 3, 0});
-  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
-  shader->SetTexture(texture1);
+  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  shader->SetTexture(image1);
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt32;
@@ -274,10 +273,10 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
       {tl, p1},
   });
 
-  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
-  texture1->SetSampler({.min_mag_filter = Filter::kLinear});
-  auto texture2 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
-  texture2->SetSampler({.min_mag_filter = Filter::kNearest});
+  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  image1->SetSampler({.min_mag_filter = Filter::kLinear});
+  auto image2 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  image2->SetSampler({.min_mag_filter = Filter::kNearest});
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
@@ -290,7 +289,7 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
           .alpha = 1.0,
           .offset = {0, -0.5},
       });
-      shader->SetTexture(texture1);
+      shader->SetTexture(image1);
       rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
     {
@@ -299,7 +298,7 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
           .alpha = 1.0,
           .offset = {0, 0.5},
       });
-      shader->SetTexture(texture2);
+      shader->SetTexture(image2);
       rasterizer.Draw(*pipeline, *vertex_buffer, *uniform_buffer, 6);
     }
 
@@ -339,12 +338,12 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
       .alpha = 1.0,
       .offset = {0, 0},
   });
-  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
   Sampler sampler;
   sampler.wrap_mode_s = WrapMode::kRepeat;
   sampler.wrap_mode_t = WrapMode::kMirror;
-  texture1->SetSampler(sampler);
-  shader->SetTexture(texture1);
+  image1->SetSampler(sampler);
+  shader->SetTexture(image1);
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
@@ -388,12 +387,12 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
       .alpha = 1.0,
       .offset = {0, 0},
   });
-  auto texture1 = std::make_shared<Texture>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
   Sampler sampler;
   sampler.wrap_mode_s = WrapMode::kClamp;
   sampler.wrap_mode_t = WrapMode::kMirror;
-  texture1->SetSampler(sampler);
-  shader->SetTexture(texture1);
+  image1->SetSampler(sampler);
+  shader->SetTexture(image1);
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
@@ -411,9 +410,9 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
   model.SetScale(0.075);
-  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
-  texture->SetSampler({.min_mag_filter = Filter::kLinear});
-  model.SetTexture(texture);
+  auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "marble.jpg");
+  image->SetSampler({.min_mag_filter = Filter::kLinear});
+  model.SetTexture(image);
   ASSERT_TRUE(model.IsValid());
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
@@ -428,9 +427,9 @@ TEST_F(RasterizerTest, CanMSAA) {
   Application application({1024, 768}, SampleCount::kFour);
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
-  auto texture = std::make_shared<Texture>(SFT_ASSETS_LOCATION "marble.jpg");
-  texture->SetSampler({.min_mag_filter = Filter::kLinear});
-  model.SetTexture(texture);
+  auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "marble.jpg");
+  image->SetSampler({.min_mag_filter = Filter::kLinear});
+  model.SetTexture(image);
   ASSERT_TRUE(model.IsValid());
   const char* msaa_items[] = {
       "No MSAA",  //
@@ -492,18 +491,18 @@ TEST_F(RasterizerTest, CanMSAA) {
 }
 
 static void DisplayTextureInHUD(const char* title,
-                                Texture* tex,
+                                Image* image,
                                 ScalarF scale) {
-  if (!tex) {
+  if (!image) {
     return;
   }
   ImGui::Text(title, "");
   const auto tint_color = ImVec4(1, 1, 1, 1);
   const auto border_color = ImVec4(1, 1, 1, 1);
-  const auto tex_size = tex->GetSize();
+  const auto tex_size = image->GetSize();
   const auto image_pos = ImGui::GetCursorScreenPos();
   const auto image_size = glm::vec2{tex_size.x * scale, tex_size.y * scale};
-  ImGui::Image(tex,                                 //
+  ImGui::Image(image,                               //
                ImVec2(image_size.x, image_size.y),  //
                ImVec2(0, 1),                        // uv0
                ImVec2(1, 0),                        // uv1
@@ -527,10 +526,10 @@ static void DisplayTextureInHUD(const char* title,
     uv1.y = 1.f - uv1.y;
     uv2.y = 1.f - uv2.y;
     const auto tooltip_image_size = image_size / 2.0f;
-    auto sampled = tex->Sample(uv);
+    auto sampled = image->Sample(uv);
     ImGui::ColorEdit4("Color", (float*)&sampled);
     ImGui::Text("%s (%.2fx)", title, zoom_factor);
-    ImGui::Image(tex,                                                 // texture
+    ImGui::Image(image,                                               // texture
                  ImVec2(tooltip_image_size.x, tooltip_image_size.y),  // size
                  ImVec2{uv1.x, uv1.y},                                // uv1
                  ImVec2{uv2.x, uv2.y},                                // uv2
@@ -546,18 +545,17 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
 
-  auto texture =
-      std::make_shared<Texture>(SFT_ASSETS_LOCATION "helmet/Base.png");
-  texture->SetSampler({.min_mag_filter = Filter::kNearest});
-  model.SetTexture(texture);
+  auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "helmet/Base.png");
+  image->SetSampler({.min_mag_filter = Filter::kNearest});
+  model.SetTexture(image);
   model.GetPipeline().stencil_desc = StencilAttachmentDescriptor{
       .stencil_test_enabled = true,
       .stencil_compare = CompareFunction::kAlways,
       .depth_stencil_pass = StencilOperation::kIncrementClamp,
   };
   ASSERT_TRUE(model.IsValid());
-  static std::shared_ptr<Texture> depth_tex;
-  static std::shared_ptr<Texture> overdraw_tex;
+  static std::shared_ptr<Image> depth_tex;
+  static std::shared_ptr<Image> overdraw_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
     static float rotation = 45 + 90;
@@ -658,16 +656,16 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
   uniform_buffer->Emplace(Uniforms{
       .color = kColorFuchsia,
   });
-  static std::shared_ptr<Texture> depth_tex;
+  static std::shared_ptr<Image> depth_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 3u);
-    depth_tex = rasterizer.CaptureDebugDepthTexture();
-    DisplayTextureInHUD("Depth Buffer", depth_tex.get(), 0.25);
+    depth_image = rasterizer.CaptureDebugDepthTexture();
+    DisplayTextureInHUD("Depth Buffer", depth_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  depth_tex = nullptr;
+  depth_image = nullptr;
 }
 
 TEST_F(RasterizerTest, CanPerformDepthTest) {
@@ -698,18 +696,18 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
   auto uniform_buffer2 = buffer->Emplace(Uniforms{
       .color = kColorFirebrick,
   });
-  static std::shared_ptr<Texture> depth_tex;
+  static std::shared_ptr<Image> depth_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     pipeline.depth_desc.depth_test_enabled = true;
     rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
     rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
-    depth_tex = rasterizer.CaptureDebugDepthTexture();
-    DisplayTextureInHUD("Depth Buffer", depth_tex.get(), 0.25);
+    depth_image = rasterizer.CaptureDebugDepthTexture();
+    DisplayTextureInHUD("Depth Buffer", depth_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  depth_tex.reset();
+  depth_image.reset();
 }
 
 TEST_F(RasterizerTest, CanShowHUD) {
@@ -746,7 +744,7 @@ TEST_F(RasterizerTest, CanvasCanDrawStuff) {
 TEST_F(RasterizerTest, CanStencil) {
   Application application;
   auto context = std::make_shared<CanvasContext>();
-  static std::shared_ptr<Texture> stencil_tex;
+  static std::shared_ptr<Image> stencil_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
     Canvas canvas(context);
@@ -768,18 +766,18 @@ TEST_F(RasterizerTest, CanStencil) {
     paint.color = kColorBlue.WithAlpha(128);
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
-    stencil_tex = rasterizer.CaptureDebugStencilTexture();
-    DisplayTextureInHUD("Stencil Buffer", stencil_tex.get(), 0.25);
+    stencil_image = rasterizer.CaptureDebugStencilTexture();
+    DisplayTextureInHUD("Stencil Buffer", stencil_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  stencil_tex = nullptr;
+  stencil_image = nullptr;
 }
 
 TEST_F(RasterizerTest, CanClipWithStencils) {
   Application application;
   auto context = std::make_shared<CanvasContext>();
-  static std::shared_ptr<Texture> stencil_tex;
+  static std::shared_ptr<Image> stencil_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
     Canvas canvas(context);
@@ -811,12 +809,12 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
 
-    stencil_tex = rasterizer.CaptureDebugStencilTexture();
-    DisplayTextureInHUD("Stencil Buffer", stencil_tex.get(), 0.25);
+    stencil_image = rasterizer.CaptureDebugStencilTexture();
+    DisplayTextureInHUD("Stencil Buffer", stencil_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  stencil_tex = nullptr;
+  stencil_image = nullptr;
 }
 
 }  // namespace testing

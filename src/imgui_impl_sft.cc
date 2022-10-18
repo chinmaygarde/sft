@@ -9,7 +9,7 @@
 namespace sft {
 
 struct RendererData {
-  std::shared_ptr<Texture> font_atlas;
+  std::shared_ptr<Image> font_atlas;
   std::shared_ptr<ImGuiShader> shader;
   std::shared_ptr<Pipeline> pipeline;
 };
@@ -38,12 +38,12 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
 
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<ImGuiShader>();
-  auto font_atlas = std::make_shared<Texture>(
-      Mapping::MakeWithCopy(pixels, width * height * 4),
-      glm::ivec2{width, height});
+  auto font_atlas =
+      std::make_shared<Image>(Mapping::MakeWithCopy(pixels, width * height * 4),
+                              glm::ivec2{width, height});
   font_atlas->SetSampler({.min_mag_filter = Filter::kNearest});
 
-  shader->SetTexture(font_atlas.get());
+  shader->SetImage(font_atlas.get());
   io.Fonts->SetTexID(font_atlas.get());
 
   pipeline->shader = shader;
@@ -143,8 +143,8 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
         vertex_buffer->Emplace(v3);
       }
 
-      auto texture = reinterpret_cast<Texture*>(cmd.GetTexID());
-      user_data->shader->SetTexture(texture);
+      auto texture = reinterpret_cast<Image*>(cmd.GetTexID());
+      user_data->shader->SetImage(texture);
 
       rasterizer->Draw(*user_data->pipeline,  // pipeline
                        *vertex_buffer,        // vertex_buffer

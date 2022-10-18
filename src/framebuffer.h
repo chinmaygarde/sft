@@ -94,16 +94,16 @@ inline Color PerformResolve(const Color* samples, uint8_t count) {
 }
 
 template <class T, class = std::enable_if_t<std::is_standard_layout_v<T>>>
-class Framebuffer {
+class Texture {
  public:
-  Framebuffer(glm::ivec2 size, SampleCount samples = SampleCount::kOne)
-      : Framebuffer(reinterpret_cast<T*>(std::calloc(
-                        size.x * size.y * static_cast<uint8_t>(samples),
-                        sizeof(T))),
-                    size,
-                    samples) {}
+  Texture(glm::ivec2 size, SampleCount samples = SampleCount::kOne)
+      : Texture(reinterpret_cast<T*>(
+                    std::calloc(size.x * size.y * static_cast<uint8_t>(samples),
+                                sizeof(T))),
+                size,
+                samples) {}
 
-  ~Framebuffer() { std::free(allocation_); }
+  ~Texture() { std::free(allocation_); }
 
   bool IsValid() const { return allocation_ != nullptr; }
 
@@ -173,7 +173,7 @@ class Framebuffer {
     return {min, max};
   }
 
-  std::shared_ptr<Texture> CreateTexture(
+  std::shared_ptr<Image> CreateImage(
       std::function<Color(const T&)> transform) const {
     if (sample_count_ != SampleCount::kOne) {
       return nullptr;
@@ -191,14 +191,14 @@ class Framebuffer {
         size,                                          //
         [allocation]() { std::free(allocation); }      //
     );
-    return std::make_shared<Texture>(mapping, size_);
+    return std::make_shared<Image>(mapping, size_);
   }
 
   glm::ivec2 GetSize() const { return size_; }
 
   SampleCount GetSampleCount() const { return sample_count_; }
 
-  [[nodiscard]] bool Resolve(Framebuffer<T>& to) const {
+  [[nodiscard]] bool Resolve(Texture<T>& to) const {
     if (to.GetSize() != GetSize()) {
       return false;
     }
@@ -221,10 +221,10 @@ class Framebuffer {
   glm::ivec2 size_ = {};
   SampleCount sample_count_;
 
-  Framebuffer(T* allocation, glm::ivec2 size, SampleCount sample_count)
+  Texture(T* allocation, glm::ivec2 size, SampleCount sample_count)
       : allocation_(allocation), size_(size), sample_count_(sample_count) {}
 
-  SFT_DISALLOW_COPY_AND_ASSIGN(Framebuffer);
+  SFT_DISALLOW_COPY_AND_ASSIGN(Texture);
 };
 
 }  // namespace sft

@@ -54,12 +54,12 @@ class ModelShader final : public Shader {
     return color;
   }
 
-  void SetTexture(std::shared_ptr<Texture> texture) {
+  void SetTexture(std::shared_ptr<Image> texture) {
     texture_ = std::move(texture);
   }
 
  private:
-  std::shared_ptr<Texture> texture_;
+  std::shared_ptr<Image> texture_;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(ModelShader);
 };

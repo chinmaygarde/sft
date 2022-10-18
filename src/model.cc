@@ -145,7 +145,7 @@ void Model::SetRotation(ScalarF rotation) {
   rotation_ = rotation;
 }
 
-void Model::SetTexture(std::shared_ptr<Texture> texture) {
+void Model::SetTexture(std::shared_ptr<Image> texture) {
   model_shader_->SetTexture(std::move(texture));
 }
 

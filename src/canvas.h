@@ -39,16 +39,16 @@ class CanvasShader final : public Shader {
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
     auto color = UNIFORM(color);
-    if (texture_) {
-      color *= texture_->Sample(VARYING_LOAD(uv));
+    if (image_) {
+      color *= image_->Sample(VARYING_LOAD(uv));
     }
     return color;
   }
 
-  void SetTexture(const Texture* texture) { texture_ = texture; }
+  void SetImage(const Image* texture) { image_ = texture; }
 
  private:
-  const Texture* texture_;
+  const Image* image_;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(CanvasShader);
 };
@@ -70,7 +70,7 @@ class CanvasContext {
 
   Pipeline& GetPipeline() { return pipeline_; }
 
-  void SetTexture(const Texture* texture) { shader_->SetTexture(texture); }
+  void SetImage(const Image* texture) { shader_->SetImage(texture); }
 
  private:
   std::shared_ptr<CanvasShader> shader_;
@@ -83,7 +83,7 @@ struct Paint {
   std::optional<ColorAttachmentDescriptor> color_desc;
   std::optional<DepthAttachmentDescriptor> depth_desc;
   std::optional<StencilAttachmentDescriptor> stencil_desc;
-  std::shared_ptr<Texture> texture;
+  std::shared_ptr<Image> image;
   uint32_t stencil_reference = 0;
 };
 
@@ -125,7 +125,7 @@ class Canvas {
     pipeline.stencil_desc =
         paint.stencil_desc.value_or(StencilAttachmentDescriptor{});
 
-    context_->SetTexture(paint.texture.get());
+    context_->SetImage(paint.image.get());
 
     rasterizer.Draw(pipeline,                //
                     vertex_buffer,           //
@@ -135,7 +135,7 @@ class Canvas {
                     paint.stencil_reference  //
     );
 
-    context_->SetTexture(nullptr);
+    context_->SetImage(nullptr);
   }
 
   void Translate(glm::vec2 tx) {

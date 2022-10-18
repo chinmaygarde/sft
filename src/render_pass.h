@@ -32,13 +32,13 @@ struct PassAttachment {
 
 struct ColorPassAttachment final : public PassAttachment {
   glm::vec4 clear_color = {0.0, 0.0, 0.0, 1.0};
-  std::shared_ptr<Framebuffer<Color>> texture;
-  std::shared_ptr<Framebuffer<Color>> resolve;
+  std::shared_ptr<Texture<Color>> texture;
+  std::shared_ptr<Texture<Color>> resolve;
 
   ColorPassAttachment(glm::ivec2 size, SampleCount sample_count) {
-    texture = std::make_shared<Framebuffer<Color>>(size, sample_count);
+    texture = std::make_shared<Texture<Color>>(size, sample_count);
     if (sample_count != SampleCount::kOne) {
-      resolve = std::make_shared<Framebuffer<Color>>(size, SampleCount::kOne);
+      resolve = std::make_shared<Texture<Color>>(size, SampleCount::kOne);
     }
   }
 
@@ -90,10 +90,10 @@ struct ColorPassAttachment final : public PassAttachment {
 
 struct DepthPassAttachment : public PassAttachment {
   ScalarF clear_depth = 1.0;
-  std::shared_ptr<Framebuffer<ScalarF>> texture;
+  std::shared_ptr<Texture<ScalarF>> texture;
 
   DepthPassAttachment(const glm::ivec2& size) {
-    texture = std::make_shared<Framebuffer<ScalarF>>(size);
+    texture = std::make_shared<Texture<ScalarF>>(size);
   }
 
   glm::ivec2 GetSize() const override { return texture->GetSize(); }
@@ -133,10 +133,10 @@ struct DepthPassAttachment : public PassAttachment {
 
 struct StencilPassAttachment : public PassAttachment {
   uint32_t clear_stencil = 0;
-  std::shared_ptr<Framebuffer<uint32_t>> texture;
+  std::shared_ptr<Texture<uint32_t>> texture;
 
   StencilPassAttachment(const glm::ivec2& size) {
-    texture = std::make_shared<Framebuffer<uint32_t>>(size);
+    texture = std::make_shared<Texture<uint32_t>>(size);
   }
 
   glm::ivec2 GetSize() const override { return texture->GetSize(); }

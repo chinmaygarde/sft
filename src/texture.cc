@@ -7,7 +7,7 @@
 
 namespace sft {
 
-Texture::Texture(const char* path) {
+Image::Image(const char* path) {
   int width = 0;
   int height = 0;
   int channels_in_file = 0;
@@ -24,10 +24,10 @@ Texture::Texture(const char* path) {
   size_ = {width, height};
 }
 
-Texture::Texture(std::shared_ptr<Mapping> mapping, glm::ivec2 size)
+Image::Image(std::shared_ptr<Mapping> mapping, glm::ivec2 size)
     : mapping_(std::move(mapping)), size_(size) {}
 
-Texture::~Texture() = default;
+Image::~Image() = default;
 
 constexpr ScalarF SamplerLocation(ScalarF location, WrapMode mode) {
   // Section 3.7.6 "Texture Wrap Modes"
@@ -46,7 +46,7 @@ constexpr ScalarF SamplerLocation(ScalarF location, WrapMode mode) {
   return 0.0;
 }
 
-glm::vec4 Texture::Sample(glm::vec2 pos) const {
+glm::vec4 Image::Sample(glm::vec2 pos) const {
   if (size_.x * size_.y <= 0) {
     return kColorBlack;
   }
@@ -55,14 +55,14 @@ glm::vec4 Texture::Sample(glm::vec2 pos) const {
                      SamplerLocation(pos.y, sampler_.wrap_mode_t)});
 }
 
-glm::vec4 Texture::SampleUnitNearest(glm::vec2 st) const {
+glm::vec4 Image::SampleUnitNearest(glm::vec2 st) const {
   return SampleUV({
       glm::clamp<Scalar>(st.x * size_.x, 0, size_.x - 1),
       glm::clamp<Scalar>(st.y * size_.y, 0, size_.y - 1),
   });
 }
 
-glm::vec4 Texture::SampleUnitLinear(glm::vec2 st) const {
+glm::vec4 Image::SampleUnitLinear(glm::vec2 st) const {
   ScalarF u = st.x * size_.x;
   ScalarF v = st.y * size_.y;
 
@@ -105,7 +105,7 @@ glm::vec4 Texture::SampleUnitLinear(glm::vec2 st) const {
 
 // From 3.7.7 Texture Minification
 // https://registry.khronos.org/OpenGL/specs/es/2.0/es_full_spec_2.0.pdf
-glm::vec4 Texture::SampleUnit(glm::vec2 pos) const {
+glm::vec4 Image::SampleUnit(glm::vec2 pos) const {
   switch (sampler_.min_mag_filter) {
     case Filter::kNearest:
       return SampleUnitNearest(pos);
@@ -115,11 +115,11 @@ glm::vec4 Texture::SampleUnit(glm::vec2 pos) const {
   return kColorBlack;
 }
 
-const uint8_t* Texture::GetBuffer() const {
+const uint8_t* Image::GetBuffer() const {
   return mapping_ ? mapping_->GetBuffer() : nullptr;
 }
 
-glm::vec4 Texture::SampleUV(glm::ivec2 uv) const {
+glm::vec4 Image::SampleUV(glm::ivec2 uv) const {
   uv = glm::clamp(uv, {0, 0}, {size_.x - 1, size_.y - 1});
   auto offset = size_.x * uv.y + uv.x;
   const Color* icolor = reinterpret_cast<const Color*>(GetBuffer()) + offset;

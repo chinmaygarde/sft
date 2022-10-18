@@ -17,7 +17,7 @@
 
 namespace sft {
 
-class Texture;
+class Image;
 
 class Rasterizer {
  public:
@@ -111,9 +111,9 @@ class Rasterizer {
 
   const RasterizerMetrics& GetMetrics() const;
 
-  std::shared_ptr<Texture> CaptureDebugDepthTexture() const;
+  std::shared_ptr<Image> CaptureDebugDepthTexture() const;
 
-  std::shared_ptr<Texture> CaptureDebugStencilTexture() const;
+  std::shared_ptr<Image> CaptureDebugStencilTexture() const;
 
   [[nodiscard]] bool Resize(glm::ivec2 size);
 

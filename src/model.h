@@ -28,7 +28,7 @@ class Model {
 
   void SetRotation(ScalarF degrees);
 
-  void SetTexture(std::shared_ptr<Texture> texture);
+  void SetTexture(std::shared_ptr<Image> texture);
 
   void SetLightDirection(glm::vec3 dir);
 

@@ -7,13 +7,13 @@
 
 namespace sft {
 
-class Texture {
+class Image {
  public:
-  Texture(const char* file_path);
+  Image(const char* file_path);
 
-  Texture(std::shared_ptr<Mapping> mapping, glm::ivec2 size);
+  Image(std::shared_ptr<Mapping> mapping, glm::ivec2 size);
 
-  ~Texture();
+  ~Image();
 
   void SetSampler(Sampler sampler) { sampler_ = std::move(sampler); }
 
@@ -41,7 +41,7 @@ class Texture {
 
   const uint8_t* GetBuffer() const;
 
-  SFT_DISALLOW_COPY_AND_ASSIGN(Texture);
+  SFT_DISALLOW_COPY_AND_ASSIGN(Image);
 };
 
 }  // namespace sft
