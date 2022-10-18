@@ -51,8 +51,8 @@ struct ColorPassAttachment final : public PassAttachment {
     if (size == GetSize()) {
       return true;
     }
-    if (resolve) {
-      return resolve->Resize(size);
+    if (resolve && !resolve->Resize(size)) {
+      return false;
     }
     return texture->Resize(size);
   }

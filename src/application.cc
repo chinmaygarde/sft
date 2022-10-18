@@ -40,7 +40,7 @@ Application::Application(glm::ivec2 size, SampleCount sample_count)
 
   Uint32 window_flags = 0;
 
-  // window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
   window_flags |= SDL_WINDOW_RESIZABLE;
 
   sdl_window_ =
@@ -51,12 +51,28 @@ Application::Application(glm::ivec2 size, SampleCount sample_count)
                          window_size_.y,          //
                          window_flags             //
       );
+
   if (!sdl_window_) {
     return;
   }
 
   sdl_renderer_ = ::SDL_CreateRenderer(sdl_window_, -1, 0);
+
   if (!sdl_renderer_) {
+    return;
+  }
+
+  // The size of the renderer and that of the rasterizer may differ in case of
+  // Hi-DPI setups. Get the actual size and scale.
+  glm::ivec2 output_size;
+  if (::SDL_GetRendererOutputSize(sdl_renderer_,   //
+                                  &output_size.x,  //
+                                  &output_size.y   //
+                                  ) != 0) {
+    return;
+  }
+
+  if (!rasterizer_->Resize(output_size)) {
     return;
   }
 
