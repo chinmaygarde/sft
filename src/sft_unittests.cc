@@ -497,11 +497,14 @@ static void DisplayTextureInHUD(const char* title,
     return;
   }
   ImGui::Text(title, "");
+  auto& io = ImGui::GetIO();
   const auto tint_color = ImVec4(1, 1, 1, 1);
   const auto border_color = ImVec4(1, 1, 1, 1);
   const auto tex_size = image->GetSize();
   const auto image_pos = ImGui::GetCursorScreenPos();
-  const auto image_size = glm::vec2{tex_size.x * scale, tex_size.y * scale};
+  const auto image_size =
+      glm::vec2{tex_size.x * scale, tex_size.y * scale} /
+      glm::vec2{io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y};
   ImGui::Image(image,                               //
                ImVec2(image_size.x, image_size.y),  //
                ImVec2(0, 1),                        // uv0
@@ -509,7 +512,6 @@ static void DisplayTextureInHUD(const char* title,
                tint_color,                          // tint color
                border_color                         // border color
   );
-  auto& io = ImGui::GetIO();
   if (ImGui::IsItemHovered()) {
     ImGui::BeginTooltip();
     constexpr auto min_uv = glm::vec2{0.0f, 0.0f};
@@ -525,7 +527,7 @@ static void DisplayTextureInHUD(const char* title,
     uv.y = 1.f - uv.y;
     uv1.y = 1.f - uv1.y;
     uv2.y = 1.f - uv2.y;
-    const auto tooltip_image_size = image_size / 2.0f;
+    auto tooltip_image_size = image_size / 2.0f;
     auto sampled = image->Sample(uv);
     ImGui::ColorEdit4("Color", (float*)&sampled);
     ImGui::Text("%s (%.2fx)", title, zoom_factor);
