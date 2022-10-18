@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "event.h"
 #include "geom.h"
 #include "macros.h"
 #include "sdl_utils.h"
@@ -29,8 +28,6 @@ class Application {
   void SetTitle(std::string title);
 
   bool Update();
-
-  void OnTouchEvent(TouchEventType type, glm::vec2 pos);
 
   bool OnWindowSizeChanged(glm::ivec2 size);
 

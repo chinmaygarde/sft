@@ -98,8 +98,6 @@ bool Application::Render() {
   return result;
 }
 
-void Application::OnTouchEvent(TouchEventType type, glm::vec2 pos) {}
-
 bool Application::IsValid() const {
   return is_valid_;
 }

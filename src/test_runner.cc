@@ -43,23 +43,6 @@ bool TestRunner::Run(Application& application) const {
       ImGui_ImplSDL2_ProcessEvent(&event);
 
       switch (event.type) {
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP:
-          if (event.button.button != SDL_BUTTON_LEFT) {
-            break;
-          }
-          application.OnTouchEvent(event.type == SDL_MOUSEBUTTONDOWN
-                                       ? TouchEventType::kTouchDown
-                                       : TouchEventType::kTouchUp,
-                                   glm::vec2{event.button.x, event.button.y});
-          break;
-        case SDL_MOUSEMOTION:
-          if (event.button.button != SDL_BUTTON_LEFT) {
-            break;
-          }
-          application.OnTouchEvent(TouchEventType::kTouchMove,
-                                   glm::vec2{event.button.x, event.button.y});
-          break;
         case SDL_KEYUP:
           switch (event.key.keysym.sym) {
             case SDL_KeyCode::SDLK_q:
