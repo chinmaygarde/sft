@@ -1,5 +1,7 @@
 #include "mapping.h"
 
+#include <cstring>
+
 namespace sft {
 
 std::unique_ptr<Mapping> Mapping::MakeWithCopy(const uint8_t* buffer,
@@ -8,7 +10,7 @@ std::unique_ptr<Mapping> Mapping::MakeWithCopy(const uint8_t* buffer,
   if (!copied) {
     return nullptr;
   }
-  ::memmove(copied, buffer, size);
+  std::memmove(copied, buffer, size);
   return std::make_unique<Mapping>(reinterpret_cast<const uint8_t*>(copied),
                                    size, [copied]() { ::free(copied); });
 }

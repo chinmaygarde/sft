@@ -110,7 +110,7 @@ class Canvas {
     auto size = glm::vec2{rasterizer.GetSize()};
     auto projection = glm::ortho(0.f, size.x, size.y, 0.f);
     auto uniform_buffer = buffer->Emplace<Uniforms>(
-        Uniforms{.color = paint.color, .xformation = projection * ctm_});
+        Uniforms{.xformation = projection * ctm_, .color = paint.color});
     auto index_buffer =
         buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
 

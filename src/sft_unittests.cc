@@ -752,7 +752,7 @@ TEST_F(RasterizerTest, CanStencil) {
     Canvas canvas(context);
     Paint paint;
     paint.color = kColorRed.WithAlpha(128);
-    paint.color_desc = ColorAttachmentDescriptor{.blend.enabled = true};
+    paint.color_desc = ColorAttachmentDescriptor{.blend = {.enabled = true}};
     paint.stencil_desc = StencilAttachmentDescriptor{
         .stencil_test_enabled = true,
         .stencil_compare = CompareFunction::kAlways,

@@ -17,7 +17,7 @@ struct BufferView {
 
   const uint8_t* GetData() const;
 
-  constexpr operator bool() const { return static_cast<bool>(buffer_); }
+  operator bool() const { return static_cast<bool>(buffer_); }
 
  private:
   std::shared_ptr<Buffer> buffer_;

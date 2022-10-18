@@ -3,6 +3,8 @@
 #include "geom.h"
 #include "macros.h"
 
+#include <cstring>
+
 namespace sft {
 
 struct RasterizerMetrics {
@@ -20,7 +22,7 @@ struct RasterizerMetrics {
 
   void Display() const;
 
-  void Reset() { ::memset(this, 0, sizeof(RasterizerMetrics)); }
+  void Reset() { std::memset(this, 0, sizeof(RasterizerMetrics)); }
 };
 
 }  // namespace sft

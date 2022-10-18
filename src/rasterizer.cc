@@ -193,7 +193,7 @@ constexpr ScalarF EdgeFunction(const glm::vec2& v0,
   return (p.x - v0.x) * (v1.y - v0.y) - (p.y - v0.y) * (v1.x - v0.x);
 }
 
-constexpr bool IsTopLeftEdge(const glm::vec2& edge) {
+static bool IsTopLeftEdge(const glm::vec2& edge) {
   // Top edges are flat (y == 0) and go right (x == 0).
   const auto is_top =
       glm::epsilonEqual(edge.y, 0.0f, kEpsilon) && edge.x > 0.0f;
@@ -204,10 +204,10 @@ constexpr bool IsTopLeftEdge(const glm::vec2& edge) {
   return is_top || is_left;
 }
 
-constexpr bool PointInside(const glm::vec2& a,
-                           const glm::vec2& b,
-                           const glm::vec2& c,
-                           const glm::vec2& p) {
+static bool PointInside(const glm::vec2& a,
+                        const glm::vec2& b,
+                        const glm::vec2& c,
+                        const glm::vec2& p) {
   const auto edge_ab = EdgeFunction(a, b, p);
   const auto edge_bc = EdgeFunction(b, c, p);
   const auto edge_ca = EdgeFunction(c, a, p);

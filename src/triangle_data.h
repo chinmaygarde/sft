@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <type_traits>
 
 #include "buffer_view.h"
@@ -41,7 +42,7 @@ struct TriangleData {
         varyings(p_varyings),
         stencil_reference(p_stencil_reference) {}
 
-  constexpr size_t GetVertexIndex(size_t index) const {
+  size_t GetVertexIndex(size_t index) const {
     if (!index_buffer) {
       return index;
     }
@@ -69,7 +70,7 @@ struct TriangleData {
   template <class T>
   T GetVertexData(size_t index, size_t offset) const {
     T result;
-    ::memmove(&result, GetVertexDataPtr(index, offset), sizeof(T));
+    std::memmove(&result, GetVertexDataPtr(index, offset), sizeof(T));
     return result;
   }
 

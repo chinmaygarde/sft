@@ -98,8 +98,8 @@ target_compile_options(sft_lib
     -Werror
     -Wall
     -Wextra
-    -Wpedantic
     -Wno-unused-parameter
+    -Wno-missing-field-initializers
 )
 
 target_link_libraries(sft_lib
