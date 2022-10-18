@@ -92,29 +92,32 @@ bool Rasterizer::UpdateAndCheckFragmentPassesStencilTest(
   return stencil_test_passes;
 }
 
-void Rasterizer::UpdateTexel(const Pipeline& pipeline,
-                             Texel texel,
+void Rasterizer::UpdateColor(const ColorAttachmentDescriptor& color_desc,
+                             const glm::ivec2& pos,
+                             const Color& src,
                              size_t sample) {
-  if (IsOOB(texel.pos, size_)) {
+  if (IsOOB(pos, size_)) {
     return;
   }
+  auto dst = *pass_.color.texture->Get(pos, sample);
+  auto color = color_desc.blend.Blend(src, dst);
+  pass_.color.texture->Set(color, pos, sample);
+}
 
-  //----------------------------------------------------------------------------
-  // Write to the color attachment.
-  //----------------------------------------------------------------------------
-  auto dst = *pass_.color.texture->Get(texel.pos, sample);
-  auto src = texel.color;
-  auto color = pipeline.color_desc.blend.Blend(src, dst);
-  pass_.color.texture->Set(color, texel.pos, sample);
-
-  //----------------------------------------------------------------------------
-  // Write to the depth attachment.
-  //----------------------------------------------------------------------------
-  if (pipeline.depth_desc.depth_test_enabled) {
-    if (pipeline.depth_desc.depth_write_enabled) {
-      pass_.depth.texture->Set(texel.depth, texel.pos, sample);
-    }
+void Rasterizer::UpdateDepth(const DepthAttachmentDescriptor& depth_desc,
+                             const glm::ivec2& pos,
+                             ScalarF depth,
+                             size_t sample) {
+  if (IsOOB(pos, size_)) {
+    return;
   }
+  if (!depth_desc.depth_test_enabled) {
+    return;
+  }
+  if (!depth_desc.depth_write_enabled) {
+    return;
+  }
+  pass_.depth.texture->Set(depth, pos, sample);
 }
 
 void Rasterizer::Clear(Color color) {
@@ -377,13 +380,10 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       //------------------------------------------------------------------------
       // Update the texel.
       //------------------------------------------------------------------------
-      Texel texel;
-      texel.pos = frag;
-      texel.depth = depth;
-      texel.color = color;
       for (size_t s = 0; s < GetSampleCount(sample_count); s++) {
         if (samples_found & (1 << s)) {
-          UpdateTexel(data.pipeline, texel, s);
+          UpdateColor(data.pipeline.color_desc, frag, color, s);
+          UpdateDepth(data.pipeline.depth_desc, frag, depth, s);
         }
       }
     }

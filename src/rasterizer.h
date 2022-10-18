@@ -135,7 +135,15 @@ class Rasterizer {
                                                uint32_t reference_value,
                                                size_t sample);
 
-  void UpdateTexel(const Pipeline& pipeline, Texel texel, size_t sample);
+  void UpdateColor(const ColorAttachmentDescriptor& color_desc,
+                   const glm::ivec2& pos,
+                   const Color& color,
+                   size_t sample);
+
+  void UpdateDepth(const DepthAttachmentDescriptor& depth_desc,
+                   const glm::ivec2& pos,
+                   ScalarF depth,
+                   size_t sample);
 
   void DrawTriangle(const TriangleData& data);
 

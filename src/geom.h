@@ -339,12 +339,6 @@ struct Rect {
   }
 };
 
-struct Texel {
-  glm::ivec2 pos;
-  ScalarF depth = 0.0;
-  Color color;
-};
-
 template <class T>
 T BarycentricInterpolation(const T& p1,
                            const T& p2,
