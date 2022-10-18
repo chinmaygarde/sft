@@ -5,10 +5,10 @@
 #include <memory>
 
 #include "event.h"
-#include "framebuffer.h"
 #include "geom.h"
 #include "macros.h"
 #include "sdl_utils.h"
+#include "texture.h"
 #include "timing.h"
 
 namespace sft {

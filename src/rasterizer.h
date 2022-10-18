@@ -8,11 +8,11 @@
 
 #include "buffer.h"
 #include "buffer_view.h"
-#include "framebuffer.h"
 #include "geom.h"
 #include "pipeline.h"
 #include "rasterizer_metrics.h"
 #include "render_pass.h"
+#include "texture.h"
 #include "triangle_data.h"
 
 namespace sft {

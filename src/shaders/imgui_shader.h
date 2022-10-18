@@ -1,9 +1,9 @@
 #pragma once
 
+#include "image.h"
 #include "invocation.h"
 #include "macros.h"
 #include "shader.h"
-#include "texture.h"
 
 namespace sft {
 

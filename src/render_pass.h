@@ -1,8 +1,8 @@
 #pragma once
 
-#include "framebuffer.h"
 #include "geom.h"
 #include "macros.h"
+#include "texture.h"
 
 namespace sft {
 

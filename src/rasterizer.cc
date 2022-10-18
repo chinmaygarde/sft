@@ -1,10 +1,10 @@
 #include "rasterizer.h"
 #include <cfloat>
 
+#include "image.h"
 #include "invocation.h"
 #include "macros.h"
 #include "mapping.h"
-#include "texture.h"
 
 namespace sft {
 

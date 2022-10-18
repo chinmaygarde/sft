@@ -43,10 +43,10 @@ add_library(sft_lib
   src/command_buffer.h
   src/command_encoder.cc
   src/command_encoder.h
-  src/framebuffer.cc
-  src/framebuffer.h
   src/geom.cc
   src/geom.h
+  src/image.cc
+  src/image.h
   src/imgui_impl_sft.cc
   src/imgui_impl_sft.h
   src/invocation.cc

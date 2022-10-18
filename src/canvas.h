@@ -4,11 +4,11 @@
 
 #include "attachment.h"
 #include "geom.h"
+#include "image.h"
 #include "invocation.h"
 #include "macros.h"
 #include "rasterizer.h"
 #include "shader.h"
-#include "texture.h"
 
 namespace sft {
 

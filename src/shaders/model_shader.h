@@ -1,8 +1,8 @@
 #pragma once
 
+#include "image.h"
 #include "invocation.h"
 #include "shader.h"
-#include "texture.h"
 
 namespace sft {
 

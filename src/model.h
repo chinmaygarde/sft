@@ -8,9 +8,9 @@
 
 #include "buffer.h"
 #include "geom.h"
+#include "image.h"
 #include "rasterizer.h"
 #include "shaders/model_shader.h"
-#include "texture.h"
 
 namespace sft {
 
