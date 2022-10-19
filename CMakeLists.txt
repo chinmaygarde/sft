@@ -38,6 +38,8 @@ add_library(sft_lib
   src/buffer_view.cc
   src/buffer_view.h
   src/canvas.cc
+  third_party/perfetto/sdk/perfetto.cc
+  third_party/perfetto/sdk/perfetto.h
   src/canvas.h
   src/command_buffer.cc
   src/command_buffer.h
@@ -115,6 +117,7 @@ target_include_directories(sft_lib
     third_party/stb
     third_party/imgui
     third_party/spirv_cross/include
+    third_party/perfetto/sdk
 )
 
 add_executable(sft_unittests

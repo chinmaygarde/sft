@@ -16,7 +16,7 @@ class Rasterizer;
 
 class Application {
  public:
-  Application(glm::ivec2 size = {1024, 768},
+  Application(glm::ivec2 size = {800, 600},
               SampleCount sample_count = SampleCount::kOne);
 
   ~Application();

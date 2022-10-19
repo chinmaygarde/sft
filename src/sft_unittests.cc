@@ -424,7 +424,7 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
 }
 
 TEST_F(RasterizerTest, CanMSAA) {
-  Application application({1024, 768}, SampleCount::kFour);
+  Application application({800, 600}, SampleCount::kFour);
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
   auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "marble.jpg");
