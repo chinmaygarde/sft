@@ -26,10 +26,6 @@ class TestRunner : public ::testing::Test {
   TimePoint start_time_;
   std::unique_ptr<perfetto::TracingSession> session_;
 
-  void StartTracing();
-
-  void StopTracing();
-
   SFT_DISALLOW_COPY_AND_ASSIGN(TestRunner);
 };
 

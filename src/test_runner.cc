@@ -2,14 +2,12 @@
 
 #include <SDL.h>
 
-#include <fstream>
 #include <sstream>
 
 #include "application.h"
 #include "backends/imgui_impl_sdl.h"
 #include "fixtures_location.h"
 #include "imgui.h"
-#include "perfetto.h"
 
 namespace sft {
 
@@ -28,14 +26,6 @@ static std::string CreateTestName() {
                 ->test_suite_name();
   stream << ".";
   stream << ::testing::UnitTest::GetInstance()->current_test_info()->name();
-  return stream.str();
-}
-
-static std::string CreateTraceFilePath() {
-  std::stringstream stream;
-  stream << SFT_ASSETS_LOCATION
-         << ::testing::UnitTest::GetInstance()->current_test_info()->name()
-         << ".perfetto-trace";
   return stream.str();
 }
 
@@ -101,46 +91,8 @@ void TestRunner::SetUp() {
   if (gSkipRemainingTests) {
     GTEST_SKIP();
   }
-  StartTracing();
 }
 
-void TestRunner::TearDown() {
-  StopTracing();
-}
-
-void TestRunner::StartTracing() {
-  if (session_) {
-    return;
-  }
-
-  perfetto::TraceConfig trace;
-  trace.add_buffers()->set_size_kb(5 * 1024);
-  auto* data_source_config = trace.add_data_sources()->mutable_config();
-  data_source_config->set_name("track_event");
-
-  session_ = perfetto::Tracing::NewTrace();
-  session_->Setup(trace);
-  session_->StartBlocking();
-
-  perfetto::ProcessTrack process_track = perfetto::ProcessTrack::Current();
-  perfetto::protos::gen::TrackDescriptor desc = process_track.Serialize();
-  desc.mutable_process()->set_process_name("SFT");
-  perfetto::TrackEvent::SetTrackDescriptor(process_track, desc);
-}
-
-void TestRunner::StopTracing() {
-  if (!session_) {
-    return;
-  }
-  perfetto::TrackEvent::Flush();
-  auto session = std::move(session_);
-  session->StopBlocking();
-  const auto trace_data = session->ReadTraceBlocking();
-  std::ofstream trace_stream;
-  trace_stream.open(CreateTraceFilePath().c_str(),
-                    std::ios::trunc | std::ios::out | std::ios::binary);
-  trace_stream.write(&trace_data[0], trace_data.size());
-  trace_stream.close();
-}
+void TestRunner::TearDown() {}
 
 }  // namespace sft
