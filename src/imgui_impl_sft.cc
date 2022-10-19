@@ -27,10 +27,6 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   io.BackendRendererUserData = data;
   io.BackendRendererName = "SFT";
 
-  ImFontConfig cfg;
-  cfg.SizePixels = 18;
-  io.Fonts->AddFontDefault(&cfg);
-
   uint8_t* pixels = nullptr;
   int width = 0;
   int height = 0;
