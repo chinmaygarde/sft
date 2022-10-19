@@ -183,6 +183,7 @@ struct RenderPass {
       : color(size, sample_count), depth(size), stencil(size) {}
 
   [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Resize");
     return color.Resize(size) && depth.Resize(size) && stencil.Resize(size);
   }
 
@@ -209,6 +210,7 @@ struct RenderPass {
   }
 
   bool Begin() {
+    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Begin");
     color.Load();
     depth.Load();
     stencil.Load();
@@ -216,6 +218,7 @@ struct RenderPass {
   }
 
   bool End() {
+    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::End");
     color.Store();
     depth.Store();
     stencil.Store();

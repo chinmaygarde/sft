@@ -20,8 +20,15 @@ class TestRunner : public ::testing::Test {
 
   void SetUp() override;
 
+  void TearDown() override;
+
  private:
   TimePoint start_time_;
+  std::unique_ptr<perfetto::TracingSession> session_;
+
+  void StartTracing();
+
+  void StopTracing();
 
   SFT_DISALLOW_COPY_AND_ASSIGN(TestRunner);
 };

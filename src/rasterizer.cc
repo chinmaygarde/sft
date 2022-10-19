@@ -248,6 +248,7 @@ static bool PointInside(const glm::vec2& a,
 }
 
 void Rasterizer::DrawTriangle(const TriangleData& data) {
+  TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
   metrics_.primitive_count++;
 
   auto viewport = data.pipeline.viewport.value_or(size_);
@@ -325,6 +326,8 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   metrics_.primitives_processed++;
 
   const auto sample_count = pass_.color.texture->GetSampleCount();
+
+  TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------

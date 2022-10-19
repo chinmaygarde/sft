@@ -38,8 +38,6 @@ add_library(sft_lib
   src/buffer_view.cc
   src/buffer_view.h
   src/canvas.cc
-  third_party/perfetto/sdk/perfetto.cc
-  third_party/perfetto/sdk/perfetto.h
   src/canvas.h
   src/command_buffer.cc
   src/command_buffer.h
@@ -81,6 +79,8 @@ add_library(sft_lib
   src/texture.h
   src/timing.cc
   src/timing.h
+  src/tracing.cc
+  src/tracing.h
   src/triangle_data.cc
   src/triangle_data.h
   src/vertex_descriptor.cc
@@ -93,6 +93,8 @@ add_library(sft_lib
   third_party/imgui/imgui_draw.cpp
   third_party/imgui/imgui_tables.cpp
   third_party/imgui/imgui_widgets.cpp
+  third_party/perfetto/sdk/perfetto.cc
+  third_party/perfetto/sdk/perfetto.h
 )
 
 target_compile_options(sft_lib
@@ -124,9 +126,10 @@ add_executable(sft_unittests
   src/sft_unittests.cc
   src/test_runner.h
   src/test_runner.cc
+  src/test_main.cc
 )
 
-target_link_libraries(sft_unittests sft_lib gtest_main)
+target_link_libraries(sft_unittests sft_lib gtest)
 
 get_filename_component(SFT_ASSETS_LOCATION assets ABSOLUTE)
 configure_file(src/fixtures_location.h.in fixtures_location.h @ONLY)

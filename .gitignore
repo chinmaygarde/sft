@@ -3,4 +3,5 @@ build/
 *.sublime-workspace
 .cache/
 *.orig
+*.perfetto-trace
 *.ini
