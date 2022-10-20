@@ -4,12 +4,12 @@
 
 #include "tracing.h"
 
-#define SFT_ASSERT(x)                                       \
-  {                                                         \
-    if (!(x)) {                                             \
-      std::cout << "Assertion " #x " failed." << std::endl; \
-      std::abort();                                         \
-    }                                                       \
+#define SFT_ASSERT(x)                                            \
+  {                                                              \
+    if (!(x)) {                                                  \
+      std::cout << "SFT: Assertion " #x " failed." << std::endl; \
+      std::abort();                                              \
+    }                                                            \
   }
 
 #define SFT_DISALLOW_COPY(TypeName) TypeName(const TypeName&) = delete

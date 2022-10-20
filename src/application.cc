@@ -119,6 +119,7 @@ bool Application::IsValid() const {
 }
 
 bool Application::Update() {
+  TRACE_EVENT(kTraceCategoryApplication, __FUNCTION__);
   if (!rasterizer_callback_) {
     return false;
   }
@@ -126,6 +127,7 @@ bool Application::Update() {
 }
 
 bool Application::OnRender() {
+  TRACE_EVENT(kTraceCategoryApplication, __FUNCTION__);
   if (!is_valid_) {
     return false;
   }

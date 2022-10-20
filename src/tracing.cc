@@ -29,25 +29,22 @@ void StartTracing() {
   // recording. In this example we just need the "track_event" data source,
   // which corresponds to the TRACE_EVENT trace points.
   perfetto::TraceConfig cfg;
-  cfg.add_buffers()->set_size_kb(1024 * 4);
+  cfg.add_buffers()->set_size_kb(1024);
   auto* ds_cfg = cfg.add_data_sources()->mutable_config();
   ds_cfg->set_name("track_event");
 
-  auto tracing_session = perfetto::Tracing::NewTrace();
-  tracing_session->Setup(cfg);
-  tracing_session->StartBlocking();
-
+  gGlobalSession = perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  gGlobalSession->Setup(cfg);
+  gGlobalSession->StartBlocking();
   // Give a custom name for the traced process.
   perfetto::ProcessTrack process_track = perfetto::ProcessTrack::Current();
   perfetto::protos::gen::TrackDescriptor desc = process_track.Serialize();
-  desc.mutable_process()->set_process_name("SFT");
+  desc.mutable_process()->set_process_name("SFT Harness");
   perfetto::TrackEvent::SetTrackDescriptor(process_track, desc);
-
-  gGlobalSession = std::move(tracing_session);
 }
 
 void StopTracing() {
-  SFT_ASSERT(gGlobalSession);
+  SFT_ASSERT(gGlobalSession.get());
   // Make sure the last event is closed for this example.
   perfetto::TrackEvent::Flush();
 
@@ -56,14 +53,14 @@ void StopTracing() {
   std::vector<char> trace_data(gGlobalSession->ReadTraceBlocking());
 
   // Write the result into a file.
-  // Note: To save memory with longer traces, you can tell Perfetto to write
-  // directly into a file by passing a file descriptor into Setup() above.
+  static constexpr const char* kTraceFileName = "last_run.perfetto-trace";
   std::ofstream output;
-  output.open("last_run.perfetto-trace",
-              std::ios::trunc | std::ios::out | std::ios::binary);
+  output.open(kTraceFileName, std::ios::out | std::ios::binary);
   output.write(&trace_data[0], std::streamsize(trace_data.size()));
   output.close();
   gGlobalSession.reset();
+  std::cout << "Trace session written to \"" << kTraceFileName << "\" ("
+            << trace_data.size() << " bytes)." << std::endl;
 }
 
 }  // namespace sft
