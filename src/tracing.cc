@@ -33,7 +33,7 @@ void StartTracing() {
   auto* ds_cfg = cfg.add_data_sources()->mutable_config();
   ds_cfg->set_name("track_event");
 
-  gGlobalSession = perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  gGlobalSession = perfetto::Tracing::NewTrace();
   gGlobalSession->Setup(cfg);
   gGlobalSession->StartBlocking();
   // Give a custom name for the traced process.
@@ -49,8 +49,12 @@ void StopTracing() {
   perfetto::TrackEvent::Flush();
 
   // Stop tracing and read the trace data.
+  gGlobalSession->FlushBlocking();
   gGlobalSession->StopBlocking();
+
   std::vector<char> trace_data(gGlobalSession->ReadTraceBlocking());
+
+  gGlobalSession.reset();
 
   // Write the result into a file.
   static constexpr const char* kTraceFileName = "last_run.perfetto-trace";
@@ -58,7 +62,7 @@ void StopTracing() {
   output.open(kTraceFileName, std::ios::out | std::ios::binary);
   output.write(&trace_data[0], std::streamsize(trace_data.size()));
   output.close();
-  gGlobalSession.reset();
+
   std::cout << "Trace session written to \"" << kTraceFileName << "\" ("
             << trace_data.size() << " bytes)." << std::endl;
 }
