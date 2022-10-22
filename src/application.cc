@@ -34,6 +34,7 @@ std::string CreateWindowTitle(MillisecondsF frame_time,
 Application::Application(glm::ivec2 size, SampleCount sample_count)
     : rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
       launch_time_(Clock::now()) {
+  TRACE_EVENT(kTraceCategoryApplication, "ApplicationCreate");
   SFT_ASSERT(rasterizer_);
 
   window_size_ = rasterizer_->GetSize();
@@ -179,15 +180,18 @@ bool Application::OnRender() {
   dest.y = 0;
   dest.w = size.x;
   dest.h = size.y;
-  if (::SDL_RenderCopyEx(sdl_renderer_,       //
-                         color_attachment,    //
-                         nullptr,             //
-                         &dest,               //
-                         180,                 //
-                         NULL,                //
-                         SDL_FLIP_HORIZONTAL  //
-                         ) != 0) {
-    return false;
+  {
+    TRACE_EVENT(kTraceCategoryApplication, "SDL_RenderCopy");
+    if (::SDL_RenderCopyEx(sdl_renderer_,       //
+                           color_attachment,    //
+                           nullptr,             //
+                           &dest,               //
+                           180,                 //
+                           NULL,                //
+                           SDL_FLIP_HORIZONTAL  //
+                           ) != 0) {
+      return false;
+    }
   }
 
   ::SDL_RenderPresent(sdl_renderer_);

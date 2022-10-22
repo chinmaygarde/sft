@@ -45,14 +45,18 @@ struct ColorPassAttachment final : public PassAttachment {
   glm::ivec2 GetSize() const override { return texture->GetSize(); }
 
   [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    TRACE_EVENT(kTraceCategoryRasterizer, "ColorResize");
     if (!IsValid()) {
       return false;
     }
     if (size == GetSize()) {
       return true;
     }
-    if (resolve && !resolve->Resize(size)) {
-      return false;
+    {
+      TRACE_EVENT(kTraceCategoryRasterizer, "ResolveResize");
+      if (resolve && !resolve->Resize(size)) {
+        return false;
+      }
     }
     return texture->Resize(size);
   }
@@ -101,6 +105,7 @@ struct DepthPassAttachment : public PassAttachment {
   bool IsValid() const override { return !!texture; }
 
   [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    TRACE_EVENT(kTraceCategoryRasterizer, "DepthResize");
     if (!IsValid()) {
       return false;
     }
@@ -144,6 +149,7 @@ struct StencilPassAttachment : public PassAttachment {
   bool IsValid() const override { return !!texture; }
 
   [[nodiscard]] bool Resize(const glm::ivec2& size) {
+    TRACE_EVENT(kTraceCategoryRasterizer, "StencilResize");
     if (!IsValid()) {
       return false;
     }
