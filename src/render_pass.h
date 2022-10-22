@@ -180,12 +180,12 @@ struct StencilPassAttachment : public PassAttachment {
   void Store() override {}
 };
 
-struct RenderPass {
+struct RenderPassAttachments {
   ColorPassAttachment color;
   DepthPassAttachment depth;
   StencilPassAttachment stencil;
 
-  RenderPass(const glm::ivec2& size, SampleCount sample_count)
+  RenderPassAttachments(const glm::ivec2& size, SampleCount sample_count)
       : color(size, sample_count), depth(size), stencil(size) {}
 
   [[nodiscard]] bool Resize(const glm::ivec2& size) {
@@ -215,16 +215,16 @@ struct RenderPass {
     return texture_size == depth_size && texture_size == stencil_size;
   }
 
-  bool Begin() {
-    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Begin");
+  bool Load() {
+    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Load");
     color.Load();
     depth.Load();
     stencil.Load();
     return true;
   }
 
-  bool End() {
-    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::End");
+  bool Store() {
+    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Store");
     color.Store();
     depth.Store();
     stencil.Store();

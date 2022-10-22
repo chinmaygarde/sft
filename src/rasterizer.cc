@@ -126,7 +126,7 @@ void Rasterizer::UpdateDepth(const DepthAttachmentDescriptor& depth_desc,
 
 void Rasterizer::Clear(Color color) {
   pass_.color.clear_color = color;
-  pass_.Begin();
+  pass_.Load();
   metrics_.area = pass_.GetSize();
 }
 
@@ -457,7 +457,7 @@ bool Rasterizer::Resize(glm::ivec2 size) {
   return true;
 }
 
-RenderPass& Rasterizer::GetRenderPass() {
+RenderPassAttachments& Rasterizer::GetRenderPass() {
   return pass_;
 }
 
