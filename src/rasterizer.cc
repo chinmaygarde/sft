@@ -248,94 +248,15 @@ static bool PointInside(const glm::vec2& a,
   return true;
 }
 
-void Rasterizer::DrawTriangle(const TriangleData& data) {
-  TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
-  metrics_.primitive_count++;
-
-  auto viewport = data.pipeline->viewport.value_or(size_);
-
-  //----------------------------------------------------------------------------
-  // Invoke vertex shaders. The clip-space coordinates returned are specified by
-  // homogenous 4D vectors.
-  //----------------------------------------------------------------------------
-  VertexInvocation vertex_invocation(*this, data, data.base_vertex_id);
-  const auto clip_p1 = data.pipeline->shader->ProcessVertex(vertex_invocation);
-  vertex_invocation.vertex_id++;
-  const auto clip_p2 = data.pipeline->shader->ProcessVertex(vertex_invocation);
-  vertex_invocation.vertex_id++;
-  const auto clip_p3 = data.pipeline->shader->ProcessVertex(vertex_invocation);
-  metrics_.vertex_invocations += 3;
-
-  //----------------------------------------------------------------------------
-  // Convert clip space coordinates into NDC coordinates (divide by w).
-  //----------------------------------------------------------------------------
-  const auto ndc_p1 = ToNDC(clip_p1);
-  const auto ndc_p2 = ToNDC(clip_p2);
-  const auto ndc_p3 = ToNDC(clip_p3);
-
-  //----------------------------------------------------------------------------
-  // Cull faces.
-  //----------------------------------------------------------------------------
-  if (data.pipeline->cull_face.has_value()) {
-    if (ShouldCullFace(data.pipeline->cull_face.value(),  //
-                       data.pipeline->winding,            //
-                       ndc_p1,                            //
-                       ndc_p2,                            //
-                       ndc_p3                             //
-                       )) {
-      metrics_.face_culling++;
-      return;
-    }
-  }
-
-  //----------------------------------------------------------------------------
-  // Convert NDC points returned by the shader into screen-space.
-  //----------------------------------------------------------------------------
-  const auto frag_p1 = ToTexelPos(ndc_p1, viewport);
-  const auto frag_p2 = ToTexelPos(ndc_p2, viewport);
-  const auto frag_p3 = ToTexelPos(ndc_p3, viewport);
-
-  //----------------------------------------------------------------------------
-  // Find bounding box and apply scissor.
-  //----------------------------------------------------------------------------
-  const auto bounding_box = GetBoundingBox(frag_p1, frag_p2, frag_p3);
-
-  if (bounding_box.size.IsEmpty()) {
-    metrics_.empty_primitive++;
-    return;
-  }
-
-  auto scissor_box =
-      bounding_box.Intersection(data.pipeline->scissor.value_or(Rect{size_}));
-
-  if (!scissor_box.has_value()) {
-    metrics_.scissor_culling++;
-    return;
-  }
-
-  const auto& box = scissor_box.value();
-
-  //----------------------------------------------------------------------------
-  // Apply sample point culling.
-  // From https://developer.arm.com/documentation/102540/0100/Primitive-culling
-  //----------------------------------------------------------------------------
-  if (box.size.width < 2 && box.size.height < 2) {
-    metrics_.sample_point_culling++;
-    return;
-  }
-
-  metrics_.primitives_processed++;
-
-  const auto sample_count = pass_.color.texture->GetSampleCount();
-
+void Rasterizer::ShadeFragments(const TriangleData& data,
+                                const Tiler::Data& tiler_data) {
   TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
-
-  tiler_.AddData({
-      .rect = box,
-      .ndc = {ndc_p1, ndc_p2, ndc_p3},
-      .pipeline = data.pipeline,
-  });
-
+  const auto& box = tiler_data.box;
+  const auto sample_count = pass_.color.texture->GetSampleCount();
+  auto viewport = data.pipeline->viewport.value_or(size_);
+  const auto frag_p1 = ToTexelPos(tiler_data.ndc[0], viewport);
+  const auto frag_p2 = ToTexelPos(tiler_data.ndc[1], viewport);
+  const auto frag_p3 = ToTexelPos(tiler_data.ndc[2], viewport);
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
@@ -356,8 +277,12 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
         //----------------------------------------------------------------------
         const auto bary =
             GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
-        const auto depth =
-            BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
+        const auto depth = BarycentricInterpolation(tiler_data.ndc[0],  //
+                                                    tiler_data.ndc[1],  //
+                                                    tiler_data.ndc[2],  //
+                                                    bary                //
+                                                    )
+                               .z;
         const auto depth_test_passes =
             FragmentPassesDepthTest(*data.pipeline, frag, depth, sample);
 
@@ -417,6 +342,92 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       }
     }
   }
+}
+
+void Rasterizer::DrawTriangle(const TriangleData& data) {
+  TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
+  metrics_.primitive_count++;
+
+  //----------------------------------------------------------------------------
+  // Invoke vertex shaders. The clip-space coordinates returned are specified by
+  // homogenous 4D vectors.
+  //----------------------------------------------------------------------------
+  VertexInvocation vertex_invocation(*this, data, data.base_vertex_id);
+  const auto clip_p1 = data.pipeline->shader->ProcessVertex(vertex_invocation);
+  vertex_invocation.vertex_id++;
+  const auto clip_p2 = data.pipeline->shader->ProcessVertex(vertex_invocation);
+  vertex_invocation.vertex_id++;
+  const auto clip_p3 = data.pipeline->shader->ProcessVertex(vertex_invocation);
+  metrics_.vertex_invocations += 3;
+
+  //----------------------------------------------------------------------------
+  // Convert clip space coordinates into NDC coordinates (divide by w).
+  //----------------------------------------------------------------------------
+  const auto ndc_p1 = ToNDC(clip_p1);
+  const auto ndc_p2 = ToNDC(clip_p2);
+  const auto ndc_p3 = ToNDC(clip_p3);
+
+  //----------------------------------------------------------------------------
+  // Cull faces.
+  //----------------------------------------------------------------------------
+  if (data.pipeline->cull_face.has_value()) {
+    if (ShouldCullFace(data.pipeline->cull_face.value(),  //
+                       data.pipeline->winding,            //
+                       ndc_p1,                            //
+                       ndc_p2,                            //
+                       ndc_p3                             //
+                       )) {
+      metrics_.face_culling++;
+      return;
+    }
+  }
+
+  //----------------------------------------------------------------------------
+  // Convert NDC points returned by the shader into screen-space.
+  //----------------------------------------------------------------------------
+  auto viewport = data.pipeline->viewport.value_or(size_);
+  const auto frag_p1 = ToTexelPos(ndc_p1, viewport);
+  const auto frag_p2 = ToTexelPos(ndc_p2, viewport);
+  const auto frag_p3 = ToTexelPos(ndc_p3, viewport);
+
+  //----------------------------------------------------------------------------
+  // Find bounding box and apply scissor.
+  //----------------------------------------------------------------------------
+  const auto bounding_box = GetBoundingBox(frag_p1, frag_p2, frag_p3);
+
+  if (bounding_box.size.IsEmpty()) {
+    metrics_.empty_primitive++;
+    return;
+  }
+
+  auto scissor_box =
+      bounding_box.Intersection(data.pipeline->scissor.value_or(Rect{size_}));
+
+  if (!scissor_box.has_value()) {
+    metrics_.scissor_culling++;
+    return;
+  }
+
+  const auto& box = scissor_box.value();
+
+  //----------------------------------------------------------------------------
+  // Apply sample point culling.
+  // From https://developer.arm.com/documentation/102540/0100/Primitive-culling
+  //----------------------------------------------------------------------------
+  if (box.size.width < 2 && box.size.height < 2) {
+    metrics_.sample_point_culling++;
+    return;
+  }
+
+  metrics_.primitives_processed++;
+
+  auto tiler_data = Tiler::Data{
+      .box = box,
+      .ndc = {ndc_p1, ndc_p2, ndc_p3},
+      .pipeline = data.pipeline,
+  };
+
+  ShadeFragments(data, tiler_data);
 }
 
 void Rasterizer::ResetMetrics() {

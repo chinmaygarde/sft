@@ -823,7 +823,7 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
 TEST(TilerTest, CanCreateTiler) {
   Tiler tiler;
   Tiler::Data data;
-  data.rect = Rect::MakeLTRB(10, 10, 100, 100);
+  data.box = Rect::MakeLTRB(10, 10, 100, 100);
   tiler.AddData(data);
 }
 

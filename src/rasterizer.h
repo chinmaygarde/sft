@@ -149,6 +149,8 @@ class Rasterizer {
 
   void DrawTriangle(const TriangleData& data);
 
+  void ShadeFragments(const TriangleData& data, const Tiler::Data& tiler_data);
+
   SFT_DISALLOW_COPY_AND_ASSIGN(Rasterizer);
 };
 

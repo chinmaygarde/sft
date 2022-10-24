@@ -14,8 +14,8 @@ namespace sft {
 class Tiler {
  public:
   struct Data {
-    Rect rect;
-    glm::vec2 ndc[3];
+    Rect box;
+    glm::vec3 ndc[3];
     std::shared_ptr<Pipeline> pipeline;
   };
 
@@ -30,7 +30,7 @@ class Tiler {
 
   void AddData(Data p_data) {
     const auto data = data_.emplace_back(std::move(p_data));
-    const auto ltrb = data.rect.GetLTRB();
+    const auto ltrb = data.box.GetLTRB();
     const int a_min[2] = {
         static_cast<int>(glm::floor(ltrb[0])),
         static_cast<int>(glm::floor(ltrb[1])),
