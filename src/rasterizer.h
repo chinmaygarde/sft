@@ -13,6 +13,7 @@
 #include "rasterizer_metrics.h"
 #include "render_pass.h"
 #include "texture.h"
+#include "tiler.h"
 #include "triangle_data.h"
 
 namespace sft {
@@ -31,23 +32,23 @@ class Rasterizer {
 
   void Clear(Color color);
 
-  void Draw(const Pipeline& pipeline,
+  void Draw(std::shared_ptr<Pipeline> pipeline,
             const BufferView& vertex_buffer,
             const BufferView& uniform_buffer,
             size_t count,
             uint32_t stencil_refernece = 0) {
-    return Draw(pipeline, vertex_buffer, {}, uniform_buffer, count,
+    return Draw(std::move(pipeline), vertex_buffer, {}, uniform_buffer, count,
                 stencil_refernece);
   }
 
-  void Draw(const Pipeline& pipeline,
+  void Draw(std::shared_ptr<Pipeline> pipeline,
             const BufferView& vertex_buffer,
             const BufferView& index_buffer,
             const BufferView& uniform_buffer,
             size_t count,
             uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
-    const auto varyings_size = pipeline.shader->GetVaryingsSize();
+    const auto varyings_size = pipeline->shader->GetVaryingsSize();
     auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
     TriangleData data(pipeline,          //
                       vertex_buffer,     //
@@ -57,7 +58,7 @@ class Rasterizer {
                       varyings,          //
                       stencil_reference  //
     );
-    const auto vtx_offset = pipeline.vertex_descriptor.offset;
+    const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
       data.base_vertex_id = i;
       data.p1 = data.GetVertexData<decltype(data.p1)>(i + 0, vtx_offset);
@@ -123,6 +124,7 @@ class Rasterizer {
   RenderPassAttachments pass_;
   glm::ivec2 size_;
   RasterizerMetrics metrics_;
+  Tiler tiler_;
 
   bool FragmentPassesDepthTest(const Pipeline& pipeline,
                                glm::ivec2 pos,

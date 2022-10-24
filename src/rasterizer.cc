@@ -128,6 +128,7 @@ void Rasterizer::Clear(Color color) {
   pass_.color.clear_color = color;
   pass_.Load();
   metrics_.area = pass_.GetSize();
+  tiler_.Reset();
 }
 
 constexpr glm::vec3 ToNDC(const glm::vec4& clip) {
@@ -251,18 +252,18 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
   metrics_.primitive_count++;
 
-  auto viewport = data.pipeline.viewport.value_or(size_);
+  auto viewport = data.pipeline->viewport.value_or(size_);
 
   //----------------------------------------------------------------------------
   // Invoke vertex shaders. The clip-space coordinates returned are specified by
   // homogenous 4D vectors.
   //----------------------------------------------------------------------------
   VertexInvocation vertex_invocation(*this, data, data.base_vertex_id);
-  const auto clip_p1 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  const auto clip_p1 = data.pipeline->shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
-  const auto clip_p2 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  const auto clip_p2 = data.pipeline->shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
-  const auto clip_p3 = data.pipeline.shader->ProcessVertex(vertex_invocation);
+  const auto clip_p3 = data.pipeline->shader->ProcessVertex(vertex_invocation);
   metrics_.vertex_invocations += 3;
 
   //----------------------------------------------------------------------------
@@ -275,12 +276,12 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   //----------------------------------------------------------------------------
   // Cull faces.
   //----------------------------------------------------------------------------
-  if (data.pipeline.cull_face.has_value()) {
-    if (ShouldCullFace(data.pipeline.cull_face.value(),  //
-                       data.pipeline.winding,            //
-                       ndc_p1,                           //
-                       ndc_p2,                           //
-                       ndc_p3                            //
+  if (data.pipeline->cull_face.has_value()) {
+    if (ShouldCullFace(data.pipeline->cull_face.value(),  //
+                       data.pipeline->winding,            //
+                       ndc_p1,                            //
+                       ndc_p2,                            //
+                       ndc_p3                             //
                        )) {
       metrics_.face_culling++;
       return;
@@ -305,7 +306,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   }
 
   auto scissor_box =
-      bounding_box.Intersection(data.pipeline.scissor.value_or(Rect{size_}));
+      bounding_box.Intersection(data.pipeline->scissor.value_or(Rect{size_}));
 
   if (!scissor_box.has_value()) {
     metrics_.scissor_culling++;
@@ -328,6 +329,13 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   const auto sample_count = pass_.color.texture->GetSampleCount();
 
   TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
+
+  tiler_.AddData({
+      .rect = box,
+      .ndc = {ndc_p1, ndc_p2, ndc_p3},
+      .pipeline = data.pipeline,
+  });
+
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
@@ -351,13 +359,13 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
         const auto depth =
             BarycentricInterpolation(ndc_p1, ndc_p2, ndc_p3, bary).z;
         const auto depth_test_passes =
-            FragmentPassesDepthTest(data.pipeline, frag, depth, sample);
+            FragmentPassesDepthTest(*data.pipeline, frag, depth, sample);
 
         //----------------------------------------------------------------------
         // Perform the stencil test.
         //----------------------------------------------------------------------
         const auto stencil_test_passes =
-            UpdateAndCheckFragmentPassesStencilTest(data.pipeline,           //
+            UpdateAndCheckFragmentPassesStencilTest(*data.pipeline,          //
                                                     frag,                    //
                                                     depth_test_passes,       //
                                                     data.stencil_reference,  //
@@ -376,7 +384,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
         //----------------------------------------------------------------------
         // Update the depth values.
         //----------------------------------------------------------------------
-        UpdateDepth(data.pipeline.depth_desc, frag, depth, sample);
+        UpdateDepth(data.pipeline->depth_desc, frag, depth, sample);
 
         //----------------------------------------------------------------------
         // This sample location needs a color value.
@@ -395,7 +403,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       const auto bary =
           GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
       const auto color =
-          Color{data.pipeline.shader->ProcessFragment({bary, *this, data})};
+          Color{data.pipeline->shader->ProcessFragment({bary, *this, data})};
       metrics_.fragment_invocations++;
 
       //------------------------------------------------------------------------
@@ -404,7 +412,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       for (size_t sample = 0; sample < GetSampleCount(sample_count); sample++) {
         if (samples_found & (1 << sample)) {
           const auto frag = pixel + GetSampleLocation(sample_count, sample);
-          UpdateColor(data.pipeline.color_desc, frag, color, sample);
+          UpdateColor(data.pipeline->color_desc, frag, color, sample);
         }
       }
     }

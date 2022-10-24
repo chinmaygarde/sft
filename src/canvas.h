@@ -57,24 +57,24 @@ class CanvasContext {
  public:
   CanvasContext() {
     shader_ = std::make_shared<CanvasShader>();
-    pipeline_.shader = shader_;
-    pipeline_.vertex_descriptor.stride = sizeof(CanvasShader::VertexData);
-    pipeline_.vertex_descriptor.offset =
+    pipeline_->shader = shader_;
+    pipeline_->vertex_descriptor.stride = sizeof(CanvasShader::VertexData);
+    pipeline_->vertex_descriptor.offset =
         offsetof(CanvasShader::VertexData, position);
-    pipeline_.vertex_descriptor.index_type = IndexType::kUInt16;
-    pipeline_.vertex_descriptor.vertex_format = VertexFormat::kFloat2;
-    pipeline_.cull_face = std::nullopt;
+    pipeline_->vertex_descriptor.index_type = IndexType::kUInt16;
+    pipeline_->vertex_descriptor.vertex_format = VertexFormat::kFloat2;
+    pipeline_->cull_face = std::nullopt;
   }
 
   ~CanvasContext() {}
 
-  Pipeline& GetPipeline() { return pipeline_; }
+  const std::shared_ptr<Pipeline>& GetPipeline() { return pipeline_; }
 
   void SetImage(const Image* texture) { shader_->SetImage(texture); }
 
  private:
   std::shared_ptr<CanvasShader> shader_;
-  Pipeline pipeline_;
+  std::shared_ptr<Pipeline> pipeline_ = std::make_shared<Pipeline>();
   SFT_DISALLOW_COPY_AND_ASSIGN(CanvasContext);
 };
 
@@ -114,15 +114,15 @@ class Canvas {
     auto index_buffer =
         buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
 
-    auto& pipeline = context_->GetPipeline();
+    auto pipeline = context_->GetPipeline();
 
-    pipeline.color_desc =
+    pipeline->color_desc =
         paint.color_desc.value_or(ColorAttachmentDescriptor{});
 
-    pipeline.depth_desc =
+    pipeline->depth_desc =
         paint.depth_desc.value_or(DepthAttachmentDescriptor{});
 
-    pipeline.stencil_desc =
+    pipeline->stencil_desc =
         paint.stencil_desc.value_or(StencilAttachmentDescriptor{});
 
     context_->SetImage(paint.image.get());

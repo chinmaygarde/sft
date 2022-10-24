@@ -77,6 +77,8 @@ add_library(sft_lib
   src/shaders/texture_shader.h
   src/texture.cc
   src/texture.h
+  src/tiler.cc
+  src/tiler.h
   src/timing.cc
   src/timing.h
   src/tracing.cc
@@ -116,6 +118,7 @@ target_link_libraries(sft_lib
 target_include_directories(sft_lib
   PUBLIC
     src
+    third_party
     third_party/stb
     third_party/imgui
     third_party/spirv_cross/include

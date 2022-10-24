@@ -134,7 +134,7 @@ void Model::RenderTo(Rasterizer& rasterizer) {
       .color = kColorFirebrick,
   });
 
-  rasterizer.Draw(*pipeline_, *vertex_buffer_, *uniform_buffer, vertex_count_);
+  rasterizer.Draw(pipeline_, *vertex_buffer_, *uniform_buffer, vertex_count_);
 }
 
 void Model::SetScale(ScalarF scale) {

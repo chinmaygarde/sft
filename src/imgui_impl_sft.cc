@@ -144,10 +144,10 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
       auto texture = reinterpret_cast<Image*>(cmd.GetTexID());
       user_data->shader->SetImage(texture);
 
-      rasterizer->Draw(*user_data->pipeline,  // pipeline
-                       *vertex_buffer,        // vertex_buffer
-                       *uniform_buffer,       // uniform buffer
-                       cmd.ElemCount          // count
+      rasterizer->Draw(user_data->pipeline,  // pipeline
+                       *vertex_buffer,       // vertex_buffer
+                       *uniform_buffer,      // uniform buffer
+                       cmd.ElemCount         // count
       );
     }
   }
