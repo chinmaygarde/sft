@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstring>
 #include <type_traits>
 
@@ -28,9 +29,7 @@ struct Resources {
 };
 
 struct VertexData {
-  glm::vec3 p1;
-  glm::vec3 p2;
-  glm::vec3 p3;
+  std::array<glm::vec3, 3> vtx;
   size_t base_vertex_id = 0;
   std::shared_ptr<Pipeline> pipeline;
   std::shared_ptr<Resources> resources;

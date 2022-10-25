@@ -60,9 +60,9 @@ class Rasterizer {
     const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
       data.base_vertex_id = i;
-      data.p1 = data.GetVertexData<decltype(data.p1)>(i + 0, vtx_offset);
-      data.p2 = data.GetVertexData<decltype(data.p2)>(i + 1, vtx_offset);
-      data.p3 = data.GetVertexData<decltype(data.p3)>(i + 2, vtx_offset);
+      data.vtx[0] = data.GetVertexData<glm::vec3>(i + 0, vtx_offset);
+      data.vtx[1] = data.GetVertexData<glm::vec3>(i + 1, vtx_offset);
+      data.vtx[2] = data.GetVertexData<glm::vec3>(i + 2, vtx_offset);
       DrawTriangle(data);
     }
   }
