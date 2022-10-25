@@ -248,7 +248,7 @@ static bool PointInside(const glm::vec2& a,
   return true;
 }
 
-void Rasterizer::ShadeFragments(const TriangleData& data,
+void Rasterizer::ShadeFragments(const VertexData& data,
                                 const Tiler::Data& tiler_data) {
   TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
   const auto& box = tiler_data.box;
@@ -346,7 +346,7 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
   }
 }
 
-void Rasterizer::DrawTriangle(const TriangleData& data) {
+void Rasterizer::DrawTriangle(const VertexData& data) {
   TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
   metrics_.primitive_count++;
 

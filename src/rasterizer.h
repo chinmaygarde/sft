@@ -49,14 +49,14 @@ class Rasterizer {
             uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
     const auto varyings_size = pipeline->shader->GetVaryingsSize();
-    TriangleData data(pipeline,  //
-                      Bindings{
-                          vertex_buffer,   //
-                          index_buffer,    //
-                          uniform_buffer,  //
-                      },                   //
-                      varyings_size,       //
-                      stencil_reference    //
+    VertexData data(pipeline,  //
+                    Bindings{
+                        vertex_buffer,   //
+                        index_buffer,    //
+                        uniform_buffer,  //
+                    },                   //
+                    varyings_size,       //
+                    stencil_reference    //
     );
     const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
@@ -69,7 +69,7 @@ class Rasterizer {
   }
 
   template <class T>
-  void StoreVarying(const TriangleData& data,
+  void StoreVarying(const VertexData& data,
                     const T& val,
                     size_t index,
                     size_t offset) const {
@@ -79,7 +79,7 @@ class Rasterizer {
   }
 
   template <class T>
-  T LoadVarying(const TriangleData& data,
+  T LoadVarying(const VertexData& data,
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
     const auto stride = data.varyings_stride;
@@ -94,14 +94,12 @@ class Rasterizer {
   }
 
   template <class T>
-  T LoadVertexData(const TriangleData& data,
-                   size_t index,
-                   size_t offset) const {
+  T LoadVertexData(const VertexData& data, size_t index, size_t offset) const {
     return data.GetVertexData<T>(index, offset);
   }
 
   template <class T>
-  T LoadUniform(const TriangleData& data, size_t offset) const {
+  T LoadUniform(const VertexData& data, size_t offset) const {
     T result = {};
     memcpy(&result, data.bindings.uniform.GetData() + offset, sizeof(T));
     return result;
@@ -146,9 +144,9 @@ class Rasterizer {
                    ScalarF depth,
                    size_t sample);
 
-  void DrawTriangle(const TriangleData& data);
+  void DrawTriangle(const VertexData& data);
 
-  void ShadeFragments(const TriangleData& data, const Tiler::Data& tiler_data);
+  void ShadeFragments(const VertexData& data, const Tiler::Data& tiler_data);
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Rasterizer);
 };

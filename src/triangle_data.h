@@ -20,7 +20,7 @@ struct Bindings {
   BufferView uniform;
 };
 
-struct TriangleData {
+struct VertexData {
   glm::vec3 p1;
   glm::vec3 p2;
   glm::vec3 p3;
@@ -31,10 +31,10 @@ struct TriangleData {
   std::vector<uint8_t> varyings;
   const uint32_t stencil_reference;
 
-  TriangleData(std::shared_ptr<Pipeline> p_pipeline,
-               Bindings p_bindings,
-               size_t p_varyings_stride,
-               uint32_t p_stencil_reference)
+  VertexData(std::shared_ptr<Pipeline> p_pipeline,
+             Bindings p_bindings,
+             size_t p_varyings_stride,
+             uint32_t p_stencil_reference)
       : pipeline(std::move(p_pipeline)),
         bindings(std::move(p_bindings)),
         varyings_stride(p_varyings_stride),

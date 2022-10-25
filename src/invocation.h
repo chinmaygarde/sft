@@ -8,7 +8,7 @@
 namespace sft {
 
 class Rasterizer;
-struct TriangleData;
+struct VertexData;
 
 struct VertexInvocation {
   size_t vertex_id;
@@ -32,11 +32,11 @@ struct VertexInvocation {
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const TriangleData& data;
+  const VertexData& data;
   const Tiler::Data& tiler_data;
 
   VertexInvocation(const Rasterizer& p_rasterizer,
-                   const TriangleData& p_data,
+                   const VertexData& p_data,
                    const Tiler::Data& p_tiler_data,
                    size_t p_vertex_id)
       : vertex_id(p_vertex_id),
@@ -65,12 +65,12 @@ struct FragmentInvocation {
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const TriangleData& data;
+  const VertexData& data;
   const Tiler::Data& tiler_data;
 
   FragmentInvocation(glm::vec3 p_barycentric_coordinates,
                      const Rasterizer& p_rasterizer,
-                     const TriangleData& p_data,
+                     const VertexData& p_data,
                      const Tiler::Data& p_tiler_data)
       : barycentric_coordinates(p_barycentric_coordinates),
         rasterizer(p_rasterizer),
