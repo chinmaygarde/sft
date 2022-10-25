@@ -48,15 +48,14 @@ class Rasterizer {
             size_t count,
             uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
-    const auto varyings_size = pipeline->shader->GetVaryingsSize();
-    VertexData data(pipeline,  //
-                    Bindings{
-                        vertex_buffer,   //
-                        index_buffer,    //
-                        uniform_buffer,  //
-                    },                   //
-                    varyings_size,       //
-                    stencil_reference    //
+    auto resources =
+        std::make_shared<Resources>(pipeline->shader->GetVaryingsSize());
+    resources->vertex = std::move(vertex_buffer);
+    resources->index = std::move(index_buffer);
+    resources->uniform = std::move(uniform_buffer);
+    VertexData data(pipeline,              //
+                    std::move(resources),  //
+                    stencil_reference      //
     );
     const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
@@ -73,8 +72,10 @@ class Rasterizer {
                     const T& val,
                     size_t index,
                     size_t offset) const {
-    auto varyings_offset = offset + data.varyings_stride * (index % 3);
-    auto ptr = const_cast<uint8_t*>(data.varyings.data()) + varyings_offset;
+    auto varyings_offset =
+        offset + data.resources->GetVaryingsStride() * (index % 3);
+    auto ptr =
+        const_cast<uint8_t*>(data.resources->varyings.data()) + varyings_offset;
     memcpy(ptr, &val, sizeof(T));
   }
 
@@ -82,8 +83,8 @@ class Rasterizer {
   T LoadVarying(const VertexData& data,
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
-    const auto stride = data.varyings_stride;
-    auto ptr = data.varyings.data() + offset;
+    const auto stride = data.resources->GetVaryingsStride();
+    auto ptr = data.resources->varyings.data() + offset;
     T p1, p2, p3;
     memcpy(&p1, ptr, sizeof(p1));
     ptr += stride;
@@ -101,7 +102,7 @@ class Rasterizer {
   template <class T>
   T LoadUniform(const VertexData& data, size_t offset) const {
     T result = {};
-    memcpy(&result, data.bindings.uniform.GetData() + offset, sizeof(T));
+    memcpy(&result, data.resources->uniform.GetData() + offset, sizeof(T));
     return result;
   }
 

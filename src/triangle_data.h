@@ -14,10 +14,17 @@ class Buffer;
 
 struct BufferView;
 
-struct Bindings {
+struct Resources {
   BufferView vertex;
   BufferView index;
   BufferView uniform;
+  std::vector<uint8_t> varyings;
+
+  explicit Resources(size_t varyings_stride) {
+    varyings.resize(varyings_stride * 3u);
+  }
+
+  size_t GetVaryingsStride() const { return varyings.size() / 3u; }
 };
 
 struct VertexData {
@@ -26,35 +33,31 @@ struct VertexData {
   glm::vec3 p3;
   size_t base_vertex_id = 0;
   std::shared_ptr<Pipeline> pipeline;
-  Bindings bindings;
-  const size_t varyings_stride;
-  std::vector<uint8_t> varyings;
+  std::shared_ptr<Resources> resources;
   const uint32_t stencil_reference;
 
   VertexData(std::shared_ptr<Pipeline> p_pipeline,
-             Bindings p_bindings,
-             size_t p_varyings_stride,
+             std::shared_ptr<Resources> p_resources,
              uint32_t p_stencil_reference)
       : pipeline(std::move(p_pipeline)),
-        bindings(std::move(p_bindings)),
-        varyings_stride(p_varyings_stride),
-        stencil_reference(p_stencil_reference) {
-    varyings.resize(varyings_stride * 3u);
-  }
+        resources(std::move(p_resources)),
+        stencil_reference(p_stencil_reference) {}
 
   size_t GetVertexIndex(size_t index) const {
-    if (!bindings.index) {
+    if (!resources->index) {
       return index;
     }
     switch (pipeline->vertex_descriptor.index_type) {
       case IndexType::kUInt32: {
         auto index_ptr =
-            reinterpret_cast<const uint32_t*>(bindings.index.GetData()) + index;
+            reinterpret_cast<const uint32_t*>(resources->index.GetData()) +
+            index;
         return *index_ptr;
       }
       case IndexType::kUInt16: {
         auto index_ptr =
-            reinterpret_cast<const uint16_t*>(bindings.index.GetData()) + index;
+            reinterpret_cast<const uint16_t*>(resources->index.GetData()) +
+            index;
         return *index_ptr;
       }
     }
@@ -62,7 +65,7 @@ struct VertexData {
   }
 
   const uint8_t* GetVertexDataPtr(size_t index, size_t offset) const {
-    const auto* vtx_ptr = bindings.vertex.GetData() + offset;
+    const auto* vtx_ptr = resources->vertex.GetData() + offset;
     vtx_ptr += GetVertexIndex(index) * pipeline->vertex_descriptor.stride;
     return vtx_ptr;
   }

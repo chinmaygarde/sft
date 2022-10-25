@@ -21,8 +21,8 @@ struct BufferView {
 
  private:
   std::shared_ptr<Buffer> buffer_;
-  const size_t offset_;
-  const size_t length_;
+  size_t offset_;
+  size_t length_;
 };
 
 }  // namespace sft
