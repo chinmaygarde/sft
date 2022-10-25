@@ -329,8 +329,8 @@ void Rasterizer::ShadeFragments(const VertexData& data,
       const auto frag = pixel + kSampleMidpoint;
       const auto bary =
           GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
-      const auto color = Color{
-          pipeline->shader->ProcessFragment({bary, *this, data, tiler_data})};
+      const auto color = Color{pipeline->shader->ProcessFragment(
+          {bary, *this, *tiler_data.resources})};
       metrics_.fragment_invocations++;
 
       //------------------------------------------------------------------------
@@ -353,6 +353,7 @@ void Rasterizer::DrawTriangle(const VertexData& data) {
   auto tiler_data = Tiler::Data{};
   tiler_data.stencil_reference = data.stencil_reference;
   tiler_data.pipeline = data.pipeline;
+  tiler_data.resources = data.resources;
 
   //----------------------------------------------------------------------------
   // Invoke vertex shaders. The clip-space coordinates returned are specified by

@@ -15,33 +15,33 @@ struct VertexInvocation {
 
   template <class T>
   T LoadVertexData(size_t offset) const {
-    return rasterizer.LoadVertexData<T>(data, vertex_id, offset);
+    return rasterizer.LoadVertexData<T>(vtx_data, vertex_id, offset);
   }
 
   template <class T>
   T LoadUniform(size_t offset) const {
-    return rasterizer.LoadUniform<T>(data, offset);
+    return rasterizer.LoadUniform<T>(*vtx_data.resources, offset);
   }
 
   template <class T>
   void StoreVarying(const T& val, size_t offset) const {
-    rasterizer.StoreVarying(data, val, vertex_id, offset);
+    rasterizer.StoreVarying(*vtx_data.resources, val, vertex_id, offset);
   }
 
  private:
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const VertexData& data;
+  const VertexData& vtx_data;
   const Tiler::Data& tiler_data;
 
   VertexInvocation(const Rasterizer& p_rasterizer,
-                   const VertexData& p_data,
+                   const VertexData& p_vtx_data,
                    const Tiler::Data& p_tiler_data,
                    size_t p_vertex_id)
       : vertex_id(p_vertex_id),
         rasterizer(p_rasterizer),
-        data(p_data),
+        vtx_data(p_vtx_data),
         tiler_data(p_tiler_data) {}
 };
 
@@ -50,7 +50,7 @@ struct FragmentInvocation {
 
   template <class T>
   T LoadVarying(size_t offset) const {
-    return rasterizer.LoadVarying<T>(data,                     //
+    return rasterizer.LoadVarying<T>(resources,                //
                                      barycentric_coordinates,  //
                                      offset                    //
     );
@@ -58,24 +58,21 @@ struct FragmentInvocation {
 
   template <class T>
   T LoadUniform(size_t offset) const {
-    return rasterizer.LoadUniform<T>(data, offset);
+    return rasterizer.LoadUniform<T>(resources, offset);
   }
 
  private:
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const VertexData& data;
-  const Tiler::Data& tiler_data;
+  const Resources& resources;
 
   FragmentInvocation(glm::vec3 p_barycentric_coordinates,
                      const Rasterizer& p_rasterizer,
-                     const VertexData& p_data,
-                     const Tiler::Data& p_tiler_data)
+                     const Resources& p_resources)
       : barycentric_coordinates(p_barycentric_coordinates),
         rasterizer(p_rasterizer),
-        data(p_data),
-        tiler_data(p_tiler_data) {}
+        resources(p_resources) {}
 };
 
 }  // namespace sft

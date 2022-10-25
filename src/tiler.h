@@ -3,6 +3,7 @@
 #include "geom.h"
 #include "macros.h"
 #include "pipeline.h"
+#include "triangle_data.h"
 
 #define Min std::min
 #define Max std::max
@@ -17,6 +18,7 @@ class Tiler {
     Rect box;
     glm::vec3 ndc[3];
     std::shared_ptr<Pipeline> pipeline;
+    std::shared_ptr<Resources> resources;
     uint32_t stencil_reference = 0;
   };
 
