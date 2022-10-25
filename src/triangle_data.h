@@ -28,19 +28,19 @@ struct TriangleData {
   std::shared_ptr<Pipeline> pipeline;
   Bindings bindings;
   const size_t varyings_stride;
-  uint8_t* varyings = nullptr;
+  std::vector<uint8_t> varyings;
   const uint32_t stencil_reference;
 
   TriangleData(std::shared_ptr<Pipeline> p_pipeline,
                Bindings p_bindings,
                size_t p_varyings_stride,
-               uint8_t* p_varyings,
                uint32_t p_stencil_reference)
       : pipeline(std::move(p_pipeline)),
         bindings(std::move(p_bindings)),
         varyings_stride(p_varyings_stride),
-        varyings(p_varyings),
-        stencil_reference(p_stencil_reference) {}
+        stencil_reference(p_stencil_reference) {
+    varyings.resize(varyings_stride * 3u);
+  }
 
   size_t GetVertexIndex(size_t index) const {
     if (!bindings.index) {
