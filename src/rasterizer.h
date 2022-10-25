@@ -50,13 +50,15 @@ class Rasterizer {
     metrics_.draw_count++;
     const auto varyings_size = pipeline->shader->GetVaryingsSize();
     auto* varyings = reinterpret_cast<uint8_t*>(::alloca(varyings_size * 3u));
-    TriangleData data(pipeline,          //
-                      vertex_buffer,     //
-                      index_buffer,      //
-                      uniform_buffer,    //
-                      varyings_size,     //
-                      varyings,          //
-                      stencil_reference  //
+    TriangleData data(pipeline,  //
+                      Bindings{
+                          vertex_buffer,   //
+                          index_buffer,    //
+                          uniform_buffer,  //
+                      },                   //
+                      varyings_size,       //
+                      varyings,            //
+                      stencil_reference    //
     );
     const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
@@ -104,7 +106,7 @@ class Rasterizer {
   template <class T>
   T LoadUniform(const TriangleData& data, size_t offset) const {
     T result = {};
-    memcpy(&result, data.uniform_buffer.GetData() + offset, sizeof(T));
+    memcpy(&result, data.bindings.uniform.GetData() + offset, sizeof(T));
     return result;
   }
 
