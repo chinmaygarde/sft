@@ -329,8 +329,8 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
       const auto frag = pixel + kSampleMidpoint;
       const auto bary =
           GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
-      const auto color =
-          Color{pipeline->shader->ProcessFragment({bary, *this, data})};
+      const auto color = Color{
+          pipeline->shader->ProcessFragment({bary, *this, data, tiler_data})};
       metrics_.fragment_invocations++;
 
       //------------------------------------------------------------------------
@@ -350,11 +350,16 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
   TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
   metrics_.primitive_count++;
 
+  auto tiler_data = Tiler::Data{};
+  tiler_data.stencil_reference = data.stencil_reference;
+  tiler_data.pipeline = data.pipeline;
+
   //----------------------------------------------------------------------------
   // Invoke vertex shaders. The clip-space coordinates returned are specified by
   // homogenous 4D vectors.
   //----------------------------------------------------------------------------
-  VertexInvocation vertex_invocation(*this, data, data.base_vertex_id);
+  VertexInvocation vertex_invocation(*this, data, tiler_data,
+                                     data.base_vertex_id);
   const auto clip_p1 = data.pipeline->shader->ProcessVertex(vertex_invocation);
   vertex_invocation.vertex_id++;
   const auto clip_p2 = data.pipeline->shader->ProcessVertex(vertex_invocation);
@@ -423,12 +428,10 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
 
   metrics_.primitives_processed++;
 
-  auto tiler_data = Tiler::Data{
-      .box = box,
-      .ndc = {ndc_p1, ndc_p2, ndc_p3},
-      .pipeline = data.pipeline,
-      .stencil_reference = data.stencil_reference,
-  };
+  tiler_data.box = box;
+  tiler_data.ndc[0] = ndc_p1;
+  tiler_data.ndc[1] = ndc_p2;
+  tiler_data.ndc[2] = ndc_p3;
 
   ShadeFragments(data, tiler_data);
 }
