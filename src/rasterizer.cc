@@ -253,7 +253,8 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
   TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
   const auto& box = tiler_data.box;
   const auto sample_count = pass_.color.texture->GetSampleCount();
-  auto viewport = data.pipeline->viewport.value_or(size_);
+  const auto& pipeline = data.pipeline;
+  auto viewport = pipeline->viewport.value_or(size_);
   const auto frag_p1 = ToTexelPos(tiler_data.ndc[0], viewport);
   const auto frag_p2 = ToTexelPos(tiler_data.ndc[1], viewport);
   const auto frag_p3 = ToTexelPos(tiler_data.ndc[2], viewport);
@@ -284,17 +285,18 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
                                                     )
                                .z;
         const auto depth_test_passes =
-            FragmentPassesDepthTest(*data.pipeline, frag, depth, sample);
+            FragmentPassesDepthTest(*pipeline, frag, depth, sample);
 
         //----------------------------------------------------------------------
         // Perform the stencil test.
         //----------------------------------------------------------------------
         const auto stencil_test_passes =
-            UpdateAndCheckFragmentPassesStencilTest(*data.pipeline,          //
-                                                    frag,                    //
-                                                    depth_test_passes,       //
-                                                    data.stencil_reference,  //
-                                                    sample                   //
+            UpdateAndCheckFragmentPassesStencilTest(
+                *pipeline,                     //
+                frag,                          //
+                depth_test_passes,             //
+                tiler_data.stencil_reference,  //
+                sample                         //
             );
 
         //----------------------------------------------------------------------
@@ -309,7 +311,7 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
         //----------------------------------------------------------------------
         // Update the depth values.
         //----------------------------------------------------------------------
-        UpdateDepth(data.pipeline->depth_desc, frag, depth, sample);
+        UpdateDepth(pipeline->depth_desc, frag, depth, sample);
 
         //----------------------------------------------------------------------
         // This sample location needs a color value.
@@ -328,7 +330,7 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
       const auto bary =
           GetBaryCentricCoordinates(frag, frag_p1, frag_p2, frag_p3);
       const auto color =
-          Color{data.pipeline->shader->ProcessFragment({bary, *this, data})};
+          Color{pipeline->shader->ProcessFragment({bary, *this, data})};
       metrics_.fragment_invocations++;
 
       //------------------------------------------------------------------------
@@ -337,7 +339,7 @@ void Rasterizer::ShadeFragments(const TriangleData& data,
       for (size_t sample = 0; sample < GetSampleCount(sample_count); sample++) {
         if (samples_found & (1 << sample)) {
           const auto frag = pixel + GetSampleLocation(sample_count, sample);
-          UpdateColor(data.pipeline->color_desc, frag, color, sample);
+          UpdateColor(pipeline->color_desc, frag, color, sample);
         }
       }
     }
@@ -425,6 +427,7 @@ void Rasterizer::DrawTriangle(const TriangleData& data) {
       .box = box,
       .ndc = {ndc_p1, ndc_p2, ndc_p3},
       .pipeline = data.pipeline,
+      .stencil_reference = data.stencil_reference,
   };
 
   ShadeFragments(data, tiler_data);

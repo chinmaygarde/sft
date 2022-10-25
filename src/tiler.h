@@ -17,6 +17,7 @@ class Tiler {
     Rect box;
     glm::vec3 ndc[3];
     std::shared_ptr<Pipeline> pipeline;
+    uint32_t stencil_reference = 0;
   };
 
   Tiler() {}
