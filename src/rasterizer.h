@@ -32,6 +32,8 @@ class Rasterizer {
 
   void Clear(Color color);
 
+  void Finish() { tiler_.Dispatch(); }
+
   void Draw(std::shared_ptr<Pipeline> pipeline,
             const BufferView& vertex_buffer,
             const BufferView& uniform_buffer,
@@ -146,7 +148,7 @@ class Rasterizer {
 
   void DrawTriangle(const VertexData& data);
 
-  void ShadeFragments(const VertexData& data, const Tiler::Data& tiler_data);
+  void ShadeFragments(const Tiler::Data& tiler_data);
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Rasterizer);
 };

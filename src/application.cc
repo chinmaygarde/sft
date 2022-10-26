@@ -151,6 +151,8 @@ bool Application::OnRender() {
 
   ImGui_ImplSFT_RenderDrawData(rasterizer_.get(), ImGui::GetDrawData());
 
+  rasterizer_->Finish();
+
   const auto update_end = Clock::now();
 
   last_update_duration_ = update_end - update_start;

@@ -248,12 +248,11 @@ static bool PointInside(const glm::vec2& a,
   return true;
 }
 
-void Rasterizer::ShadeFragments(const VertexData& data,
-                                const Tiler::Data& tiler_data) {
+void Rasterizer::ShadeFragments(const Tiler::Data& tiler_data) {
   TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
   const auto& box = tiler_data.box;
   const auto sample_count = pass_.color.texture->GetSampleCount();
-  const auto& pipeline = data.pipeline;
+  const auto& pipeline = tiler_data.pipeline;
   auto viewport = pipeline->viewport.value_or(size_);
   const auto frag_p1 = ToTexelPos(tiler_data.ndc[0], viewport);
   const auto frag_p2 = ToTexelPos(tiler_data.ndc[1], viewport);
@@ -434,7 +433,9 @@ void Rasterizer::DrawTriangle(const VertexData& data) {
   tiler_data.ndc[1] = ndc_p2;
   tiler_data.ndc[2] = ndc_p3;
 
-  ShadeFragments(data, tiler_data);
+  ShadeFragments(tiler_data);
+
+  tiler_.AddData(std::move(tiler_data));
 }
 
 void Rasterizer::ResetMetrics() {
