@@ -32,7 +32,7 @@ class Rasterizer {
 
   void Clear(Color color);
 
-  void Finish() { tiler_.Dispatch(); }
+  void Finish() { tiler_.Dispatch(*this); }
 
   void Draw(std::shared_ptr<Pipeline> pipeline,
             const BufferView& vertex_buffer,
@@ -119,6 +119,8 @@ class Rasterizer {
 
   [[nodiscard]] bool ResizeSamples(SampleCount count);
 
+  void ShadeFragments(const Tiler::Data& tiler_data, const Rect& tile);
+
  private:
   RenderPassAttachments pass_;
   glm::ivec2 size_;
@@ -147,8 +149,6 @@ class Rasterizer {
                    size_t sample);
 
   void DrawTriangle(const VertexData& data);
-
-  void ShadeFragments(const Tiler::Data& tiler_data);
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Rasterizer);
 };

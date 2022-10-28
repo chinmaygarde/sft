@@ -248,9 +248,13 @@ static bool PointInside(const glm::vec2& a,
   return true;
 }
 
-void Rasterizer::ShadeFragments(const Tiler::Data& tiler_data) {
+void Rasterizer::ShadeFragments(const Tiler::Data& tiler_data,
+                                const Rect& tile) {
   TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
-  const auto& box = tiler_data.box;
+  auto box = tiler_data.box.Intersection(tile);
+  if (!box.has_value()) {
+    return;
+  }
   const auto sample_count = pass_.color.texture->GetSampleCount();
   const auto& pipeline = tiler_data.pipeline;
   auto viewport = pipeline->viewport.value_or(size_);
@@ -260,8 +264,8 @@ void Rasterizer::ShadeFragments(const Tiler::Data& tiler_data) {
   //----------------------------------------------------------------------------
   // Shade fragments.
   //----------------------------------------------------------------------------
-  for (auto y = box.origin.y; y <= box.origin.y + box.size.height; y++) {
-    for (auto x = box.origin.x; x <= box.origin.x + box.size.width; x++) {
+  for (auto y = box->origin.y; y <= box->origin.y + box->size.height; y++) {
+    for (auto x = box->origin.x; x <= box->origin.x + box->size.width; x++) {
       const auto pixel = glm::vec2{x, y};
       uint32_t samples_found = 0;
 
@@ -433,9 +437,8 @@ void Rasterizer::DrawTriangle(const VertexData& data) {
   tiler_data.ndc[1] = ndc_p2;
   tiler_data.ndc[2] = ndc_p3;
 
-  ShadeFragments(tiler_data);
-
-  tiler_.AddData(std::move(tiler_data));
+  // tiler_.AddData(std::move(tiler_data));
+  ShadeFragments(tiler_data, Rect(glm::vec2{size_}));
 }
 
 void Rasterizer::ResetMetrics() {
