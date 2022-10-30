@@ -11,11 +11,11 @@ class Rasterizer;
 struct VertexData;
 
 struct VertexInvocation {
-  size_t vertex_id;
+  size_t vtx_index;
 
   template <class T>
   T LoadVertexData(size_t offset) const {
-    return rasterizer.LoadVertexData<T>(vtx_data, vertex_id, offset);
+    return rasterizer.LoadVertexData<T>(vtx_data, vtx_index, offset);
   }
 
   template <class T>
@@ -25,7 +25,7 @@ struct VertexInvocation {
 
   template <class T>
   void StoreVarying(const T& val, size_t offset) const {
-    rasterizer.StoreVarying(*vtx_data.resources, val, vertex_id, offset);
+    rasterizer.StoreVarying(*vtx_data.resources, val, vtx_index, offset);
   }
 
  private:
@@ -39,7 +39,7 @@ struct VertexInvocation {
                    const VertexData& p_vtx_data,
                    const Tiler::Data& p_tiler_data,
                    size_t p_vertex_id)
-      : vertex_id(p_vertex_id),
+      : vtx_index(p_vertex_id),
         rasterizer(p_rasterizer),
         vtx_data(p_vtx_data),
         tiler_data(p_tiler_data) {}

@@ -365,9 +365,9 @@ void Rasterizer::DrawTriangle(const VertexData& data) {
   VertexInvocation vertex_invocation(*this, data, tiler_data,
                                      data.base_vertex_id);
   const auto clip_p1 = data.pipeline->shader->ProcessVertex(vertex_invocation);
-  vertex_invocation.vertex_id++;
+  vertex_invocation.vtx_index++;
   const auto clip_p2 = data.pipeline->shader->ProcessVertex(vertex_invocation);
-  vertex_invocation.vertex_id++;
+  vertex_invocation.vtx_index++;
   const auto clip_p3 = data.pipeline->shader->ProcessVertex(vertex_invocation);
   metrics_.vertex_invocations += 3;
 
@@ -437,8 +437,8 @@ void Rasterizer::DrawTriangle(const VertexData& data) {
   tiler_data.ndc[1] = ndc_p2;
   tiler_data.ndc[2] = ndc_p3;
 
-  // tiler_.AddData(std::move(tiler_data));
-  ShadeFragments(tiler_data, Rect(glm::vec2{size_}));
+  tiler_.AddData(std::move(tiler_data));
+  // ShadeFragments(tiler_data, Rect(glm::vec2{size_}));
 }
 
 void Rasterizer::ResetMetrics() {

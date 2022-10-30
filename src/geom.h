@@ -318,6 +318,18 @@ struct Rect {
     return {left, top, right, bottom};
   }
 
+  constexpr glm::vec2 GetLT() const {
+    const auto left = std::min(origin.x, origin.x + size.width);
+    const auto top = std::min(origin.y, origin.y + size.height);
+    return {left, top};
+  }
+
+  constexpr glm::vec2 GetRB() const {
+    const auto right = std::max(origin.x, origin.x + size.width);
+    const auto bottom = std::max(origin.y, origin.y + size.height);
+    return {right, bottom};
+  }
+
   constexpr static Rect MakeLTRB(ScalarF left,
                                  ScalarF top,
                                  ScalarF right,

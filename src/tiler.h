@@ -24,32 +24,13 @@ class Tiler {
     uint32_t stencil_reference = 0;
   };
 
-  Tiler() {}
+  Tiler();
 
-  ~Tiler() {}
+  ~Tiler();
 
-  void Reset() {
-    data_.clear();
-    tree_.RemoveAll();
-    min_ = {INT_MAX, INT_MAX};
-    max_ = {INT_MIN, INT_MIN};
-  }
+  void Reset();
 
-  void AddData(Data p_data) {
-    const auto data = data_.emplace_back(std::move(p_data));
-    const auto ltrb = data.box.GetLTRB();
-    const int a_min[2] = {
-        static_cast<int>(glm::floor(ltrb[0])),
-        static_cast<int>(glm::floor(ltrb[1])),
-    };
-    const int a_max[2] = {
-        static_cast<int>(glm::ceil(ltrb[2])),
-        static_cast<int>(glm::ceil(ltrb[3])),
-    };
-    tree_.Insert(a_min, a_max, data_.size() - 1u);
-    min_ = glm::min(glm::ivec2{a_min[0], a_min[1]}, min_);
-    max_ = glm::max(glm::ivec2{a_max[0], a_max[1]}, max_);
-  }
+  void AddData(Data p_data);
 
   void Dispatch(Rasterizer& rasterizer);
 
