@@ -3,7 +3,7 @@
 #include "geom.h"
 #include "macros.h"
 #include "pipeline.h"
-#include "triangle_data.h"
+#include "vertex_data.h"
 
 #define Min std::min
 #define Max std::max

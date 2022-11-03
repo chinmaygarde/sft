@@ -24,9 +24,7 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
   const glm::ivec2 num_slices = {16, 16};
   const glm::ivec2 full_span = max_ - min_;
   const glm::ivec2 min_span = {256, 256};
-  const glm::ivec2 span = glm::max(
-      glm::ivec2{full_span.x / num_slices.x, full_span.y / num_slices.y},
-      min_span);
+  const glm::ivec2 span = glm::max(full_span.x / num_slices, min_span);
 
   if (tree_.Count() == 0 || full_span.x <= 0 || full_span.y <= 0) {
     return;
@@ -55,7 +53,7 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
       for (const auto& index : index_set) {
         // std::cout << index << ", ";
         rasterizer.ShadeFragments(data_.at(index), tile);
-        break;
+        // break;
       }
       // std::cout << std::endl;
       index_set.clear();

@@ -14,7 +14,7 @@
 #include "render_pass.h"
 #include "texture.h"
 #include "tiler.h"
-#include "triangle_data.h"
+#include "vertex_data.h"
 
 namespace sft {
 
