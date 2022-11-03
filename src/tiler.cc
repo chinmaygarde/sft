@@ -11,11 +11,11 @@ Tiler::Tiler() = default;
 
 Tiler::~Tiler() = default;
 
-void Tiler::AddData(Data p_data) {
-  const auto data = data_.emplace_back(std::move(p_data));
+void Tiler::AddData(FragmentResources frag_resources) {
+  const auto data = frag_resources_.emplace_back(std::move(frag_resources));
   const auto min = glm::ivec2{glm::floor(data.box.GetLT())};
   const auto max = glm::ivec2{glm::ceil(data.box.GetRB())};
-  tree_.Insert((int*)&min, (int*)&max, data_.size() - 1u);
+  tree_.Insert((int*)&min, (int*)&max, frag_resources_.size() - 1u);
   min_ = glm::min(min, min_);
   max_ = glm::max(max, max_);
 }
@@ -52,7 +52,7 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
       // std::cout << "> ";
       for (const auto& index : index_set) {
         // std::cout << index << ", ";
-        rasterizer.ShadeFragments(data_.at(index), tile);
+        rasterizer.ShadeFragments(frag_resources_.at(index), tile);
         // break;
       }
       // std::cout << std::endl;
@@ -62,7 +62,7 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
 }
 
 void Tiler::Reset() {
-  data_.clear();
+  frag_resources_.clear();
   tree_.RemoveAll();
   min_ = {INT_MAX, INT_MAX};
   max_ = {INT_MIN, INT_MIN};

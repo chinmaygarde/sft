@@ -8,7 +8,7 @@
 namespace sft {
 
 class Rasterizer;
-struct VertexData;
+struct VertexResources;
 
 struct VertexInvocation {
   size_t vtx_index;
@@ -32,12 +32,12 @@ struct VertexInvocation {
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const VertexData& vtx_data;
-  const Tiler::Data& tiler_data;
+  const VertexResources& vtx_data;
+  const FragmentResources& tiler_data;
 
   VertexInvocation(const Rasterizer& p_rasterizer,
-                   const VertexData& p_vtx_data,
-                   const Tiler::Data& p_tiler_data,
+                   const VertexResources& p_vtx_data,
+                   const FragmentResources& p_tiler_data,
                    size_t p_vertex_id)
       : vtx_index(p_vertex_id),
         rasterizer(p_rasterizer),
@@ -65,11 +65,11 @@ struct FragmentInvocation {
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const Resources& resources;
+  const DispatchResources& resources;
 
   FragmentInvocation(glm::vec3 p_barycentric_coordinates,
                      const Rasterizer& p_rasterizer,
-                     const Resources& p_resources)
+                     const DispatchResources& p_resources)
       : barycentric_coordinates(p_barycentric_coordinates),
         rasterizer(p_rasterizer),
         resources(p_resources) {}

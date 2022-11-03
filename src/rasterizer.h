@@ -12,9 +12,9 @@
 #include "pipeline.h"
 #include "rasterizer_metrics.h"
 #include "render_pass.h"
+#include "stage_resources.h"
 #include "texture.h"
 #include "tiler.h"
-#include "vertex_data.h"
 
 namespace sft {
 
@@ -50,14 +50,14 @@ class Rasterizer {
             size_t count,
             uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
-    auto resources =
-        std::make_shared<Resources>(pipeline->shader->GetVaryingsSize());
+    auto resources = std::make_shared<DispatchResources>(
+        pipeline->shader->GetVaryingsSize());
     resources->vertex = std::move(vertex_buffer);
     resources->index = std::move(index_buffer);
     resources->uniform = std::move(uniform_buffer);
-    VertexData data(pipeline,              //
-                    std::move(resources),  //
-                    stencil_reference      //
+    VertexResources data(pipeline,              //
+                         std::move(resources),  //
+                         stencil_reference      //
     );
     const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
@@ -70,7 +70,7 @@ class Rasterizer {
   }
 
   template <class T>
-  void StoreVarying(const Resources& resources,
+  void StoreVarying(const DispatchResources& resources,
                     const T& val,
                     size_t index,
                     size_t offset) const {
@@ -81,7 +81,7 @@ class Rasterizer {
   }
 
   template <class T>
-  T LoadVarying(const Resources& resources,
+  T LoadVarying(const DispatchResources& resources,
                 const glm::vec3& barycentric_coordinates,
                 size_t offset) const {
     const auto stride = resources.GetVaryingsStride();
@@ -96,12 +96,14 @@ class Rasterizer {
   }
 
   template <class T>
-  T LoadVertexData(const VertexData& data, size_t index, size_t offset) const {
+  T LoadVertexData(const VertexResources& data,
+                   size_t index,
+                   size_t offset) const {
     return data.GetVertexData<T>(index, offset);
   }
 
   template <class T>
-  T LoadUniform(const Resources& resources, size_t offset) const {
+  T LoadUniform(const DispatchResources& resources, size_t offset) const {
     T result = {};
     memcpy(&result, resources.uniform.GetData() + offset, sizeof(T));
     return result;
@@ -119,7 +121,7 @@ class Rasterizer {
 
   [[nodiscard]] bool ResizeSamples(SampleCount count);
 
-  void ShadeFragments(const Tiler::Data& tiler_data, const Rect& tile);
+  void ShadeFragments(const FragmentResources& tiler_data, const Rect& tile);
 
  private:
   RenderPassAttachments pass_;
@@ -148,7 +150,7 @@ class Rasterizer {
                    ScalarF depth,
                    size_t sample);
 
-  void DrawTriangle(const VertexData& data);
+  void DrawTriangle(const VertexResources& data);
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Rasterizer);
 };

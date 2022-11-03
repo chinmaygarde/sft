@@ -83,8 +83,8 @@ add_library(sft_lib
   src/timing.h
   src/tracing.cc
   src/tracing.h
-  src/vertex_data.cc
-  src/vertex_data.h
+  src/stage_resources.cc
+  src/stage_resources.h
   src/vertex_descriptor.cc
   src/vertex_descriptor.h
   third_party/imgui/backends/imgui_impl_sdl.cpp

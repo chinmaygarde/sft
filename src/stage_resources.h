@@ -15,29 +15,29 @@ class Buffer;
 
 struct BufferView;
 
-struct Resources {
+struct DispatchResources {
   BufferView vertex;
   BufferView index;
   BufferView uniform;
   std::vector<uint8_t> varyings;
 
-  explicit Resources(size_t varyings_stride) {
+  explicit DispatchResources(size_t varyings_stride) {
     varyings.resize(varyings_stride * 3u);
   }
 
   size_t GetVaryingsStride() const { return varyings.size() / 3u; }
 };
 
-struct VertexData {
+struct VertexResources {
   std::array<glm::vec3, 3> vtx;
   size_t base_vertex_id = 0;
   std::shared_ptr<Pipeline> pipeline;
-  std::shared_ptr<Resources> resources;
+  std::shared_ptr<DispatchResources> resources;
   const uint32_t stencil_reference;
 
-  VertexData(std::shared_ptr<Pipeline> p_pipeline,
-             std::shared_ptr<Resources> p_resources,
-             uint32_t p_stencil_reference)
+  VertexResources(std::shared_ptr<Pipeline> p_pipeline,
+                  std::shared_ptr<DispatchResources> p_resources,
+                  uint32_t p_stencil_reference)
       : pipeline(std::move(p_pipeline)),
         resources(std::move(p_resources)),
         stencil_reference(p_stencil_reference) {}
@@ -84,6 +84,14 @@ struct VertexData {
         return GetVertexData<glm::vec3>(index, offset);
     }
   }
+};
+
+struct FragmentResources {
+  Rect box;
+  glm::vec3 ndc[3];
+  std::shared_ptr<Pipeline> pipeline;
+  std::shared_ptr<DispatchResources> resources;
+  uint32_t stencil_reference = 0;
 };
 
 }  // namespace sft
