@@ -72,9 +72,10 @@ class Rasterizer {
   template <class T>
   void StoreVarying(const DispatchResources& resources,
                     const T& val,
-                    size_t index,
-                    size_t offset) const {
-    auto varyings_offset = offset + resources.GetVaryingsStride() * (index % 3);
+                    size_t triangle_index,
+                    size_t struct_offset) const {
+    auto varyings_offset =
+        struct_offset + resources.GetVaryingsStride() * (triangle_index % 3);
     auto ptr =
         const_cast<uint8_t*>(resources.varyings.data()) + varyings_offset;
     memcpy(ptr, &val, sizeof(T));
@@ -83,9 +84,9 @@ class Rasterizer {
   template <class T>
   T LoadVarying(const DispatchResources& resources,
                 const glm::vec3& barycentric_coordinates,
-                size_t offset) const {
+                size_t struct_offset) const {
     const auto stride = resources.GetVaryingsStride();
-    auto ptr = resources.varyings.data() + offset;
+    auto ptr = resources.varyings.data() + struct_offset;
     T p1, p2, p3;
     memcpy(&p1, ptr, sizeof(p1));
     ptr += stride;

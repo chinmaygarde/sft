@@ -15,34 +15,35 @@ struct VertexInvocation {
 
   template <class T>
   T LoadVertexData(size_t offset) const {
-    return rasterizer.LoadVertexData<T>(vtx_data, vtx_index, offset);
+    return rasterizer.LoadVertexData<T>(vtx_resources, vtx_index, offset);
   }
 
   template <class T>
-  T LoadUniform(size_t offset) const {
-    return rasterizer.LoadUniform<T>(*vtx_data.resources, offset);
+  T LoadUniform(size_t struct_offset) const {
+    return rasterizer.LoadUniform<T>(*vtx_resources.resources, struct_offset);
   }
 
   template <class T>
-  void StoreVarying(const T& val, size_t offset) const {
-    rasterizer.StoreVarying(*vtx_data.resources, val, vtx_index, offset);
+  void StoreVarying(const T& value, size_t struct_offset) const {
+    rasterizer.StoreVarying(*vtx_resources.resources, value, vtx_index,
+                            struct_offset);
   }
 
  private:
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const VertexResources& vtx_data;
-  const FragmentResources& tiler_data;
+  const VertexResources& vtx_resources;
+  const FragmentResources& frag_resources;
 
   VertexInvocation(const Rasterizer& p_rasterizer,
-                   const VertexResources& p_vtx_data,
-                   const FragmentResources& p_tiler_data,
+                   const VertexResources& p_vtx_resources,
+                   const FragmentResources& p_frag_resources,
                    size_t p_vertex_id)
       : vtx_index(p_vertex_id),
         rasterizer(p_rasterizer),
-        vtx_data(p_vtx_data),
-        tiler_data(p_tiler_data) {}
+        vtx_resources(p_vtx_resources),
+        frag_resources(p_frag_resources) {}
 };
 
 struct FragmentInvocation {
@@ -57,8 +58,8 @@ struct FragmentInvocation {
   }
 
   template <class T>
-  T LoadUniform(size_t offset) const {
-    return rasterizer.LoadUniform<T>(resources, offset);
+  T LoadUniform(size_t struct_offset) const {
+    return rasterizer.LoadUniform<T>(resources, struct_offset);
   }
 
  private:
