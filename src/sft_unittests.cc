@@ -820,12 +820,5 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
   stencil_image = nullptr;
 }
 
-TEST(TilerTest, CanCreateTiler) {
-  Tiler tiler;
-  FragmentResources data;
-  data.box = Rect::MakeLTRB(10, 10, 100, 100);
-  tiler.AddData(data);
-}
-
 }  // namespace testing
 }  // namespace sft

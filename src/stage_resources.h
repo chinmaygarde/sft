@@ -19,13 +19,6 @@ struct DispatchResources {
   BufferView vertex;
   BufferView index;
   BufferView uniform;
-  std::vector<uint8_t> varyings;
-
-  explicit DispatchResources(size_t varyings_stride) {
-    varyings.resize(varyings_stride * 3u);
-  }
-
-  size_t GetVaryingsStride() const { return varyings.size() / 3u; }
 };
 
 struct VertexResources {
@@ -92,6 +85,13 @@ struct FragmentResources {
   std::shared_ptr<Pipeline> pipeline;
   std::shared_ptr<DispatchResources> resources;
   uint32_t stencil_reference = 0;
+  std::vector<uint8_t> varyings;
+
+  explicit FragmentResources(size_t varyings_stride) {
+    varyings.resize(varyings_stride * 3u);
+  }
+
+  size_t GetVaryingsStride() const { return varyings.size() / 3u; }
 };
 
 }  // namespace sft

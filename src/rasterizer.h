@@ -50,8 +50,7 @@ class Rasterizer {
             size_t count,
             uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
-    auto resources = std::make_shared<DispatchResources>(
-        pipeline->shader->GetVaryingsSize());
+    auto resources = std::make_shared<DispatchResources>();
     resources->vertex = std::move(vertex_buffer);
     resources->index = std::move(index_buffer);
     resources->uniform = std::move(uniform_buffer);
@@ -70,7 +69,7 @@ class Rasterizer {
   }
 
   template <class T>
-  void StoreVarying(const DispatchResources& resources,
+  void StoreVarying(const FragmentResources& resources,
                     const T& val,
                     size_t triangle_index,
                     size_t struct_offset) const {
@@ -82,7 +81,7 @@ class Rasterizer {
   }
 
   template <class T>
-  T LoadVarying(const DispatchResources& resources,
+  T LoadVarying(const FragmentResources& resources,
                 const glm::vec3& barycentric_coordinates,
                 size_t struct_offset) const {
     const auto stride = resources.GetVaryingsStride();

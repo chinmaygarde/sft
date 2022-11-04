@@ -25,8 +25,7 @@ struct VertexInvocation {
 
   template <class T>
   void StoreVarying(const T& value, size_t struct_offset) const {
-    rasterizer.StoreVarying(*vtx_resources.resources, value, vtx_index,
-                            struct_offset);
+    rasterizer.StoreVarying(frag_resources, value, vtx_index, struct_offset);
   }
 
  private:
@@ -51,7 +50,7 @@ struct FragmentInvocation {
 
   template <class T>
   T LoadVarying(size_t offset) const {
-    return rasterizer.LoadVarying<T>(resources,                //
+    return rasterizer.LoadVarying<T>(frag_resources,           //
                                      barycentric_coordinates,  //
                                      offset                    //
     );
@@ -59,21 +58,21 @@ struct FragmentInvocation {
 
   template <class T>
   T LoadUniform(size_t struct_offset) const {
-    return rasterizer.LoadUniform<T>(resources, struct_offset);
+    return rasterizer.LoadUniform<T>(*frag_resources.resources, struct_offset);
   }
 
  private:
   friend Rasterizer;
 
   const Rasterizer& rasterizer;
-  const DispatchResources& resources;
+  const FragmentResources& frag_resources;
 
   FragmentInvocation(glm::vec3 p_barycentric_coordinates,
                      const Rasterizer& p_rasterizer,
-                     const DispatchResources& p_resources)
+                     const FragmentResources& p_resources)
       : barycentric_coordinates(p_barycentric_coordinates),
         rasterizer(p_rasterizer),
-        resources(p_resources) {}
+        frag_resources(p_resources) {}
 };
 
 }  // namespace sft
