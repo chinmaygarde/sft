@@ -30,7 +30,7 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
     return;
   }
 
-  using IndexSet = std::vector<size_t>;
+  using IndexSet = std::set<size_t, std::less<size_t>>;
   IndexSet index_set;
 
   for (auto x = min_.x; x < max_.x; x += span.x) {
@@ -40,7 +40,7 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
       auto found = tree_.Search(
           (int*)&min, (int*)&max,
           [](size_t idx, void* ctx) -> bool {
-            reinterpret_cast<decltype(index_set)*>(ctx)->push_back(idx);
+            reinterpret_cast<decltype(index_set)*>(ctx)->insert(idx);
             return true;
           },
           &index_set);
@@ -49,13 +49,9 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
         continue;
       }
       const auto tile = Rect::MakeLTRB(min.x, min.y, max.x, max.y);
-      // std::cout << "> ";
       for (const auto& index : index_set) {
-        // std::cout << index << ", ";
         rasterizer.ShadeFragments(frag_resources_.at(index), tile);
-        // break;
       }
-      // std::cout << std::endl;
       index_set.clear();
     }
   }

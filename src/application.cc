@@ -149,7 +149,7 @@ bool Application::OnRender() {
 
   ImGui::Render();
 
-  // ImGui_ImplSFT_RenderDrawData(rasterizer_.get(), ImGui::GetDrawData());
+  ImGui_ImplSFT_RenderDrawData(rasterizer_.get(), ImGui::GetDrawData());
 
   rasterizer_->Finish();
 
