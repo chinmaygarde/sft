@@ -6,6 +6,7 @@
 
 #include "geom.h"
 #include "macros.h"
+#include "marl/scheduler.h"
 #include "sdl_utils.h"
 #include "texture.h"
 #include "timing.h"
@@ -38,6 +39,7 @@ class Application {
   void SetRasterizerCallback(RasterizerCallback callback);
 
  private:
+  std::unique_ptr<marl::Scheduler> scheduler_;
   const std::shared_ptr<Rasterizer> rasterizer_;
   glm::ivec2 window_size_;
   SDL_Window* sdl_window_ = nullptr;

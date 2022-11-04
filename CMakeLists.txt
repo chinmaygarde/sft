@@ -23,6 +23,10 @@ set(GOOGLETEST_PATH "third_party/googletest")
 set(BENCHMARK_ENABLE_TESTING FALSE)
 add_subdirectory(third_party/googlebenchmark)
 add_subdirectory(third_party/glm)
+set(MARL_BUILD_TESTS FALSE)
+set(MARL_BUILD_BENCHMARKS FALSE)
+set(MARL_BUILD_EXAMPLES FALSE)
+add_subdirectory(third_party/marl)
 
 include(GoogleTest)
 
@@ -113,6 +117,7 @@ target_link_libraries(sft_lib
     SDL2
     tinyobjloader
     glm
+    marl
 )
 
 target_include_directories(sft_lib

@@ -3,6 +3,7 @@
 #include <set>
 #include <vector>
 
+#include "marl/waitgroup.h"
 #include "rasterizer.h"
 
 namespace sft {
@@ -23,7 +24,7 @@ void Tiler::AddData(FragmentResources frag_resources) {
 void Tiler::Dispatch(Rasterizer& rasterizer) {
   const glm::ivec2 num_slices = {16, 16};
   const glm::ivec2 full_span = max_ - min_;
-  const glm::ivec2 min_span = {256, 256};
+  const glm::ivec2 min_span = {64, 64};
   const glm::ivec2 span = glm::max(full_span.x / num_slices, min_span);
 
   if (tree_.Count() == 0 || full_span.x <= 0 || full_span.y <= 0) {
@@ -31,30 +32,36 @@ void Tiler::Dispatch(Rasterizer& rasterizer) {
   }
 
   using IndexSet = std::set<size_t, std::less<size_t>>;
-  IndexSet index_set;
+
+  marl::WaitGroup wg;
 
   for (auto x = min_.x; x < max_.x; x += span.x) {
     for (auto y = min_.y; y < max_.y; y += span.y) {
+      IndexSet index_set;
       const auto min = glm::ivec2{x, y};
       const auto max = min + span;
-      auto found = tree_.Search(
-          (int*)&min, (int*)&max,
-          [](size_t idx, void* ctx) -> bool {
-            reinterpret_cast<decltype(index_set)*>(ctx)->insert(idx);
-            return true;
-          },
-          &index_set);
+      auto found = tree_.Search((int*)&min, (int*)&max,
+                                [](size_t idx, void* ctx) -> bool {
+                                  reinterpret_cast<IndexSet*>(ctx)->insert(idx);
+                                  return true;
+                                },
+                                &index_set);
       if (found == 0) {
         // The bounding boxes of no primitives intersect this tile.
         continue;
       }
-      const auto tile = Rect::MakeLTRB(min.x, min.y, max.x, max.y);
-      for (const auto& index : index_set) {
-        rasterizer.ShadeFragments(frag_resources_.at(index), tile);
-      }
-      index_set.clear();
+      wg.add();
+      marl::schedule([&wg, min, max, index_set = std::move(index_set),
+                      &rasterizer, frag_resources = &frag_resources_]() {
+        const auto tile = Rect::MakeLTRB(min.x, min.y, max.x, max.y);
+        for (const auto& index : index_set) {
+          rasterizer.ShadeFragments(frag_resources->at(index), tile);
+        }
+        wg.done();
+      });
     }
   }
+  wg.wait();
 }
 
 void Tiler::Reset() {

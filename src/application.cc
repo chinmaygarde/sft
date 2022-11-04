@@ -32,10 +32,13 @@ std::string CreateWindowTitle(MillisecondsF frame_time,
 }
 
 Application::Application(glm::ivec2 size, SampleCount sample_count)
-    : rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
+    : scheduler_(std::make_unique<marl::Scheduler>(
+          marl::Scheduler::Config::allCores())),
+      rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
       launch_time_(Clock::now()) {
   TRACE_EVENT(kTraceCategoryApplication, "ApplicationCreate");
-  SFT_ASSERT(rasterizer_);
+
+  scheduler_->bind();
 
   window_size_ = rasterizer_->GetSize();
 
@@ -96,6 +99,7 @@ Application::~Application() {
   if (sdl_renderer_) {
     ::SDL_DestroyRenderer(sdl_renderer_);
   }
+  scheduler_->unbind();
 }
 
 bool Application::Render() {
