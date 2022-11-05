@@ -209,7 +209,7 @@ class Texture {
     if (to.GetSampleCount() != SampleCount::kOne) {
       return false;
     }
-    constexpr size_t slices = 4u;
+    constexpr size_t slices = 5u;
     glm::ivec2 span = size_ / glm::ivec2{slices, slices};
 
     marl::WaitGroup wg;
