@@ -9,6 +9,8 @@
 #include "geom.h"
 #include "image.h"
 #include "macros.h"
+#include "marl/scheduler.h"
+#include "marl/waitgroup.h"
 
 namespace sft {
 
@@ -201,21 +203,29 @@ class Texture {
   SampleCount GetSampleCount() const { return sample_count_; }
 
   [[nodiscard]] bool Resolve(Texture<T>& to) const {
-    TRACE_EVENT(kTraceCategoryRasterizer, "Texture::Resolve");
     if (to.GetSize() != GetSize()) {
       return false;
     }
     if (to.GetSampleCount() != SampleCount::kOne) {
       return false;
     }
-    for (auto x = 0; x < size_.x; x++) {
-      for (auto y = 0; y < size_.y; y++) {
-        const auto position = glm::ivec2{x, y};
-        const auto* samples = Get(position, 0);
-        to.Set(PerformResolve(samples, static_cast<uint8_t>(sample_count_)),
-               position, 0);
+    constexpr size_t slices = 4u;
+    glm::ivec2 span = size_ / glm::ivec2{slices, slices};
+
+    marl::WaitGroup wg;
+
+    for (size_t x = 0; x < slices; x++) {
+      for (size_t y = 0; y < slices; y++) {
+        wg.add();
+        const auto min = glm::ivec2{span.x * x, span.y * y};
+        const auto max = glm::ivec2{span.x * (x + 1), span.y * (y + 1)};
+        marl::schedule([&, min, max]() {
+          ResolveSubSection(to, min, max);
+          wg.done();
+        });
       }
     }
+    wg.wait();
     return true;
   }
 
@@ -226,6 +236,19 @@ class Texture {
 
   Texture(T* allocation, glm::ivec2 size, SampleCount sample_count)
       : allocation_(allocation), size_(size), sample_count_(sample_count) {}
+
+  void ResolveSubSection(Texture<T>& to, glm::ivec2 min, glm::ivec2 max) const {
+    min = glm::max(glm::ivec2{0, 0}, min);
+    max = glm::min(size_, max);
+    for (auto x = min.x; x < max.x; x++) {
+      for (auto y = min.y; y < max.y; y++) {
+        const auto position = glm::ivec2{x, y};
+        const auto* samples = Get(position, 0);
+        to.Set(PerformResolve(samples, static_cast<uint8_t>(sample_count_)),
+               position, 0);
+      }
+    }
+  }
 
   SFT_DISALLOW_COPY_AND_ASSIGN(Texture);
 };
