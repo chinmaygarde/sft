@@ -2,6 +2,8 @@
 
 #include "geom.h"
 #include "macros.h"
+#include "marl/scheduler.h"
+#include "marl/waitgroup.h"
 #include "texture.h"
 
 namespace sft {
@@ -216,10 +218,20 @@ struct RenderPassAttachments {
   }
 
   bool Load() {
-    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Load");
-    color.Load();
-    depth.Load();
-    stencil.Load();
+    marl::WaitGroup wg(3);
+    marl::schedule([wg, attachment = &color]() {
+      attachment->Load();
+      wg.done();
+    });
+    marl::schedule([wg, attachment = &depth]() {
+      attachment->Load();
+      wg.done();
+    });
+    marl::schedule([wg, attachment = &stencil]() {
+      attachment->Load();
+      wg.done();
+    });
+    wg.wait();
     return true;
   }
 
