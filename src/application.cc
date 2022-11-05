@@ -157,10 +157,6 @@ bool Application::OnRender() {
 
   rasterizer_->Finish();
 
-  const auto update_end = Clock::now();
-
-  last_update_duration_ = update_end - update_start;
-
   const auto size = rasterizer_->GetSize();
 
   auto& pass = rasterizer_->GetRenderPass();
@@ -173,6 +169,8 @@ bool Application::OnRender() {
     }
     texture = pass.color.resolve;
   }
+
+  last_update_duration_ = Clock::now() - update_start;
 
   SDLTextureNoCopyCaster color_attachment(sdl_renderer_,               //
                                           texture->Get({}, 0),         //
