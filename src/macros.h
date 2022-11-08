@@ -34,3 +34,5 @@
 #define SFT_DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
   TypeName() = delete;                               \
   SFT_DISALLOW_COPY_ASSIGN_AND_MOVE(TypeName)
+
+#define SFT_ALWAYS_INLINE inline __attribute__((always_inline))

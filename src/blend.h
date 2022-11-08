@@ -127,7 +127,9 @@ struct BlendDescriptor {
   }
 
   template <class T>
-  static constexpr T ApplyOp(BlendOp op, const T& src, const T& dst) {
+  SFT_ALWAYS_INLINE static constexpr T ApplyOp(BlendOp op,
+                                               const T& src,
+                                               const T& dst) {
     switch (op) {
       case BlendOp::kAdd:
         return src + dst;
@@ -147,9 +149,9 @@ struct BlendDescriptor {
     return glm::vec3{color};
   }
 
-  static constexpr glm::vec4 Masked(glm::vec4 src,
-                                    glm::vec4 dst,
-                                    uint8_t mask) {
+  SFT_ALWAYS_INLINE static constexpr glm::vec4 Masked(glm::vec4 src,
+                                                      glm::vec4 dst,
+                                                      uint8_t mask) {
     return glm::vec4{
         mask & ColorMask::kRed ? src.r : dst.r,    //
         mask & ColorMask::kGreen ? src.g : dst.g,  //
@@ -158,7 +160,8 @@ struct BlendDescriptor {
     };
   }
 
-  constexpr glm::vec4 Blend(glm::vec4 src, glm::vec4 dst) const {
+  SFT_ALWAYS_INLINE constexpr glm::vec4 Blend(glm::vec4 src,
+                                              glm::vec4 dst) const {
     if (!enabled) {
       return Masked(src, dst, write_mask);
     }

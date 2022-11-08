@@ -22,7 +22,8 @@ void Tiler::AddData(FragmentResources frag_resources) {
 }
 
 void Tiler::Dispatch(Rasterizer& rasterizer) {
-  const glm::ivec2 num_slices = {16, 16};
+  const auto tile_factor = TileFactorForAvailableHardwareConcurrency();
+  const glm::ivec2 num_slices = {tile_factor, tile_factor};
   const glm::ivec2 full_span = max_ - min_;
   const glm::ivec2 min_span = {64, 64};
   const glm::ivec2 span = glm::max(full_span.x / num_slices, min_span);

@@ -361,4 +361,6 @@ T BarycentricInterpolation(const T& p1,
   return bary.x * p1 + bary.y * p2 + bary.z * p3;
 }
 
+size_t TileFactorForAvailableHardwareConcurrency();
+
 }  // namespace sft
