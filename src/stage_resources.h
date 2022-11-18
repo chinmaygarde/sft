@@ -8,6 +8,7 @@
 #include "geom.h"
 #include "macros.h"
 #include "pipeline.h"
+#include "uniforms.h"
 
 namespace sft {
 
@@ -18,7 +19,7 @@ struct BufferView;
 struct DispatchResources {
   BufferView vertex;
   BufferView index;
-  BufferView uniform;
+  Uniforms uniform;
 };
 
 struct VertexResources {
@@ -92,6 +93,10 @@ struct FragmentResources {
   }
 
   size_t GetVaryingsStride() const { return varyings.size() / 3u; }
+
+  const Image& GetImage(size_t location) const {
+    return *resources->uniform.images.at(location);
+  }
 };
 
 }  // namespace sft

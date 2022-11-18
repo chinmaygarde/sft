@@ -36,24 +36,24 @@ class Rasterizer {
 
   void Draw(std::shared_ptr<Pipeline> pipeline,
             const BufferView& vertex_buffer,
-            const BufferView& uniform_buffer,
+            Uniforms uniforms,
             size_t count,
             uint32_t stencil_refernece = 0) {
-    return Draw(std::move(pipeline), vertex_buffer, {}, uniform_buffer, count,
-                stencil_refernece);
+    return Draw(std::move(pipeline), vertex_buffer, {}, std::move(uniforms),
+                count, stencil_refernece);
   }
 
   void Draw(std::shared_ptr<Pipeline> pipeline,
             const BufferView& vertex_buffer,
             const BufferView& index_buffer,
-            const BufferView& uniform_buffer,
+            Uniforms uniforms,
             size_t count,
             uint32_t stencil_reference = 0) {
     metrics_.draw_count++;
     auto resources = std::make_shared<DispatchResources>();
     resources->vertex = std::move(vertex_buffer);
     resources->index = std::move(index_buffer);
-    resources->uniform = std::move(uniform_buffer);
+    resources->uniform = std::move(uniforms);
     VertexResources data(pipeline,              //
                          std::move(resources),  //
                          stencil_reference      //
@@ -68,6 +68,7 @@ class Rasterizer {
     }
   }
 
+  // TODO: Does this need to be on the rasterizer?
   template <class T>
   void StoreVarying(const FragmentResources& resources,
                     const T& val,
@@ -80,6 +81,7 @@ class Rasterizer {
     memcpy(ptr, &val, sizeof(T));
   }
 
+  // TODO: Does this need to be on the rasterizer?
   template <class T>
   T LoadVarying(const FragmentResources& resources,
                 const glm::vec3& barycentric_coordinates,
@@ -95,6 +97,7 @@ class Rasterizer {
     return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
   }
 
+  // TODO: Does this need to be on the rasterizer?
   template <class T>
   T LoadVertexData(const VertexResources& data,
                    size_t index,
@@ -102,10 +105,11 @@ class Rasterizer {
     return data.GetVertexData<T>(index, offset);
   }
 
+  // TODO: Does this need to be on the rasterizer?
   template <class T>
   T LoadUniform(const DispatchResources& resources, size_t offset) const {
     T result = {};
-    memcpy(&result, resources.uniform.GetData() + offset, sizeof(T));
+    memcpy(&result, resources.uniform.buffer.GetData() + offset, sizeof(T));
     return result;
   }
 

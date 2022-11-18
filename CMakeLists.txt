@@ -79,6 +79,8 @@ add_library(sft_lib
   src/shaders/model_shader.h
   src/shaders/texture_shader.cc
   src/shaders/texture_shader.h
+  src/stage_resources.cc
+  src/stage_resources.h
   src/texture.cc
   src/texture.h
   src/tiler.cc
@@ -87,8 +89,8 @@ add_library(sft_lib
   src/timing.h
   src/tracing.cc
   src/tracing.h
-  src/stage_resources.cc
-  src/stage_resources.h
+  src/uniforms.cc
+  src/uniforms.h
   src/vertex_descriptor.cc
   src/vertex_descriptor.h
   third_party/imgui/backends/imgui_impl_sdl.cpp

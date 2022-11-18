@@ -71,8 +71,10 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
           .alpha = 0.75,
           .offset = {0, 0},
       });
-      shader->SetTexture(image1);
-      rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 6);
+      sft::Uniforms uniforms;
+      uniforms.buffer = *uniform_buffer;
+      uniforms.images[0] = image1;
+      rasterizer.Draw(pipeline, *vertex_buffer, uniforms, 6);
     }
     {
       auto uniform_buffer = Buffer::Create();
@@ -80,8 +82,10 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
           .alpha = 0.75,
           .offset = {0.2, 0.2},
       });
-      shader->SetTexture(image2);
-      rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 6);
+      sft::Uniforms uniforms;
+      uniforms.buffer = *uniform_buffer;
+      uniforms.images[0] = image2;
+      rasterizer.Draw(pipeline, *vertex_buffer, uniforms, 6);
     }
     {
       auto uniform_buffer = Buffer::Create();
@@ -89,8 +93,10 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
           .alpha = 0.75,
           .offset = {0.4, 0.4},
       });
-      shader->SetTexture(image3);
-      rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 6);
+      sft::Uniforms uniforms;
+      uniforms.buffer = *uniform_buffer;
+      uniforms.images[0] = image3;
+      rasterizer.Draw(pipeline, *vertex_buffer, uniforms, 6);
     }
     return true;
   });
@@ -127,9 +133,11 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
       .alpha = 1.0,
       .offset = {0, 0},
   });
+  sft::Uniforms uniforms;
+  uniforms.buffer = uniform_buffer;
+  uniforms.images[0] =
+      std::make_shared<Image>(SFT_ASSETS_LOCATION "embarcadero.jpg");
   auto index_buffer = buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
-  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "embarcadero.jpg");
-  shader->SetTexture(image1);
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt16;
@@ -137,7 +145,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    rasterizer.Draw(pipeline, vertex_buffer, index_buffer, uniform_buffer, 6);
+    rasterizer.Draw(pipeline, vertex_buffer, index_buffer, uniforms, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -231,8 +239,11 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
       .offset = {0, 0},
   });
   auto index_buffer = buffer->Emplace(std::vector<uint32_t>{0, 1, 2, 2, 3, 0});
-  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
-  shader->SetTexture(image1);
+
+  sft::Uniforms uniforms;
+  uniforms.buffer = uniform_buffer;
+  uniforms.images[0] =
+      std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt32;
@@ -240,7 +251,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    rasterizer.Draw(pipeline, vertex_buffer, index_buffer, uniform_buffer, 6);
+    rasterizer.Draw(pipeline, vertex_buffer, index_buffer, uniforms, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -290,8 +301,10 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
           .alpha = 1.0,
           .offset = {0, -0.5},
       });
-      shader->SetTexture(image1);
-      rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 6);
+      sft::Uniforms uniforms;
+      uniforms.buffer = *uniform_buffer;
+      uniforms.images[0] = image1;
+      rasterizer.Draw(pipeline, *vertex_buffer, uniforms, 6);
     }
     {
       auto uniform_buffer = Buffer::Create();
@@ -299,8 +312,10 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
           .alpha = 1.0,
           .offset = {0, 0.5},
       });
-      shader->SetTexture(image2);
-      rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 6);
+      sft::Uniforms uniforms;
+      uniforms.buffer = *uniform_buffer;
+      uniforms.images[0] = image2;
+      rasterizer.Draw(pipeline, *vertex_buffer, uniforms, 6);
     }
 
     return true;
@@ -344,14 +359,16 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
   sampler.wrap_mode_s = WrapMode::kRepeat;
   sampler.wrap_mode_t = WrapMode::kMirror;
   image1->SetSampler(sampler);
-  shader->SetTexture(image1);
+  sft::Uniforms uniforms;
+  uniforms.buffer = uniform_buffer;
+  uniforms.images[0] = image1;
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 6);
+    rasterizer.Draw(pipeline, vertex_buffer, uniforms, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -393,14 +410,16 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
   sampler.wrap_mode_s = WrapMode::kClamp;
   sampler.wrap_mode_t = WrapMode::kMirror;
   image1->SetSampler(sampler);
-  shader->SetTexture(image1);
+  sft::Uniforms uniforms;
+  uniforms.buffer = uniform_buffer;
+  uniforms.images[0] = image1;
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
   pipeline->vertex_descriptor.stride = sizeof(VD);
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorFirebrick);
-    rasterizer.Draw(pipeline, vertex_buffer, uniform_buffer, 6);
+    rasterizer.Draw(pipeline, vertex_buffer, uniforms, 6);
     return true;
   });
   ASSERT_TRUE(Run(application));
@@ -662,7 +681,7 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
   static std::shared_ptr<Image> depth_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
-    rasterizer.Draw(pipeline, *vertex_buffer, *uniform_buffer, 3u);
+    rasterizer.Draw(pipeline, *vertex_buffer, BufferView{*uniform_buffer}, 3u);
     depth_image = rasterizer.CaptureDebugDepthTexture();
     DisplayTextureInHUD("Depth Buffer", depth_image.get(), 0.25);
     return true;
