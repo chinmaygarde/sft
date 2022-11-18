@@ -44,23 +44,12 @@ class ModelShader final : public Shader {
     light = glm::normalize(light);
     auto intensity = glm::dot(light, normal);
     auto intensity_color = glm::vec4{intensity, intensity, intensity, 1.0};
-    glm::vec4 color;
-    if (texture_) {
-      color = texture_->Sample(VARYING_LOAD(texture_coord));
-    } else {
-      color = UNIFORM(color);
-    }
+    auto color = inv.GetImage(0u).Sample(VARYING_LOAD(texture_coord));
     color *= intensity_color;
     return color;
   }
 
-  void SetTexture(std::shared_ptr<Image> texture) {
-    texture_ = std::move(texture);
-  }
-
  private:
-  std::shared_ptr<Image> texture_;
-
   SFT_DISALLOW_COPY_AND_ASSIGN(ModelShader);
 };
 

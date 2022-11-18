@@ -113,6 +113,10 @@ void Model::RenderTo(Rasterizer& rasterizer) {
     return;
   }
 
+  if (!texture_) {
+    return;
+  }
+
   glm::vec2 size = rasterizer.GetSize();
 
   auto proj =
@@ -133,9 +137,10 @@ void Model::RenderTo(Rasterizer& rasterizer) {
       .light = light_direction_,
       .color = kColorFirebrick,
   });
-
-  rasterizer.Draw(pipeline_, *vertex_buffer_, BufferView{*uniform_buffer},
-                  vertex_count_);
+  sft::Uniforms uniforms;
+  uniforms.buffer = *uniform_buffer;
+  uniforms.images[0] = texture_;
+  rasterizer.Draw(pipeline_, *vertex_buffer_, uniforms, vertex_count_);
 }
 
 void Model::SetScale(ScalarF scale) {
@@ -147,7 +152,7 @@ void Model::SetRotation(ScalarF rotation) {
 }
 
 void Model::SetTexture(std::shared_ptr<Image> texture) {
-  model_shader_->SetTexture(std::move(texture));
+  texture_ = std::move(texture);
 }
 
 void Model::SetLightDirection(glm::vec3 dir) {

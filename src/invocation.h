@@ -63,7 +63,7 @@ struct FragmentInvocation {
 
   const Image& GetImage(size_t location) const {
     return frag_resources.GetImage(location);
-  };
+  }
 
  private:
   friend Rasterizer;
