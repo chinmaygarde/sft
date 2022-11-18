@@ -39,7 +39,6 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
                               glm::ivec2{width, height});
   font_atlas->SetSampler({.min_mag_filter = Filter::kNearest});
 
-  shader->SetImage(font_atlas.get());
   io.Fonts->SetTexID(font_atlas.get());
 
   pipeline->shader = shader;
@@ -142,12 +141,15 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
       }
 
       auto texture = reinterpret_cast<Image*>(cmd.GetTexID());
-      user_data->shader->SetImage(texture);
 
-      rasterizer->Draw(user_data->pipeline,          // pipeline
-                       *vertex_buffer,               // vertex_buffer
-                       BufferView{*uniform_buffer},  // uniform buffer
-                       cmd.ElemCount                 // count
+      sft::Uniforms uniforms;
+      uniforms.buffer = *uniform_buffer;
+      uniforms.images[0u] = texture->shared_from_this();
+
+      rasterizer->Draw(user_data->pipeline,  // pipeline
+                       *vertex_buffer,       // vertex_buffer
+                       uniforms,             // uniform buffer
+                       cmd.ElemCount         // count
       );
     }
   }

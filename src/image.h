@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "geom.h"
 #include "macros.h"
 #include "mapping.h"
@@ -7,7 +9,7 @@
 
 namespace sft {
 
-class Image {
+class Image final : public std::enable_shared_from_this<Image> {
  public:
   Image(const char* file_path);
 

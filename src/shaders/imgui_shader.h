@@ -28,8 +28,6 @@ class ImGuiShader final : public Shader {
 
   ~ImGuiShader() = default;
 
-  void SetImage(Image* image) { image_ = image; }
-
   size_t GetVaryingsSize() const override { return sizeof(Varyings); }
 
   glm::vec4 ProcessVertex(const VertexInvocation& inv) const override {
@@ -42,15 +40,12 @@ class ImGuiShader final : public Shader {
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
     const glm::vec4 texture_color =
-        image_ ? image_->Sample(VARYING_LOAD(texture_coordinates))
-               : glm::vec4{1.0, 1.0, 1.0, 1.0};
+        inv.GetImage(0u).Sample(VARYING_LOAD(texture_coordinates));
     const glm::vec4 color = VARYING_LOAD(vertex_color);
     return color * texture_color;
   }
 
  private:
-  Image* image_ = nullptr;
-
   SFT_DISALLOW_COPY_AND_ASSIGN(ImGuiShader);
 };
 
