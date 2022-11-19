@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-#include "tracing.h"
-
 #define SFT_ASSERT(x)                                            \
   {                                                              \
     if (!(x)) {                                                  \

@@ -32,7 +32,6 @@ static std::string CreateTestName() {
 static bool gSkipRemainingTests = false;
 
 bool TestRunner::Run(Application& application) const {
-  TRACE_EVENT(kTraceCategoryTest, "TestRunner::Run");
   bool is_running = true;
   bool success = true;
   application.SetTitle(CreateTestName());

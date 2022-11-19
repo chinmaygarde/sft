@@ -250,7 +250,6 @@ static bool PointInside(const glm::vec2& a,
 
 void Rasterizer::ShadeFragments(const FragmentResources& tiler_data,
                                 const Rect& tile) {
-  TRACE_EVENT(kTraceCategoryRasterizer, "ShadeFragments");
   auto box = tiler_data.box.Intersection(tile);
   if (!box.has_value()) {
     return;
@@ -350,7 +349,6 @@ void Rasterizer::ShadeFragments(const FragmentResources& tiler_data,
 }
 
 void Rasterizer::DrawTriangle(const VertexResources& data) {
-  TRACE_EVENT(kTraceCategoryRasterizer, "DrawTriangle");
   metrics_.primitive_count++;
 
   auto tiler_data = FragmentResources{data.pipeline->shader->GetVaryingsSize()};

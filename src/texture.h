@@ -110,7 +110,6 @@ class Texture {
   bool IsValid() const { return allocation_ != nullptr; }
 
   [[nodiscard]] bool Resize(glm::ivec2 size) {
-    TRACE_EVENT(kTraceCategoryRasterizer, "RenderPass::Resize");
     auto new_allocation =
         std::realloc(allocation_, size.x * size.y * sizeof(T) *
                                       static_cast<uint8_t>(sample_count_));
@@ -147,7 +146,6 @@ class Texture {
   }
 
   void Clear(const T& val) {
-    TRACE_EVENT(kTraceCategoryRasterizer, "Texture<T>::Clear");
     for (auto i = 0;
          i < size_.x * size_.y * static_cast<uint8_t>(sample_count_); i++) {
       allocation_[i] = val;

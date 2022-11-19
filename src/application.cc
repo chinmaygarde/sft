@@ -36,8 +36,6 @@ Application::Application(glm::ivec2 size, SampleCount sample_count)
           marl::Scheduler::Config::allCores())),
       rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
       launch_time_(Clock::now()) {
-  TRACE_EVENT(kTraceCategoryApplication, "ApplicationCreate");
-
   scheduler_->bind();
 
   window_size_ = rasterizer_->GetSize();
@@ -124,7 +122,6 @@ bool Application::IsValid() const {
 }
 
 bool Application::Update() {
-  TRACE_EVENT(kTraceCategoryApplication, __FUNCTION__);
   if (!rasterizer_callback_) {
     return false;
   }
@@ -132,7 +129,6 @@ bool Application::Update() {
 }
 
 bool Application::OnRender() {
-  TRACE_EVENT(kTraceCategoryApplication, __FUNCTION__);
   if (!is_valid_) {
     return false;
   }
@@ -185,7 +181,6 @@ bool Application::OnRender() {
   dest.w = size.x;
   dest.h = size.y;
   {
-    TRACE_EVENT(kTraceCategoryApplication, "SDL_RenderCopy");
     if (::SDL_RenderCopyEx(sdl_renderer_,       //
                            color_attachment,    //
                            nullptr,             //

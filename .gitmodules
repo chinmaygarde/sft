@@ -19,9 +19,6 @@
 [submodule "third_party/imgui"]
 	path = third_party/imgui
 	url = https://github.com/ocornut/imgui.git
-[submodule "third_party/perfetto"]
-	path = third_party/perfetto
-	url = https://android.googlesource.com/platform/external/perfetto
 [submodule "third_party/marl"]
 	path = third_party/marl
 	url = https://github.com/google/marl.git

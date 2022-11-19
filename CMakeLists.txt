@@ -87,8 +87,6 @@ add_library(sft_lib
   src/tiler.h
   src/timing.cc
   src/timing.h
-  src/tracing.cc
-  src/tracing.h
   src/uniforms.cc
   src/uniforms.h
   src/vertex_descriptor.cc
@@ -101,8 +99,6 @@ add_library(sft_lib
   third_party/imgui/imgui_draw.cpp
   third_party/imgui/imgui_tables.cpp
   third_party/imgui/imgui_widgets.cpp
-  third_party/perfetto/sdk/perfetto.cc
-  third_party/perfetto/sdk/perfetto.h
 )
 
 target_compile_options(sft_lib
@@ -112,6 +108,11 @@ target_compile_options(sft_lib
     -Wextra
     -Wno-unused-parameter
     -Wno-missing-field-initializers
+)
+
+target_compile_definitions(sft_lib
+  PUBLIC
+    -D_CRT_SECURE_NO_WARNINGS
 )
 
 target_link_libraries(sft_lib
