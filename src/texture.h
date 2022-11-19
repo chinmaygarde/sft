@@ -195,7 +195,7 @@ class Texture {
         size,                                          //
         [allocation]() { std::free(allocation); }      //
     );
-    return std::make_shared<Image>(mapping, size_);
+    return Image::Create(mapping, size_);
   }
 
   glm::ivec2 GetSize() const { return size_; }

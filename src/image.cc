@@ -7,6 +7,15 @@
 
 namespace sft {
 
+std::shared_ptr<Image> Image::Create(const char* file_path) {
+  return std::shared_ptr<Image>(new Image(file_path));
+}
+
+std::shared_ptr<Image> Image::Create(std::shared_ptr<Mapping> mapping,
+                                     glm::ivec2 size) {
+  return std::shared_ptr<Image>(new Image(std::move(mapping), size));
+}
+
 Image::Image(const char* path) {
   int width = 0;
   int height = 0;

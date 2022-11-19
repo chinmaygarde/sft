@@ -11,9 +11,10 @@ namespace sft {
 
 class Image final : public std::enable_shared_from_this<Image> {
  public:
-  Image(const char* file_path);
+  static std::shared_ptr<Image> Create(const char* file_path);
 
-  Image(std::shared_ptr<Mapping> mapping, glm::ivec2 size);
+  static std::shared_ptr<Image> Create(std::shared_ptr<Mapping> mapping,
+                                       glm::ivec2 size);
 
   ~Image();
 
@@ -32,6 +33,10 @@ class Image final : public std::enable_shared_from_this<Image> {
   glm::ivec2 size_;
   Sampler sampler_;
   bool is_valid_;
+
+  Image(const char* file_path);
+
+  Image(std::shared_ptr<Mapping> mapping, glm::ivec2 size);
 
   glm::vec4 SampleUnit(glm::vec2 position) const;
 

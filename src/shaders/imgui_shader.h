@@ -40,7 +40,7 @@ class ImGuiShader final : public Shader {
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
     const glm::vec4 texture_color =
-        inv.GetImage(0u).Sample(VARYING_LOAD(texture_coordinates));
+        inv.LoadImage(0u).Sample(VARYING_LOAD(texture_coordinates));
     const glm::vec4 color = VARYING_LOAD(vertex_color);
     return color * texture_color;
   }

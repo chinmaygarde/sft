@@ -26,7 +26,7 @@ static void BM_RenderHelmet(benchmark::State& state) {
               SFT_ASSETS_LOCATION "helmet");
   model.SetRotation(45);
   model.SetScale(900);
-  auto texture = std::make_shared<Image>(SFT_ASSETS_LOCATION "helmet/Base.png");
+  auto texture = Image::Create(SFT_ASSETS_LOCATION "helmet/Base.png");
   texture->SetSampler({.min_mag_filter = Filter::kNearest});
   model.SetTexture(texture);
   while (state.KeepRunning()) {
@@ -39,7 +39,7 @@ static void BM_RenderHelmet(benchmark::State& state) {
 BENCHMARK(BM_RenderHelmet)->Unit(benchmark::TimeUnit::kMillisecond);
 
 static void BM_SampleLinear(benchmark::State& state) {
-  auto texture = std::make_shared<Image>(SFT_ASSETS_LOCATION "helmet/Base.png");
+  auto texture = Image::Create(SFT_ASSETS_LOCATION "helmet/Base.png");
   texture->SetSampler({.min_mag_filter = Filter::kLinear});
   while (state.KeepRunning()) {
     for (auto i = 0.0f; i <= 1.0f; i += 0.001f) {
@@ -53,7 +53,7 @@ static void BM_SampleLinear(benchmark::State& state) {
 BENCHMARK(BM_SampleLinear)->Unit(benchmark::TimeUnit::kMillisecond);
 
 static void BM_SampleNearest(benchmark::State& state) {
-  auto texture = std::make_shared<Image>(SFT_ASSETS_LOCATION "helmet/Base.png");
+  auto texture = Image::Create(SFT_ASSETS_LOCATION "helmet/Base.png");
   texture->SetSampler({.min_mag_filter = Filter::kNearest});
   while (state.KeepRunning()) {
     for (auto i = 0.0f; i <= 1.0f; i += 0.001f) {

@@ -39,7 +39,7 @@ class TextureShader final : public Shader {
   }
 
   glm::vec4 ProcessFragment(const FragmentInvocation& inv) const override {
-    auto color = inv.GetImage(0).Sample(VARYING_LOAD(texture_coords));
+    auto color = inv.LoadImage(0).Sample(VARYING_LOAD(texture_coords));
     const auto alpha = glm::clamp(UNIFORM(alpha), 0.0f, 1.0f);
     color.a *= alpha;
     return color;

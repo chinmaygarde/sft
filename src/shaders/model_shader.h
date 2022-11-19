@@ -44,7 +44,7 @@ class ModelShader final : public Shader {
     light = glm::normalize(light);
     auto intensity = glm::dot(light, normal);
     auto intensity_color = glm::vec4{intensity, intensity, intensity, 1.0};
-    auto color = inv.GetImage(0u).Sample(VARYING_LOAD(texture_coord));
+    auto color = inv.LoadImage(0u).Sample(VARYING_LOAD(texture_coord));
     color *= intensity_color;
     return color;
   }

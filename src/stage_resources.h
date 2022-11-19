@@ -94,7 +94,7 @@ struct FragmentResources {
 
   size_t GetVaryingsStride() const { return varyings.size() / 3u; }
 
-  const Image& GetImage(size_t location) const {
+  const Image& LoadImage(size_t location) const {
     return *resources->uniform.images.at(location);
   }
 };

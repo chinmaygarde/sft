@@ -61,8 +61,8 @@ struct FragmentInvocation {
     return rasterizer.LoadUniform<T>(*frag_resources.resources, struct_offset);
   }
 
-  const Image& GetImage(size_t location) const {
-    return frag_resources.GetImage(location);
+  const Image& LoadImage(size_t location) const {
+    return frag_resources.LoadImage(location);
   }
 
  private:

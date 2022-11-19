@@ -35,8 +35,8 @@ bool ImGui_ImplSFT_Init(SDL_Window* window, SDL_Renderer* renderer) {
   auto pipeline = std::make_shared<Pipeline>();
   auto shader = std::make_shared<ImGuiShader>();
   auto font_atlas =
-      std::make_shared<Image>(Mapping::MakeWithCopy(pixels, width * height * 4),
-                              glm::ivec2{width, height});
+      Image::Create(Mapping::MakeWithCopy(pixels, width * height * 4),
+                    glm::ivec2{width, height});
   font_atlas->SetSampler({.min_mag_filter = Filter::kNearest});
 
   io.Fonts->SetTexID(font_atlas.get());

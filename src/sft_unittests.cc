@@ -56,9 +56,9 @@ TEST_F(RasterizerTest, CanDrawTexturedImage) {
       {tl, p1},
   });
 
-  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
-  auto image2 = std::make_shared<Image>(SFT_ASSETS_LOCATION "boston.jpg");
-  auto image3 = std::make_shared<Image>(SFT_ASSETS_LOCATION "kalimba.jpg");
+  auto image1 = Image::Create(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image2 = Image::Create(SFT_ASSETS_LOCATION "boston.jpg");
+  auto image3 = Image::Create(SFT_ASSETS_LOCATION "kalimba.jpg");
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.offset = offsetof(VD, position);
@@ -135,8 +135,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer16Bit) {
   });
   sft::Uniforms uniforms;
   uniforms.buffer = uniform_buffer;
-  uniforms.images[0] =
-      std::make_shared<Image>(SFT_ASSETS_LOCATION "embarcadero.jpg");
+  uniforms.images[0] = Image::Create(SFT_ASSETS_LOCATION "embarcadero.jpg");
   auto index_buffer = buffer->Emplace(std::vector<uint16_t>{0, 1, 2, 2, 3, 0});
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
@@ -242,8 +241,7 @@ TEST_F(RasterizerTest, CanDrawWithIndexBuffer32Bit) {
 
   sft::Uniforms uniforms;
   uniforms.buffer = uniform_buffer;
-  uniforms.images[0] =
-      std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  uniforms.images[0] = Image::Create(SFT_ASSETS_LOCATION "airplane.jpg");
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
   pipeline->vertex_descriptor.index_type = IndexType::kUInt32;
@@ -285,9 +283,9 @@ TEST_F(RasterizerTest, CanCompareLinearAndNearestSampling) {
       {tl, p1},
   });
 
-  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image1 = Image::Create(SFT_ASSETS_LOCATION "airplane.jpg");
   image1->SetSampler({.min_mag_filter = Filter::kLinear});
-  auto image2 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image2 = Image::Create(SFT_ASSETS_LOCATION "airplane.jpg");
   image2->SetSampler({.min_mag_filter = Filter::kNearest});
   pipeline->shader = shader;
   pipeline->color_desc.blend.enabled = true;
@@ -354,7 +352,7 @@ TEST_F(RasterizerTest, CanWrapModeRepeatAndMirror) {
       .alpha = 1.0,
       .offset = {0, 0},
   });
-  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image1 = Image::Create(SFT_ASSETS_LOCATION "airplane.jpg");
   Sampler sampler;
   sampler.wrap_mode_s = WrapMode::kRepeat;
   sampler.wrap_mode_t = WrapMode::kMirror;
@@ -405,7 +403,7 @@ TEST_F(RasterizerTest, CanWrapModeClampAndRepeat) {
       .alpha = 1.0,
       .offset = {0, 0},
   });
-  auto image1 = std::make_shared<Image>(SFT_ASSETS_LOCATION "airplane.jpg");
+  auto image1 = Image::Create(SFT_ASSETS_LOCATION "airplane.jpg");
   Sampler sampler;
   sampler.wrap_mode_s = WrapMode::kClamp;
   sampler.wrap_mode_t = WrapMode::kMirror;
@@ -430,7 +428,7 @@ TEST_F(RasterizerTest, CanDrawTeapot) {
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
   model.SetScale(0.075);
-  auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "marble.jpg");
+  auto image = Image::Create(SFT_ASSETS_LOCATION "marble.jpg");
   image->SetSampler({.min_mag_filter = Filter::kLinear});
   model.SetTexture(image);
   ASSERT_TRUE(model.IsValid());
@@ -447,7 +445,7 @@ TEST_F(RasterizerTest, CanMSAA) {
   Application application({800, 600}, SampleCount::kFour);
   Model model(SFT_ASSETS_LOCATION "teapot/teapot.obj",
               SFT_ASSETS_LOCATION "teapot");
-  auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "marble.jpg");
+  auto image = Image::Create(SFT_ASSETS_LOCATION "marble.jpg");
   image->SetSampler({.min_mag_filter = Filter::kLinear});
   model.SetTexture(image);
   ASSERT_TRUE(model.IsValid());
@@ -567,7 +565,7 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
   Model model(SFT_ASSETS_LOCATION "helmet/Helmet.obj",
               SFT_ASSETS_LOCATION "helmet");
 
-  auto image = std::make_shared<Image>(SFT_ASSETS_LOCATION "helmet/Base.png");
+  auto image = Image::Create(SFT_ASSETS_LOCATION "helmet/Base.png");
   image->SetSampler({.min_mag_filter = Filter::kNearest});
   model.SetTexture(image);
   model.GetPipeline().stencil_desc = StencilAttachmentDescriptor{
