@@ -435,7 +435,6 @@ void Rasterizer::DrawTriangle(const VertexResources& data) {
   tiler_data.ndc[2] = ndc_p3;
 
   tiler_.AddData(std::move(tiler_data));
-  // ShadeFragments(tiler_data, Rect(glm::vec2{size_}));
 }
 
 void Rasterizer::ResetMetrics() {
