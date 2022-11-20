@@ -21,6 +21,13 @@ struct DispatchResources {
   BufferView vertex;
   BufferView index;
   Uniforms uniform;
+
+  template <class T>
+  T LoadUniform(size_t offset) const {
+    T result = {};
+    memcpy(&result, uniform.buffer.GetData() + offset, sizeof(T));
+    return result;
+  }
 };
 
 struct VertexResources {

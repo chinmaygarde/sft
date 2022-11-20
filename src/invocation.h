@@ -20,7 +20,7 @@ struct VertexInvocation {
 
   template <class T>
   T LoadUniform(size_t struct_offset) const {
-    return rasterizer.LoadUniform<T>(*vtx_resources.resources, struct_offset);
+    return vtx_resources.resources->LoadUniform<T>(struct_offset);
   }
 
   template <class T>
@@ -58,7 +58,7 @@ struct FragmentInvocation {
 
   template <class T>
   T LoadUniform(size_t struct_offset) const {
-    return rasterizer.LoadUniform<T>(*frag_resources.resources, struct_offset);
+    return frag_resources.resources->LoadUniform<T>(struct_offset);
   }
 
   const Image& LoadImage(size_t location) const {

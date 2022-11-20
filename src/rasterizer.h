@@ -97,14 +97,6 @@ class Rasterizer {
     return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
   }
 
-  // TODO: Does this need to be on the rasterizer?
-  template <class T>
-  T LoadUniform(const DispatchResources& resources, size_t offset) const {
-    T result = {};
-    memcpy(&result, resources.uniform.buffer.GetData() + offset, sizeof(T));
-    return result;
-  }
-
   void ResetMetrics();
 
   const RasterizerMetrics& GetMetrics() const;
