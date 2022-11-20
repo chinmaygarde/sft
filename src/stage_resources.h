@@ -37,7 +37,7 @@ struct VertexResources {
         resources(std::move(p_resources)),
         stencil_reference(p_stencil_reference) {}
 
-  size_t GetVertexIndex(size_t index) const {
+  size_t LoadVertexIndex(size_t index) const {
     if (!resources->index) {
       return index;
     }
@@ -58,25 +58,25 @@ struct VertexResources {
     return 0u;
   }
 
-  const uint8_t* GetVertexDataPtr(size_t index, size_t offset) const {
+  const uint8_t* LoadVertexDataPtr(size_t index, size_t offset) const {
     const auto* vtx_ptr = resources->vertex.GetData() + offset;
-    vtx_ptr += GetVertexIndex(index) * pipeline->vertex_descriptor.stride;
+    vtx_ptr += LoadVertexIndex(index) * pipeline->vertex_descriptor.stride;
     return vtx_ptr;
   }
 
   template <class T>
-  T GetVertexData(size_t index, size_t offset) const {
+  T LoadVertexData(size_t index, size_t offset) const {
     T result;
-    std::memmove(&result, GetVertexDataPtr(index, offset), sizeof(T));
+    std::memmove(&result, LoadVertexDataPtr(index, offset), sizeof(T));
     return result;
   }
 
-  glm::vec3 GetVertex(size_t index, size_t offset) {
+  glm::vec3 LoadVertex(size_t index, size_t offset) {
     switch (pipeline->vertex_descriptor.vertex_format) {
       case VertexFormat::kFloat2:
-        return {GetVertexData<glm::vec2>(index, offset), 0.0};
+        return {LoadVertexData<glm::vec2>(index, offset), 0.0};
       case VertexFormat::kFloat3:
-        return GetVertexData<glm::vec3>(index, offset);
+        return LoadVertexData<glm::vec3>(index, offset);
     }
   }
 };

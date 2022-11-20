@@ -61,9 +61,9 @@ class Rasterizer {
     const auto vtx_offset = pipeline->vertex_descriptor.offset;
     for (size_t i = 0; i < count; i += 3) {
       data.base_vertex_id = i;
-      data.vtx[0] = data.GetVertexData<glm::vec3>(i + 0, vtx_offset);
-      data.vtx[1] = data.GetVertexData<glm::vec3>(i + 1, vtx_offset);
-      data.vtx[2] = data.GetVertexData<glm::vec3>(i + 2, vtx_offset);
+      data.vtx[0] = data.LoadVertexData<glm::vec3>(i + 0, vtx_offset);
+      data.vtx[1] = data.LoadVertexData<glm::vec3>(i + 1, vtx_offset);
+      data.vtx[2] = data.LoadVertexData<glm::vec3>(i + 2, vtx_offset);
       DrawTriangle(data);
     }
   }
@@ -95,14 +95,6 @@ class Rasterizer {
     ptr += stride;
     memcpy(&p3, ptr, sizeof(p3));
     return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
-  }
-
-  // TODO: Does this need to be on the rasterizer?
-  template <class T>
-  T LoadVertexData(const VertexResources& data,
-                   size_t index,
-                   size_t offset) const {
-    return data.GetVertexData<T>(index, offset);
   }
 
   // TODO: Does this need to be on the rasterizer?

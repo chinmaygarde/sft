@@ -15,7 +15,7 @@ struct VertexInvocation {
 
   template <class T>
   T LoadVertexData(size_t offset) const {
-    return rasterizer.LoadVertexData<T>(vtx_resources, vtx_index, offset);
+    return vtx_resources.LoadVertexData<T>(vtx_index, offset);
   }
 
   template <class T>
