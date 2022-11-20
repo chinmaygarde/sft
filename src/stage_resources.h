@@ -105,6 +105,30 @@ struct FragmentResources {
   const Image& LoadImage(size_t location) const {
     return *resources->uniform.images.at(location);
   }
+
+  template <class T>
+  void StoreVarying(const T& val,
+                    size_t triangle_index,
+                    size_t struct_offset) const {
+    auto varyings_offset =
+        struct_offset + GetVaryingsStride() * (triangle_index % 3);
+    auto ptr = const_cast<uint8_t*>(varyings.data()) + varyings_offset;
+    memcpy(ptr, &val, sizeof(T));
+  }
+
+  template <class T>
+  T LoadVarying(const glm::vec3& barycentric_coordinates,
+                size_t struct_offset) const {
+    const auto stride = GetVaryingsStride();
+    auto ptr = varyings.data() + struct_offset;
+    T p1, p2, p3;
+    memcpy(&p1, ptr, sizeof(p1));
+    ptr += stride;
+    memcpy(&p2, ptr, sizeof(p2));
+    ptr += stride;
+    memcpy(&p3, ptr, sizeof(p3));
+    return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
+  }
 };
 
 }  // namespace sft

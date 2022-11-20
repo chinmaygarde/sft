@@ -68,35 +68,6 @@ class Rasterizer {
     }
   }
 
-  // TODO: Does this need to be on the rasterizer?
-  template <class T>
-  void StoreVarying(const FragmentResources& resources,
-                    const T& val,
-                    size_t triangle_index,
-                    size_t struct_offset) const {
-    auto varyings_offset =
-        struct_offset + resources.GetVaryingsStride() * (triangle_index % 3);
-    auto ptr =
-        const_cast<uint8_t*>(resources.varyings.data()) + varyings_offset;
-    memcpy(ptr, &val, sizeof(T));
-  }
-
-  // TODO: Does this need to be on the rasterizer?
-  template <class T>
-  T LoadVarying(const FragmentResources& resources,
-                const glm::vec3& barycentric_coordinates,
-                size_t struct_offset) const {
-    const auto stride = resources.GetVaryingsStride();
-    auto ptr = resources.varyings.data() + struct_offset;
-    T p1, p2, p3;
-    memcpy(&p1, ptr, sizeof(p1));
-    ptr += stride;
-    memcpy(&p2, ptr, sizeof(p2));
-    ptr += stride;
-    memcpy(&p3, ptr, sizeof(p3));
-    return BarycentricInterpolation(p1, p2, p3, barycentric_coordinates);
-  }
-
   void ResetMetrics();
 
   const RasterizerMetrics& GetMetrics() const;

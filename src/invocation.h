@@ -25,7 +25,7 @@ struct VertexInvocation {
 
   template <class T>
   void StoreVarying(const T& value, size_t struct_offset) const {
-    rasterizer.StoreVarying(frag_resources, value, vtx_index, struct_offset);
+    frag_resources.StoreVarying(value, vtx_index, struct_offset);
   }
 
  private:
@@ -50,9 +50,8 @@ struct FragmentInvocation {
 
   template <class T>
   T LoadVarying(size_t offset) const {
-    return rasterizer.LoadVarying<T>(frag_resources,           //
-                                     barycentric_coordinates,  //
-                                     offset                    //
+    return frag_resources.LoadVarying<T>(barycentric_coordinates,  //
+                                         offset                    //
     );
   }
 
