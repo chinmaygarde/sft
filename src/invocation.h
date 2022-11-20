@@ -11,8 +11,6 @@ class Rasterizer;
 struct VertexResources;
 
 struct VertexInvocation {
-  size_t vtx_index;
-
   template <class T>
   T LoadVertexData(size_t offset) const {
     return vtx_resources.LoadVertexData<T>(vtx_index, offset);
@@ -31,6 +29,7 @@ struct VertexInvocation {
  private:
   friend Rasterizer;
 
+  size_t vtx_index;
   const VertexResources& vtx_resources;
   const FragmentResources& frag_resources;
 
@@ -43,8 +42,6 @@ struct VertexInvocation {
 };
 
 struct FragmentInvocation {
-  glm::vec3 barycentric_coordinates;
-
   template <class T>
   T LoadVarying(size_t offset) const {
     return frag_resources.LoadVarying<T>(barycentric_coordinates,  //
@@ -64,6 +61,7 @@ struct FragmentInvocation {
  private:
   friend Rasterizer;
 
+  glm::vec3 barycentric_coordinates;
   const FragmentResources& frag_resources;
 
   FragmentInvocation(glm::vec3 p_barycentric_coordinates,
