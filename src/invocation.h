@@ -31,16 +31,13 @@ struct VertexInvocation {
  private:
   friend Rasterizer;
 
-  const Rasterizer& rasterizer;
   const VertexResources& vtx_resources;
   const FragmentResources& frag_resources;
 
-  VertexInvocation(const Rasterizer& p_rasterizer,
-                   const VertexResources& p_vtx_resources,
+  VertexInvocation(const VertexResources& p_vtx_resources,
                    const FragmentResources& p_frag_resources,
                    size_t p_vertex_id)
       : vtx_index(p_vertex_id),
-        rasterizer(p_rasterizer),
         vtx_resources(p_vtx_resources),
         frag_resources(p_frag_resources) {}
 };
@@ -67,14 +64,11 @@ struct FragmentInvocation {
  private:
   friend Rasterizer;
 
-  const Rasterizer& rasterizer;
   const FragmentResources& frag_resources;
 
   FragmentInvocation(glm::vec3 p_barycentric_coordinates,
-                     const Rasterizer& p_rasterizer,
                      const FragmentResources& p_resources)
       : barycentric_coordinates(p_barycentric_coordinates),
-        rasterizer(p_rasterizer),
         frag_resources(p_resources) {}
 };
 
