@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "geom.h"
 #include "macros.h"
 #include "pipeline.h"

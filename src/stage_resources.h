@@ -3,6 +3,7 @@
 #include <array>
 #include <cstring>
 #include <type_traits>
+#include <vector>
 
 #include "buffer_view.h"
 #include "geom.h"
