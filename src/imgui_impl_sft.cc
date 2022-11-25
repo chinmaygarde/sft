@@ -95,6 +95,7 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
   SFT_ASSERT(io.BackendRendererUserData != nullptr);
   auto user_data = reinterpret_cast<RendererData*>(io.BackendRendererUserData);
 
+  auto vertex_buffer = Buffer::Create();
   auto uniform_buffer = Buffer::Create();
 
   SFT_ASSERT(draw->DisplayPos.x == 0 && draw->DisplayPos.y == 0);
@@ -124,7 +125,7 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
 
       size_t index_offset = cmd.IdxOffset;
 
-      auto vertex_buffer = Buffer::Create();
+      const auto vtx_buffer_start = vertex_buffer->GetLength();
 
       for (size_t e = 0; e < cmd.ElemCount; e += 3) {
         const auto v1_idx = idx_buffer[index_offset++];
@@ -140,16 +141,20 @@ void ImGui_ImplSFT_RenderDrawData(Rasterizer* rasterizer, ImDrawData* draw) {
         vertex_buffer->Emplace(v3);
       }
 
+      const auto vtx_buffer_end = vertex_buffer->GetLength();
+
       auto texture = reinterpret_cast<Image*>(cmd.GetTexID());
 
       sft::Uniforms uniforms;
       uniforms.buffer = *uniform_buffer;
       uniforms.images[0u] = texture->shared_from_this();
 
-      rasterizer->Draw(user_data->pipeline,  // pipeline
-                       *vertex_buffer,       // vertex_buffer
-                       uniforms,             // uniform buffer
-                       cmd.ElemCount         // count
+      rasterizer->Draw(
+          user_data->pipeline,  // pipeline
+          BufferView{*vertex_buffer, vtx_buffer_start,
+                     vtx_buffer_end - vtx_buffer_start},  // vertex_buffer
+          uniforms,                                       // uniform buffer
+          cmd.ElemCount                                   // count
       );
     }
   }
