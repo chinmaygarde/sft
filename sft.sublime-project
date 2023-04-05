@@ -2,7 +2,7 @@
   "build_systems": [
     {
       "name": "SFT Build All",
-      "shell_cmd": "ninja && ./sft_unittests --gtest_filter=\"*\"",
+      "shell_cmd": "ninja && ./sft_unittests --gtest_filter=\"*CanDrawHelmet\"",
       "working_dir": "${project_path}/build",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,
@@ -20,15 +20,13 @@
     {
       "clangd":
       {
-        "enabled": true,
-        "command": [
-          "clangd",
-          "--compile-commands-dir=build",
-          "--clang-tidy",
-          "-header-insertion=never",
-          "-j=36",
-          "--background-index=true"
-        ],
+        "initializationOptions" : {
+          "binary": "system",
+          "clangd.compile-commands-dir": "build",
+          "clangd.background-index": true,
+          "clangd.header-insertion": "never",
+          "clangd.clang-tidy": true,
+        }
       },
     },
   },

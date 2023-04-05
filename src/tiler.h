@@ -15,6 +15,10 @@
 #define Min std::min
 #define Max std::max
 
+#ifndef __cdecl
+#define __cdecl
+#endif  // __cdecl
+
 #include "superliminal/RTree.h"
 
 namespace sft {

@@ -108,6 +108,7 @@ target_compile_options(sft_lib
     -Wextra
     -Wno-unused-parameter
     -Wno-missing-field-initializers
+    -Wno-maybe-uninitialized
 )
 
 target_compile_definitions(sft_lib
