@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/cmake_toolbox")
 include(CMakeToolboxInitialize)
 
@@ -108,8 +107,6 @@ target_compile_options(sft_lib
     -Wno-unused-parameter
     -Wno-missing-field-initializers
 )
-
-AddCompileOptionIfSupported(sft_lib -Wno-maybe-uninitialized HAVE_NO_MAYBE_UNINITIALIZED)
 
 target_compile_definitions(sft_lib
   PUBLIC
