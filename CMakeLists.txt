@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.22)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_program(CCACHE_PROGRAM NAMES ccache)
-if(CCACHE_PROGRAM)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_PROGRAM}")
-endif()
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/cmake_toolbox")
+include(CMakeToolboxInitialize)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+CMakeToolboxInitialize()
+
+SetCAndCXXStandard(11 17)
+
+EnableCCache()
 
 project(sft)
 
@@ -108,8 +107,9 @@ target_compile_options(sft_lib
     -Wextra
     -Wno-unused-parameter
     -Wno-missing-field-initializers
-    -Wno-maybe-uninitialized
 )
+
+AddCompileOptionIfSupported(sft_lib -Wno-maybe-uninitialized HAVE_NO_MAYBE_UNINITIALIZED)
 
 target_compile_definitions(sft_lib
   PUBLIC
