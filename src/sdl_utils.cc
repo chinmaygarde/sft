@@ -5,6 +5,8 @@
 
 #include "sdl_utils.h"
 
+#include "geom.h"
+
 namespace sft {
 
 SDLTextureNoCopyCaster::SDLTextureNoCopyCaster(SDL_Renderer* renderer,
@@ -15,16 +17,17 @@ SDLTextureNoCopyCaster::SDLTextureNoCopyCaster(SDL_Renderer* renderer,
   if (pixels == nullptr) {
     return;
   }
-  auto surface = ::SDL_CreateRGBSurfaceFrom(const_cast<void*>(pixels),  //
-                                            width,                      //
-                                            height,                     //
-                                            bytes_per_pixel * 8,        //
-                                            width * bytes_per_pixel,    //
-                                            0,  // r mask
-                                            0,  // g mask
-                                            0,  // b mask
-                                            0   // a mask
-  );
+  auto surface =
+      ::SDL_CreateRGBSurfaceFrom(const_cast<void*>(pixels),       //
+                                 width,                           //
+                                 height,                          //
+                                 bytes_per_pixel * 8,             //
+                                 width * bytes_per_pixel,         //
+                                 kColorRed.WithAlpha(0).color,    // r mask
+                                 kColorGreen.WithAlpha(0).color,  // g mask
+                                 kColorBlue.WithAlpha(0).color,   // b mask
+                                 kColorTransparentBlack.color     // a mask
+      );
   if (surface == NULL) {
     return;
   }

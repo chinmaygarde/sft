@@ -66,7 +66,7 @@ void ImGui_ImplSFT_NewFrame() {
 
 ImGuiShader::VertexData ToShaderVertexData(const ImDrawVert& v) {
   ImGuiShader::VertexData result;
-  result.vertex_color = Color{v.col}.BGRA2RGBA();
+  result.vertex_color = Color{v.col};
   result.vertex_position = {v.pos.x, v.pos.y};
   result.texture_coordinates = {v.uv.x, v.uv.y};
   return result;

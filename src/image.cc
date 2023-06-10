@@ -137,8 +137,7 @@ glm::vec4 Image::SampleUV(glm::ivec2 uv) const {
   uv = glm::clamp(uv, {0, 0}, {size_.x - 1, size_.y - 1});
   auto offset = size_.x * uv.y + uv.x;
   const Color* icolor = reinterpret_cast<const Color*>(GetBuffer()) + offset;
-  glm::vec4 color = *icolor;
-  return {color.b, color.g, color.r, color.a};
+  return *icolor;
 }
 
 }  // namespace sft

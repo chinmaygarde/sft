@@ -54,9 +54,9 @@ struct Color {
   union {
     uint32_t color = 0u;
     struct {
-      uint8_t blue;
-      uint8_t green;
       uint8_t red;
+      uint8_t green;
+      uint8_t blue;
       uint8_t alpha;
     };
   };
@@ -64,7 +64,7 @@ struct Color {
   constexpr Color() = default;
 
   constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-      : blue(b), green(g), red(r), alpha(a) {}
+      : red(r), green(g), blue(b), alpha(a) {}
 
   constexpr Color(const glm::vec4& c)
       : Color(255 * c.r, 255 * c.g, 255 * c.b, 255 * c.a) {}
@@ -104,8 +104,6 @@ struct Color {
     return Color(red, green, blue, color);
   }
 
-  constexpr Color BGRA2RGBA() const { return Color(blue, green, red, alpha); }
-
   constexpr ColorF GetColorF() const {
     return {
         red / 255.0f,    //
@@ -142,6 +140,7 @@ constexpr Color kColorBlue = {0, 0, 255, 255};
 constexpr Color kColorWhite = {255, 255, 255, 255};
 constexpr Color kColorBlack = {0, 0, 0, 255};
 constexpr Color kColorTransparentBlack = {0, 0, 0, 0};
+constexpr Color kColorOpaqueBlack = {0, 0, 0, 255};
 constexpr Color kColorAliceBlue = {240, 248, 255, 255};
 constexpr Color kColorAntiqueWhite = {250, 235, 215, 255};
 constexpr Color kColorAqua = {0, 255, 255, 255};
