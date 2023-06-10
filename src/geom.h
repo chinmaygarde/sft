@@ -51,12 +51,20 @@ struct ColorF {
 };
 
 struct Color {
-  uint32_t color = 0u;
+  union {
+    uint32_t color = 0u;
+    struct {
+      uint8_t blue;
+      uint8_t green;
+      uint8_t red;
+      uint8_t alpha;
+    };
+  };
 
-  Color() = default;
+  constexpr Color() = default;
 
   constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-      : color(a << 24 | r << 16 | g << 8 | b << 0) {}
+      : blue(b), green(g), red(r), alpha(a) {}
 
   constexpr Color(const glm::vec4& c)
       : Color(255 * c.r, 255 * c.g, 255 * c.b, 255 * c.a) {}
@@ -73,47 +81,37 @@ struct Color {
 
   constexpr operator glm::vec4() const {
     return {
-        GetRed() / 255.0,    //
-        GetGreen() / 255.0,  //
-        GetBlue() / 255.0,   //
-        GetAlpha() / 255.0   //
+        red / 255.0,    //
+        green / 255.0,  //
+        blue / 255.0,   //
+        alpha / 255.0   //
     };
   }
 
   constexpr Color WithRed(uint8_t color) const {
-    return Color(color, GetGreen(), GetBlue(), GetAlpha());
+    return Color(color, green, blue, alpha);
   }
 
   constexpr Color WithGreen(uint8_t color) const {
-    return Color(GetRed(), color, GetBlue(), GetAlpha());
+    return Color(red, color, blue, alpha);
   }
 
   constexpr Color WithBlue(uint8_t color) const {
-    return Color(GetRed(), GetGreen(), color, GetAlpha());
+    return Color(red, green, color, alpha);
   }
 
   constexpr Color WithAlpha(uint8_t color) const {
-    return Color(GetRed(), GetGreen(), GetBlue(), color);
+    return Color(red, green, blue, color);
   }
 
-  constexpr Color BGRA2RGBA() const {
-    return Color(GetBlue(), GetGreen(), GetRed(), GetAlpha());
-  }
-
-  constexpr uint8_t GetRed() const { return color >> 16; }
-
-  constexpr uint8_t GetGreen() const { return color >> 8; }
-
-  constexpr uint8_t GetBlue() const { return color >> 0; }
-
-  constexpr uint8_t GetAlpha() const { return color >> 24; }
+  constexpr Color BGRA2RGBA() const { return Color(blue, green, red, alpha); }
 
   constexpr ColorF GetColorF() const {
     return {
-        GetRed() / 255.0f,    //
-        GetGreen() / 255.0f,  //
-        GetBlue() / 255.0f,   //
-        GetAlpha() / 255.0f   //
+        red / 255.0f,    //
+        green / 255.0f,  //
+        blue / 255.0f,   //
+        alpha / 255.0f   //
     };
   }
 
