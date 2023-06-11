@@ -19,7 +19,7 @@
 #define __cdecl
 #endif  // __cdecl
 
-#include "superliminal/RTree.h"
+#include <RTree.h>
 
 namespace sft {
 

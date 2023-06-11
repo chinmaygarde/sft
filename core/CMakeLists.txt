@@ -1,0 +1,11 @@
+sft_library(core
+  buffer.cc
+  buffer.h
+  buffer_view.cc
+  buffer_view.h
+  macros.h
+  mapping.cc
+  mapping.h
+  timing.cc
+  timing.h
+)

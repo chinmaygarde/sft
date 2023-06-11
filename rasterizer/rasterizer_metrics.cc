@@ -5,6 +5,7 @@
 
 #include "rasterizer_metrics.h"
 
+#if 0
 #include "imgui.h"
 
 namespace sft {
@@ -34,3 +35,5 @@ void RasterizerMetrics::Display() const {
 }
 
 }  // namespace sft
+
+#endif

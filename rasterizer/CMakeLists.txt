@@ -1,0 +1,45 @@
+sft_library(rasterizer
+  attachment.cc
+  attachment.h
+  blend.cc
+  blend.h
+  image.cc
+  image.h
+  invocation.cc
+  invocation.h
+  pipeline.cc
+  pipeline.h
+  rasterizer.cc
+  rasterizer.h
+  rasterizer_metrics.cc
+  rasterizer_metrics.h
+  render_pass.cc
+  render_pass.h
+  sampler.cc
+  sampler.h
+  shader.cc
+  shader.h
+  stage_resources.cc
+  stage_resources.h
+  texture.cc
+  texture.h
+  tiler.cc
+  tiler.h
+  uniforms.cc
+  uniforms.h
+  vertex_descriptor.cc
+  vertex_descriptor.h
+)
+
+target_link_libraries(rasterizer
+  PUBLIC
+    core
+    geometry
+    marl
+    superliminal
+)
+
+target_include_directories(rasterizer
+  PUBLIC
+    ../third_party/stb
+)
