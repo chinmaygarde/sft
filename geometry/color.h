@@ -39,7 +39,7 @@ struct ColorF {
 
 struct Color {
   union {
-    uint32_t color = 0u;
+    uint32_t color;
     struct {
       uint8_t red;
       uint8_t green;
@@ -48,7 +48,7 @@ struct Color {
     };
   };
 
-  constexpr Color() = default;
+  constexpr Color() : Color(0) {}
 
   constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
       : red(r), green(g), blue(b), alpha(a) {}
