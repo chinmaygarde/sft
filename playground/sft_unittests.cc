@@ -8,14 +8,14 @@
 #include "application.h"
 #include "buffer.h"
 #include "canvas.h"
+#include "color_shader.h"
 #include "fixtures_location.h"
 #include "imgui.h"
 #include "model.h"
 #include "pipeline.h"
 #include "rasterizer.h"
-#include "shaders/color_shader.h"
-#include "shaders/texture_shader.h"
 #include "test_runner.h"
+#include "texture_shader.h"
 #include "tiler.h"
 
 namespace sft {

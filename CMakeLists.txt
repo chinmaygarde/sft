@@ -34,6 +34,9 @@ add_subdirectory(third_party/superliminal)
 add_subdirectory(geometry)
 add_subdirectory(core)
 add_subdirectory(rasterizer)
+add_subdirectory(canvas)
+add_subdirectory(model)
+add_subdirectory(playground)
 
 # add_library(sft_lib
 #   src/application.cc

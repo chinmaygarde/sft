@@ -14,8 +14,8 @@
 #include "buffer.h"
 #include "geom.h"
 #include "image.h"
+#include "model_shader.h"
 #include "rasterizer.h"
-#include "shaders/model_shader.h"
 
 namespace sft {
 

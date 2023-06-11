@@ -7,9 +7,9 @@
 
 #include "backends/imgui_impl_sdl.h"
 #include "image.h"
+#include "imgui_shader.h"
 #include "macros.h"
 #include "rasterizer.h"
-#include "shaders/imgui_shader.h"
 
 namespace sft {
 
