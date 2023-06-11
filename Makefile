@@ -1,20 +1,20 @@
 # This project uses CMake and Git sub-modules. This Makefile is just in place
 # to make common tasks easier.
 
-.PHONY: build/playground/playground
+.PHONY: build/src/playground/playground
 
-run: build/playground/playground
-	./build/playground/playground
+run: build/src/playground/playground
+	./build/src/playground/playground
 
 debug:
 	mkdir -p build/debug
 	cmake -G Ninja -B build/debug -DCMAKE_BUILD_TYPE=Debug
 	ninja -C build/debug
 
-test: build/playground/playground
+test: build/src/playground/playground
 	cd build && ctest -C build
 
-build/playground/playground: build/build.ninja
+build/src/playground/playground: build/build.ninja
 	ninja -C build
 
 build/build.ninja:

@@ -41,5 +41,5 @@ target_link_libraries(rasterizer
 
 target_include_directories(rasterizer
   PUBLIC
-    ../third_party/stb
+    ../../third_party/stb
 )

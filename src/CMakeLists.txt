@@ -1,0 +1,6 @@
+add_subdirectory(canvas)
+add_subdirectory(core)
+add_subdirectory(geometry)
+add_subdirectory(model)
+add_subdirectory(playground)
+add_subdirectory(rasterizer)
