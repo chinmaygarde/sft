@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file for details.
  */
 
-#include "geom.h"
+#include "geometry.h"
 
 #include <thread>
 

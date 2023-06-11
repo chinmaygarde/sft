@@ -13,7 +13,7 @@
 
 #include "buffer.h"
 #include "buffer_view.h"
-#include "geom.h"
+#include "geometry.h"
 #include "pipeline.h"
 #include "rasterizer_metrics.h"
 #include "render_pass.h"

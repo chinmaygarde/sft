@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "attachment.h"
-#include "geom.h"
+#include "geometry.h"
 #include "shader.h"
 #include "vertex_descriptor.h"
 

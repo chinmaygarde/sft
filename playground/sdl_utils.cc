@@ -5,7 +5,7 @@
 
 #include "sdl_utils.h"
 
-#include "geom.h"
+#include "geometry.h"
 
 namespace sft {
 

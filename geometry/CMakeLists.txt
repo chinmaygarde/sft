@@ -1,6 +1,6 @@
 sft_library(geometry
-  geom.cc
-  geom.h
+  geometry.cc
+  geometry.h
 )
 
 target_link_libraries(geometry PUBLIC glm)

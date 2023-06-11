@@ -12,7 +12,7 @@
 #include <string>
 
 #include "buffer.h"
-#include "geom.h"
+#include "geometry.h"
 #include "image.h"
 #include "model_shader.h"
 #include "rasterizer.h"

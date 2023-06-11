@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "geom.h"
+#include "geometry.h"
 #include "macros.h"
 #include "marl/scheduler.h"
 #include "sdl_utils.h"

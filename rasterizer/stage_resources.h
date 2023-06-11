@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "buffer_view.h"
-#include "geom.h"
+#include "geometry.h"
 #include "macros.h"
 #include "pipeline.h"
 #include "uniforms.h"

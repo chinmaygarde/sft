@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "blend.h"
-#include "geom.h"
+#include "geometry.h"
 #include "macros.h"
 
 namespace sft {

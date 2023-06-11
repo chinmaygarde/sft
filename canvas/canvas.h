@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "attachment.h"
-#include "geom.h"
+#include "geometry.h"
 #include "image.h"
 #include "invocation.h"
 #include "macros.h"

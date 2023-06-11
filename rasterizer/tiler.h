@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "geom.h"
+#include "geometry.h"
 #include "macros.h"
 #include "pipeline.h"
 #include "stage_resources.h"

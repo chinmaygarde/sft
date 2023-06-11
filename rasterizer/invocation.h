@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "geom.h"
+#include "geometry.h"
 #include "macros.h"
 #include "rasterizer.h"
 #include "tiler.h"

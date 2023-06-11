@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "geom.h"
+#include "geometry.h"
 #include "macros.h"
 #include "mapping.h"
 #include "sampler.h"

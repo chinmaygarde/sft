@@ -11,7 +11,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "geom.h"
+#include "geometry.h"
 #include "image.h"
 #include "macros.h"
 #include "marl/scheduler.h"
