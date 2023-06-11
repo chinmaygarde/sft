@@ -1,27 +1,21 @@
 # This project uses CMake and Git sub-modules. This Makefile is just in place
 # to make common tasks easier.
 
-.PHONY: build/sft_unittests
+.PHONY: build/playground/playground
 
-run: build/sft_unittests
-	./build/sft_unittests
-
-bench: build/sft_benchmarks
-	./build/sft_benchmarks
+run: build/playground/playground
+	./build/playground/playground
 
 debug:
 	mkdir -p build/debug
 	cmake -G Ninja -B build/debug -DCMAKE_BUILD_TYPE=Debug
 	ninja -C build/debug
 
-test: build/sft_unittests
+test: build/playground/playground
 	cd build && ctest -C build
 
-build/sft_unittests: build/build.ninja
+build/playground/playground: build/build.ninja
 	ninja -C build
-
-build/sft_benchmarks: build/build.ninja
-	ninja -C build sft_benchmarks
 
 build/build.ninja:
 	mkdir -p build

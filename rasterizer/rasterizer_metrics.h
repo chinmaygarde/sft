@@ -25,8 +25,6 @@ struct RasterizerMetrics {
   size_t vertex_invocations = 0;
   size_t fragment_invocations = 0;
 
-  void Display() const;
-
   void Reset() { std::memset(this, 0, sizeof(RasterizerMetrics)); }
 };
 

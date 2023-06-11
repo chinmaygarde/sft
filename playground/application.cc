@@ -133,6 +133,31 @@ bool Application::Update() {
   return rasterizer_callback_(*rasterizer_);
 }
 
+static void DisplayMetrics(const RasterizerMetrics& m) {
+  ImGui::Begin("Rasterizer Metrics");
+
+  ImGui::Text("Size: %d x %d", m.area.x, m.area.y);
+  ImGui::Text("Draw Count: %zu", m.draw_count);
+  ImGui::Text("Primitives: %zu", m.primitive_count);
+  ImGui::Text("Primitives Processed: %zu (%.0f%%)", m.primitives_processed,
+              m.primitives_processed * 100.f / m.primitive_count);
+  ImGui::Text("Back Faces Culled: %zu (%.0f%%)", m.face_culling,
+              m.face_culling * 100.f / m.primitive_count);
+  ImGui::Text("Empty Primitive: %zu (%.0f%%)", m.empty_primitive,
+              m.empty_primitive * 100.f / m.primitive_count);
+  ImGui::Text("Scissor Culled: %zu (%.0f%%)", m.scissor_culling,
+              m.scissor_culling * 100.f / m.primitive_count);
+  ImGui::Text("Sample Point Culled: %zu (%.0f%%)", m.sample_point_culling,
+              m.sample_point_culling * 100.f / m.primitive_count);
+  ImGui::Text("Early Fragment Checks Tripped: %zu", m.early_fragment_test);
+  ImGui::Text("Vertex Invocations: %zu", m.vertex_invocations);
+  ImGui::Text(
+      "Fragment Invocations: %zu (%.2fx screen)", m.fragment_invocations,
+      static_cast<ScalarF>(m.fragment_invocations) / (m.area.x * m.area.y));
+
+  ImGui::End();
+}
+
 bool Application::OnRender() {
   if (!is_valid_) {
     return false;
@@ -149,7 +174,7 @@ bool Application::OnRender() {
     return false;
   }
 
-  rasterizer_->GetMetrics().Display();
+  DisplayMetrics(rasterizer_->GetMetrics());
   rasterizer_->ResetMetrics();
 
   ImGui::Render();

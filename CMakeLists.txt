@@ -14,8 +14,6 @@ EnableCCache()
 
 project(sft)
 
-enable_testing()
-
 add_subdirectory(third_party/sdl)
 add_subdirectory(third_party/tinyobjloader)
 add_subdirectory(third_party/googletest)
@@ -29,131 +27,9 @@ set(MARL_BUILD_EXAMPLES FALSE)
 add_subdirectory(third_party/marl)
 add_subdirectory(third_party/superliminal)
 
-# include(GoogleTest)
-
 add_subdirectory(geometry)
 add_subdirectory(core)
 add_subdirectory(rasterizer)
 add_subdirectory(canvas)
 add_subdirectory(model)
 add_subdirectory(playground)
-
-# add_library(sft_lib
-#   src/application.cc
-#   src/application.h
-#   src/attachment.cc
-#   src/attachment.h
-#   src/blend.cc
-#   src/blend.h
-#   src/buffer.cc
-#   src/buffer.h
-#   src/buffer_view.cc
-#   src/buffer_view.h
-#   src/canvas.cc
-#   src/canvas.h
-#   src/geom.cc
-#   src/geom.h
-#   src/image.cc
-#   src/image.h
-#   src/imgui_impl_sft.cc
-#   src/imgui_impl_sft.h
-#   src/invocation.cc
-#   src/invocation.h
-#   src/mapping.cc
-#   src/mapping.h
-#   src/model.cc
-#   src/model.h
-#   src/pipeline.cc
-#   src/pipeline.h
-#   src/rasterizer.cc
-#   src/rasterizer.h
-#   src/rasterizer_metrics.cc
-#   src/rasterizer_metrics.h
-#   src/render_pass.cc
-#   src/render_pass.h
-#   src/sampler.cc
-#   src/sampler.h
-#   src/sdl_utils.cc
-#   src/sdl_utils.h
-#   src/shaders/color_shader.cc
-#   src/shaders/color_shader.h
-#   src/shaders/imgui_shader.cc
-#   src/shaders/imgui_shader.h
-#   src/shaders/model_shader.cc
-#   src/shaders/model_shader.h
-#   src/shaders/texture_shader.cc
-#   src/shaders/texture_shader.h
-#   src/stage_resources.cc
-#   src/stage_resources.h
-#   src/texture.cc
-#   src/texture.h
-#   src/tiler.cc
-#   src/tiler.h
-#   src/timing.cc
-#   src/timing.h
-#   src/uniforms.cc
-#   src/uniforms.h
-#   src/vertex_descriptor.cc
-#   src/vertex_descriptor.h
-#   third_party/imgui/backends/imgui_impl_sdl.cpp
-#   third_party/imgui/backends/imgui_impl_sdl.h
-#   third_party/imgui/imgui.cpp
-#   third_party/imgui/imgui.h
-#   third_party/imgui/imgui_demo.cpp
-#   third_party/imgui/imgui_draw.cpp
-#   third_party/imgui/imgui_tables.cpp
-#   third_party/imgui/imgui_widgets.cpp
-# )
-
-# target_compile_options(sft_lib
-#   PRIVATE
-#     -Werror
-#     -Wall
-#     -Wextra
-#     -Wno-unused-parameter
-#     -Wno-missing-field-initializers
-# )
-
-# target_compile_definitions(sft_lib
-#   PUBLIC
-#     -D_CRT_SECURE_NO_WARNINGS
-# )
-
-# target_link_libraries(sft_lib
-#   PUBLIC
-#     SDL2
-#     tinyobjloader
-#     glm
-#     marl
-# )
-
-# target_include_directories(sft_lib
-#   PUBLIC
-#     src
-#     third_party
-#     third_party/stb
-#     third_party/imgui
-#     third_party/spirv_cross/include
-#     third_party/perfetto/sdk
-# )
-
-# add_executable(sft_unittests
-#   src/sft_unittests.cc
-#   src/test_runner.h
-#   src/test_runner.cc
-# )
-
-# target_link_libraries(sft_unittests sft_lib gtest gtest_main)
-
-# get_filename_component(SFT_ASSETS_LOCATION fixtures ABSOLUTE)
-# configure_file(fixtures/fixtures_location.h.in fixtures_location.h @ONLY)
-# target_include_directories(sft_unittests PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
-# gtest_discover_tests(sft_unittests)
-
-# add_executable(sft_benchmarks
-#   src/sft_benchmarks.cc
-# )
-
-# target_link_libraries(sft_benchmarks sft_lib benchmark::benchmark)
-# target_include_directories(sft_benchmarks PUBLIC ${CMAKE_CURRENT_BINARY_DIR})

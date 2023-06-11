@@ -1,4 +1,4 @@
-sft_library(playground
+sft_executable(playground
   ../third_party/imgui/backends/imgui_impl_sdl.cpp
   ../third_party/imgui/backends/imgui_impl_sdl.h
   ../third_party/imgui/imgui.cpp
@@ -24,6 +24,7 @@ target_link_libraries(playground
   PUBLIC
     SDL2
     gtest
+    gtest_main
     core
     geometry
     marl
@@ -32,7 +33,10 @@ target_link_libraries(playground
     model
 )
 
-target_include_directories(playground PUBLIC ../third_party/imgui)
+target_include_directories(playground
+  PUBLIC
+    ../third_party/imgui
+)
 
 get_filename_component(SFT_ASSETS_LOCATION ../fixtures ABSOLUTE)
 configure_file(fixtures_location.h.in fixtures_location.h @ONLY)
