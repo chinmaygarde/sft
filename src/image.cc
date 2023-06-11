@@ -140,4 +140,20 @@ glm::vec4 Image::SampleUV(glm::ivec2 uv) const {
   return *icolor;
 }
 
+void Image::SetSampler(Sampler sampler) {
+  sampler_ = std::move(sampler);
+}
+
+const Sampler& Image::GetSampler() const {
+  return sampler_;
+}
+
+glm::ivec2 Image::GetSize() const {
+  return size_;
+}
+
+bool Image::IsValid() const {
+  return is_valid_;
+}
+
 }  // namespace sft

@@ -23,13 +23,13 @@ class Image final : public std::enable_shared_from_this<Image> {
 
   ~Image();
 
-  void SetSampler(Sampler sampler) { sampler_ = std::move(sampler); }
+  void SetSampler(Sampler sampler);
 
-  const Sampler& GetSampler() const { return sampler_; }
+  const Sampler& GetSampler() const;
 
-  glm::ivec2 GetSize() const { return size_; }
+  glm::ivec2 GetSize() const;
 
-  bool IsValid() const { return is_valid_; }
+  bool IsValid() const;
 
   glm::vec4 Sample(glm::vec2 position) const;
 

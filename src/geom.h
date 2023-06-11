@@ -113,7 +113,10 @@ struct Color {
     };
   }
 
-  static Color FromComponentsF(ScalarF r, ScalarF g, ScalarF b, ScalarF a) {
+  static constexpr Color FromComponentsF(ScalarF r,
+                                         ScalarF g,
+                                         ScalarF b,
+                                         ScalarF a) {
     return Color{
         static_cast<uint8_t>(255 * r),
         static_cast<uint8_t>(255 * g),
@@ -128,7 +131,7 @@ struct Color {
                  static_cast<uint8_t>(std::rand() % 255), 255};
   }
 
-  static Color Gray(ScalarF gray) {
+  static constexpr Color Gray(ScalarF gray) {
     const uint8_t g = 255 * glm::clamp<ScalarF>(gray, 0.0, 1.0);
     return Color{g, g, g, 255};
   }
@@ -356,10 +359,10 @@ struct Rect {
 };
 
 template <class T>
-T BarycentricInterpolation(const T& p1,
-                           const T& p2,
-                           const T& p3,
-                           const glm::vec3& bary) {
+constexpr T BarycentricInterpolation(const T& p1,
+                                     const T& p2,
+                                     const T& p3,
+                                     const glm::vec3& bary) {
   return bary.x * p1 + bary.y * p2 + bary.z * p3;
 }
 

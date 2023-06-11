@@ -41,10 +41,6 @@ add_library(sft_lib
   src/buffer_view.h
   src/canvas.cc
   src/canvas.h
-  src/command_buffer.cc
-  src/command_buffer.h
-  src/command_encoder.cc
-  src/command_encoder.h
   src/geom.cc
   src/geom.h
   src/image.cc
