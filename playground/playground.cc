@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file for details.
  */
 
-#include "application.h"
+#include "playground.h"
 
 #include <iomanip>
 #include <sstream>
@@ -14,8 +14,8 @@
 
 namespace sft {
 
-std::string CreateWindowTitle(MillisecondsF frame_time,
-                              const std::string& title) {
+static std::string CreateWindowTitle(MillisecondsF frame_time,
+                                     const std::string& title) {
   std::stringstream stream;
   stream.precision(2);
   stream.setf(std::ios::fixed, std::ios::floatfield);
@@ -36,7 +36,7 @@ std::string CreateWindowTitle(MillisecondsF frame_time,
   return stream.str();
 }
 
-Application::Application(glm::ivec2 size, SampleCount sample_count)
+Playground::Playground(glm::ivec2 size, SampleCount sample_count)
     : scheduler_(std::make_unique<marl::Scheduler>(
           marl::Scheduler::Config::allCores())),
       rasterizer_(std::make_shared<Rasterizer>(size, sample_count)),
@@ -92,7 +92,7 @@ Application::Application(glm::ivec2 size, SampleCount sample_count)
   is_valid_ = true;
 }
 
-Application::~Application() {
+Playground::~Playground() {
   ImGui_ImplSFT_Shutdown();
   ImGui::DestroyContext();
 
@@ -105,7 +105,7 @@ Application::~Application() {
   scheduler_->unbind();
 }
 
-bool Application::Render() {
+bool Playground::Render() {
   const auto result = OnRender();
 
   const auto now = Clock::now();
@@ -122,11 +122,11 @@ bool Application::Render() {
   return result;
 }
 
-bool Application::IsValid() const {
+bool Playground::IsValid() const {
   return is_valid_;
 }
 
-bool Application::Update() {
+bool Playground::Update() {
   if (!rasterizer_callback_) {
     return false;
   }
@@ -158,7 +158,7 @@ static void DisplayMetrics(const RasterizerMetrics& m) {
   ImGui::End();
 }
 
-bool Application::OnRender() {
+bool Playground::OnRender() {
   if (!is_valid_) {
     return false;
   }
@@ -227,22 +227,22 @@ bool Application::OnRender() {
   return true;
 }
 
-SecondsF Application::GetTimeSinceLaunch() const {
+SecondsF Playground::GetTimeSinceLaunch() const {
   return Clock::now() - launch_time_;
 }
 
-bool Application::OnWindowSizeChanged(glm::ivec2 size) {
+bool Playground::OnWindowSizeChanged(glm::ivec2 size) {
   if (!rasterizer_) {
     return false;
   }
   return rasterizer_->Resize(size);
 }
 
-void Application::SetTitle(std::string title) {
+void Playground::SetTitle(std::string title) {
   title_ = std::move(title);
 }
 
-void Application::SetRasterizerCallback(RasterizerCallback callback) {
+void Playground::SetRasterizerCallback(RasterizerCallback callback) {
   rasterizer_callback_ = callback;
 }
 

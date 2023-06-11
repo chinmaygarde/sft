@@ -2,7 +2,7 @@
   "build_systems": [
     {
       "name": "SFT Build All",
-      "shell_cmd": "ninja",
+      "shell_cmd": "ninja && ./playground/playground",
       "working_dir": "${project_path}/build",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,

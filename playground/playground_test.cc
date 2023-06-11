@@ -3,24 +3,24 @@
  *  Licensed under the MIT License. See LICENSE file for details.
  */
 
-#include "test_runner.h"
+#include "playground_test.h"
 
 #include <SDL.h>
 
 #include <sstream>
 
-#include "application.h"
 #include "backends/imgui_impl_sdl.h"
 #include "fixtures_location.h"
 #include "imgui.h"
+#include "playground.h"
 
 namespace sft {
 
-TestRunner::TestRunner() : start_time_(Clock::now()) {
+PlaygroundTest::PlaygroundTest() : start_time_(Clock::now()) {
   SFT_ASSERT(::SDL_Init(SDL_INIT_VIDEO) == 0);
 }
 
-SecondsF TestRunner::ElapsedTime() const {
+SecondsF PlaygroundTest::ElapsedTime() const {
   return Clock::now() - start_time_;
 }
 
@@ -36,12 +36,12 @@ static std::string CreateTestName() {
 
 static bool gSkipRemainingTests = false;
 
-bool TestRunner::Run(Application& application) const {
+bool PlaygroundTest::Run(Playground& playground) const {
   bool is_running = true;
   bool success = true;
-  application.SetTitle(CreateTestName());
+  playground.SetTitle(CreateTestName());
   while (is_running) {
-    success = is_running = application.Render();
+    success = is_running = playground.Render();
     ::SDL_Event event;
     if (::SDL_PollEvent(&event) == 1) {
       auto& io = ImGui::GetIO();
@@ -72,7 +72,7 @@ bool TestRunner::Run(Application& application) const {
           switch (event.window.event) {
             case SDL_WINDOWEVENT_RESIZED:
             case SDL_WINDOWEVENT_SIZE_CHANGED:
-              if (!application.OnWindowSizeChanged(
+              if (!playground.OnWindowSizeChanged(
                       {event.window.data1, event.window.data2})) {
                 std::cout << "Window resizing failed." << std::endl;
                 is_running = false;
@@ -87,16 +87,16 @@ bool TestRunner::Run(Application& application) const {
   return success;
 }
 
-TestRunner::~TestRunner() {
+PlaygroundTest::~PlaygroundTest() {
   ::SDL_Quit();
 }
 
-void TestRunner::SetUp() {
+void PlaygroundTest::SetUp() {
   if (gSkipRemainingTests) {
     GTEST_SKIP();
   }
 }
 
-void TestRunner::TearDown() {}
+void PlaygroundTest::TearDown() {}
 
 }  // namespace sft

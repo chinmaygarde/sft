@@ -11,15 +11,15 @@
 
 namespace sft {
 
-class Application;
+class Playground;
 
-class TestRunner : public ::testing::Test {
+class PlaygroundTest : public ::testing::Test {
  public:
-  TestRunner();
+  PlaygroundTest();
 
-  ~TestRunner();
+  ~PlaygroundTest();
 
-  bool Run(Application& application) const;
+  bool Run(Playground& playground) const;
 
   SecondsF ElapsedTime() const;
 
@@ -30,7 +30,7 @@ class TestRunner : public ::testing::Test {
  private:
   TimePoint start_time_;
 
-  SFT_DISALLOW_COPY_AND_ASSIGN(TestRunner);
+  SFT_DISALLOW_COPY_AND_ASSIGN(PlaygroundTest);
 };
 
 }  // namespace sft

@@ -20,12 +20,12 @@ namespace sft {
 
 class Rasterizer;
 
-class Application {
+class Playground {
  public:
-  Application(glm::ivec2 size = {800, 600},
-              SampleCount sample_count = SampleCount::kOne);
+  Playground(glm::ivec2 size = {800, 600},
+             SampleCount sample_count = SampleCount::kOne);
 
-  ~Application();
+  ~Playground();
 
   bool IsValid() const;
 
@@ -58,7 +58,7 @@ class Application {
 
   bool OnRender();
 
-  SFT_DISALLOW_COPY_AND_ASSIGN(Application);
+  SFT_DISALLOW_COPY_AND_ASSIGN(Playground);
 };
 
 }  // namespace sft

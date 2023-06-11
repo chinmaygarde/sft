@@ -7,17 +7,17 @@ sft_executable(playground
   ../third_party/imgui/imgui_draw.cpp
   ../third_party/imgui/imgui_tables.cpp
   ../third_party/imgui/imgui_widgets.cpp
-  application.cc
-  application.h
   imgui_impl_sft.cc
   imgui_impl_sft.h
   imgui_shader.cc
   imgui_shader.h
+  playground.cc
+  playground.h
+  playground_test.cc
+  playground_test.h
   sdl_utils.cc
   sdl_utils.h
-  sft_unittests.cc
-  test_runner.cc
-  test_runner.h
+  unittests.cc
 )
 
 target_link_libraries(playground
