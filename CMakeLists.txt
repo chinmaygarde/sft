@@ -131,10 +131,9 @@ add_executable(sft_unittests
   src/sft_unittests.cc
   src/test_runner.h
   src/test_runner.cc
-  src/test_main.cc
 )
 
-target_link_libraries(sft_unittests sft_lib gtest)
+target_link_libraries(sft_unittests sft_lib gtest gtest_main)
 
 get_filename_component(SFT_ASSETS_LOCATION assets ABSOLUTE)
 configure_file(src/fixtures_location.h.in fixtures_location.h @ONLY)
