@@ -185,7 +185,7 @@ bool Playground::OnRender() {
 
   const auto size = rasterizer_->GetSize();
 
-  auto& pass = rasterizer_->GetRenderPass();
+  auto& pass = rasterizer_->GetRenderPassAttachments();
   std::shared_ptr<Texture<Color>> texture;
   if (pass.color.texture->GetSampleCount() == SampleCount::kOne) {
     texture = pass.color.texture;

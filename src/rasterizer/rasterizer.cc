@@ -472,7 +472,7 @@ bool Rasterizer::Resize(glm::ivec2 size) {
   return true;
 }
 
-RenderPassAttachments& Rasterizer::GetRenderPass() {
+RenderPassAttachments& Rasterizer::GetRenderPassAttachments() {
   return pass_;
 }
 

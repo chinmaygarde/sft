@@ -31,7 +31,7 @@ class Rasterizer {
 
   ~Rasterizer();
 
-  RenderPassAttachments& GetRenderPass();
+  RenderPassAttachments& GetRenderPassAttachments();
 
   glm::ivec2 GetSize() const;
 

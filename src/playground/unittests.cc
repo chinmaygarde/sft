@@ -497,7 +497,7 @@ TEST_F(RasterizerTest, CanMSAA) {
     static int msaa_current = 2;
     ImGui::ListBox("MSAA Options", &msaa_current, msaa_items,
                    IM_ARRAYSIZE(msaa_items));
-    SFT_ASSERT(rasterizer.GetRenderPass().SetSampleCount(
+    SFT_ASSERT(rasterizer.GetRenderPassAttachments().SetSampleCount(
         to_sample_count(msaa_current)));
     rasterizer.Clear(kColorGray);
     static ScalarF rotation = 48.132;
