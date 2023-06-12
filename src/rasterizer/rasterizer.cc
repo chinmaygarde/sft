@@ -476,4 +476,42 @@ RenderPassAttachments& Rasterizer::GetRenderPass() {
   return pass_;
 }
 
+void Rasterizer::Draw(std::shared_ptr<Pipeline> pipeline,
+                      const BufferView& vertex_buffer,
+                      const BufferView& index_buffer,
+                      Uniforms uniforms,
+                      size_t count,
+                      uint32_t stencil_reference) {
+  metrics_.draw_count++;
+  auto resources = std::make_shared<DispatchResources>();
+  resources->vertex = std::move(vertex_buffer);
+  resources->index = std::move(index_buffer);
+  resources->uniform = std::move(uniforms);
+  VertexResources data(pipeline,              //
+                       std::move(resources),  //
+                       stencil_reference      //
+  );
+  const auto vtx_offset = pipeline->vertex_descriptor.offset;
+  for (size_t i = 0; i < count; i += 3) {
+    data.base_vertex_id = i;
+    data.vtx[0] = data.LoadVertexData<glm::vec3>(i + 0, vtx_offset);
+    data.vtx[1] = data.LoadVertexData<glm::vec3>(i + 1, vtx_offset);
+    data.vtx[2] = data.LoadVertexData<glm::vec3>(i + 2, vtx_offset);
+    DrawTriangle(data);
+  }
+}
+
+void Rasterizer::Draw(std::shared_ptr<Pipeline> pipeline,
+                      const BufferView& vertex_buffer,
+                      Uniforms uniforms,
+                      size_t count,
+                      uint32_t stencil_refernece) {
+  return Draw(std::move(pipeline), vertex_buffer, {}, std::move(uniforms),
+              count, stencil_refernece);
+}
+
+void Rasterizer::Finish() {
+  tiler_.Dispatch(*this);
+}
+
 }  // namespace sft
