@@ -747,7 +747,7 @@ TEST_F(RasterizerTest, CanShowHUD) {
 
 TEST_F(RasterizerTest, CanvasCanDrawStuff) {
   Playground application;
-  auto context = std::make_shared<CanvasContext>();
+  auto context = CanvasContextCreate();
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
     Canvas canvas(context);
@@ -768,7 +768,7 @@ TEST_F(RasterizerTest, CanvasCanDrawStuff) {
 
 TEST_F(RasterizerTest, CanStencil) {
   Playground application;
-  auto context = std::make_shared<CanvasContext>();
+  auto context = CanvasContextCreate();
   static std::shared_ptr<Image> stencil_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
@@ -801,7 +801,7 @@ TEST_F(RasterizerTest, CanStencil) {
 
 TEST_F(RasterizerTest, CanClipWithStencils) {
   Playground application;
-  auto context = std::make_shared<CanvasContext>();
+  auto context = CanvasContextCreate();
   static std::shared_ptr<Image> stencil_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
