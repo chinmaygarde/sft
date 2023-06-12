@@ -461,22 +461,6 @@ constexpr Color CreateDebugColor(T val, T min, T max) {
   return Color::FromComponentsF(component, component, component, 1.0);
 }
 
-std::shared_ptr<Image> Rasterizer::CaptureDebugDepthTexture() const {
-  auto texture = pass_.depth.texture;
-  const auto min_max = texture->GetMinMaxValue();
-  return texture->CreateImage([&min_max](const ScalarF& val) -> Color {
-    return CreateDebugColor(val, min_max.first, min_max.second);
-  });
-}
-
-std::shared_ptr<Image> Rasterizer::CaptureDebugStencilTexture() const {
-  auto texture = pass_.stencil.texture;
-  const auto min_max = texture->GetMinMaxValue();
-  return texture->CreateImage([&min_max](const uint8_t& val) -> Color {
-    return CreateDebugColor(val, min_max.first, min_max.second);
-  });
-}
-
 bool Rasterizer::Resize(glm::ivec2 size) {
   if (size_ == size) {
     return true;

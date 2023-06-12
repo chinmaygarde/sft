@@ -77,10 +77,6 @@ class Rasterizer {
 
   const RasterizerMetrics& GetMetrics() const;
 
-  std::shared_ptr<Image> CaptureDebugDepthTexture() const;
-
-  std::shared_ptr<Image> CaptureDebugStencilTexture() const;
-
   [[nodiscard]] bool Resize(glm::ivec2 size);
 
   [[nodiscard]] bool ResizeSamples(SampleCount count);

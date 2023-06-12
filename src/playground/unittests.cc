@@ -579,8 +579,6 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
       .depth_stencil_pass = StencilOperation::kIncrementClamp,
   };
   ASSERT_TRUE(model.IsValid());
-  static std::shared_ptr<Image> depth_tex;
-  static std::shared_ptr<Image> overdraw_tex;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorGray);
     static float rotation = 45 + 90;
@@ -590,15 +588,9 @@ TEST_F(RasterizerTest, CanDrawHelmet) {
     model.SetRotation(rotation);
     model.SetScale(scale);
     model.RenderTo(rasterizer);
-    depth_tex = rasterizer.CaptureDebugDepthTexture();
-    overdraw_tex = rasterizer.CaptureDebugStencilTexture();
-    DisplayTextureInHUD("Depth Buffer", depth_tex.get(), 0.25);
-    DisplayTextureInHUD("Overdraw", overdraw_tex.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  depth_tex = nullptr;
-  overdraw_tex = nullptr;
 }
 
 TEST_F(RasterizerTest, CanCullFaces) {
@@ -681,16 +673,12 @@ TEST_F(RasterizerTest, CanDrawToDepthBuffer) {
   uniform_buffer->Emplace(Uniforms{
       .color = kColorFuchsia,
   });
-  static std::shared_ptr<Image> depth_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     rasterizer.Draw(pipeline, *vertex_buffer, BufferView{*uniform_buffer}, 3u);
-    depth_image = rasterizer.CaptureDebugDepthTexture();
-    DisplayTextureInHUD("Depth Buffer", depth_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  depth_image = nullptr;
 }
 
 TEST_F(RasterizerTest, CanPerformDepthTest) {
@@ -721,18 +709,14 @@ TEST_F(RasterizerTest, CanPerformDepthTest) {
   auto uniform_buffer2 = buffer->Emplace(Uniforms{
       .color = kColorFirebrick,
   });
-  static std::shared_ptr<Image> depth_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorBeige);
     pipeline->depth_desc.depth_test_enabled = true;
     rasterizer.Draw(pipeline, vertex_buffer1, uniform_buffer1, 3u);
     rasterizer.Draw(pipeline, vertex_buffer2, uniform_buffer2, 3u);
-    depth_image = rasterizer.CaptureDebugDepthTexture();
-    DisplayTextureInHUD("Depth Buffer", depth_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  depth_image.reset();
 }
 
 TEST_F(RasterizerTest, CanShowHUD) {
@@ -769,7 +753,7 @@ TEST_F(RasterizerTest, CanvasCanDrawStuff) {
 TEST_F(RasterizerTest, CanStencil) {
   Playground application;
   auto context = CanvasContextCreate();
-  static std::shared_ptr<Image> stencil_image;
+
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
     Canvas canvas(context);
@@ -791,18 +775,14 @@ TEST_F(RasterizerTest, CanStencil) {
     paint.color = kColorBlue.WithAlpha(128);
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
-    stencil_image = rasterizer.CaptureDebugStencilTexture();
-    DisplayTextureInHUD("Stencil Buffer", stencil_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  stencil_image = nullptr;
 }
 
 TEST_F(RasterizerTest, CanClipWithStencils) {
   Playground application;
   auto context = CanvasContextCreate();
-  static std::shared_ptr<Image> stencil_image;
   application.SetRasterizerCallback([&](Rasterizer& rasterizer) -> bool {
     rasterizer.Clear(kColorWhite);
     Canvas canvas(context);
@@ -834,12 +814,9 @@ TEST_F(RasterizerTest, CanClipWithStencils) {
     canvas.Translate(offset);
     canvas.DrawRect(rasterizer, rect, paint);
 
-    stencil_image = rasterizer.CaptureDebugStencilTexture();
-    DisplayTextureInHUD("Stencil Buffer", stencil_image.get(), 0.25);
     return true;
   });
   ASSERT_TRUE(Run(application));
-  stencil_image = nullptr;
 }
 
 }  // namespace testing
