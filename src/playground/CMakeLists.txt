@@ -1,4 +1,4 @@
-sft_executable(playground
+sft_library(playground_lib
   ../../third_party/imgui/backends/imgui_impl_sdl.cpp
   ../../third_party/imgui/backends/imgui_impl_sdl.h
   ../../third_party/imgui/imgui.cpp
@@ -13,31 +13,45 @@ sft_executable(playground
   imgui_shader.h
   playground.cc
   playground.h
-  playground_test.cc
-  playground_test.h
   sdl_utils.cc
   sdl_utils.h
-  unittests.cc
 )
 
-target_link_libraries(playground
+target_link_libraries(playground_lib
   PUBLIC
     SDL2
-    gtest
-    gtest_main
-    core
-    geometry
-    marl
-    rasterizer
     canvas
     model
 )
 
-target_include_directories(playground
+target_include_directories(playground_lib
   PUBLIC
     ../../third_party/imgui
+)
+
+sft_executable(playground
+  unittests.cc
+  playground_test.cc
+  playground_test.h
+)
+
+target_link_libraries(playground
+  PRIVATE
+    playground_lib
+    gtest
+    gtest_main
+)
+
+sft_executable(playground_benchmark
+  benchmarks.cc
+)
+
+target_link_libraries(playground_benchmark
+  PRIVATE
+    benchmark_main
 )
 
 get_filename_component(SFT_ASSETS_LOCATION ../../fixtures ABSOLUTE)
 configure_file(fixtures_location.h.in fixtures_location.h @ONLY)
 target_include_directories(playground PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(playground_benchmark PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
