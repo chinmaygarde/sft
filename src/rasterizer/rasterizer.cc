@@ -4,6 +4,7 @@
  */
 
 #include "rasterizer.h"
+
 #include <cfloat>
 
 #include "image.h"

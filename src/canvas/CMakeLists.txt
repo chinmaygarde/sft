@@ -11,6 +11,5 @@ sft_library(canvas
 
 target_link_libraries(canvas
   PUBLIC
-    geometry
     rasterizer
 )

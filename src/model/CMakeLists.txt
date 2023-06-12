@@ -8,7 +8,5 @@ sft_library(model
 target_link_libraries(model
   PUBLIC
     tinyobjloader
-    core
-    geometry
     rasterizer
 )

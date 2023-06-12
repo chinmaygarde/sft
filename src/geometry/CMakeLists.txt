@@ -7,4 +7,7 @@ sft_library(geometry
   types.h
 )
 
-target_link_libraries(geometry PUBLIC glm)
+target_link_libraries(geometry
+  PUBLIC
+    glm
+)
