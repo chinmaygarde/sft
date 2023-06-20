@@ -65,23 +65,23 @@ glm::vec4 Image::Sample(glm::vec2 pos) const {
     return kColorBlack;
   }
 
-  return SampleUnit({SamplerLocation(pos.x, sampler_.wrap_mode_s),
-                     SamplerLocation(pos.y, sampler_.wrap_mode_t)});
+  return SampleUV({SamplerLocation(pos.x, sampler_.wrap_mode_s),
+                   SamplerLocation(pos.y, sampler_.wrap_mode_t)});
 }
 
-glm::vec4 Image::SampleUnitNearest(glm::vec2 st) const {
-  return SampleUV({
-      glm::clamp<Scalar>(st.x * size_.x, 0, size_.x - 1),
-      glm::clamp<Scalar>(st.y * size_.y, 0, size_.y - 1),
+glm::vec4 Image::SampleUnitNearest(glm::vec2 uv) const {
+  return SampleXY({
+      glm::clamp<Scalar>(uv.x * size_.x, 0, size_.x - 1),
+      glm::clamp<Scalar>(uv.y * size_.y, 0, size_.y - 1),
   });
 }
 
-glm::vec4 Image::SampleUnitLinear(glm::vec2 st) const {
-  ScalarF u = st.x * size_.x;
-  ScalarF v = st.y * size_.y;
+glm::vec4 Image::SampleUnitLinear(glm::vec2 uv) const {
+  ScalarF x = uv.x * size_.x;
+  ScalarF y = uv.y * size_.y;
 
-  ScalarF i0 = glm::floor(u - 0.5f);
-  ScalarF j0 = glm::floor(v - 0.5f);
+  ScalarF i0 = glm::floor(x - 0.5f);
+  ScalarF j0 = glm::floor(y - 0.5f);
 
   if (sampler_.wrap_mode_s == WrapMode::kRepeat) {
     i0 = glm::mod(i0, static_cast<ScalarF>(size_.x));
@@ -102,13 +102,13 @@ glm::vec4 Image::SampleUnitLinear(glm::vec2 st) const {
     j1 = glm::mod(j1, static_cast<ScalarF>(size_.y));
   }
 
-  ScalarF a = glm::fract(u - 0.5f);
-  ScalarF b = glm::fract(v - 0.5f);
+  ScalarF a = glm::fract(x - 0.5f);
+  ScalarF b = glm::fract(y - 0.5f);
 
-  glm::vec4 ti0j0 = SampleUV({i0, j0});
-  glm::vec4 ti1j0 = SampleUV({i1, j0});
-  glm::vec4 ti0j1 = SampleUV({i0, j1});
-  glm::vec4 ti1j1 = SampleUV({i1, j1});
+  glm::vec4 ti0j0 = SampleXY({i0, j0});
+  glm::vec4 ti1j0 = SampleXY({i1, j0});
+  glm::vec4 ti0j1 = SampleXY({i0, j1});
+  glm::vec4 ti1j1 = SampleXY({i1, j1});
 
   return ((1 - a) * (1 - b) * ti0j0) +  //
          (a * (1 - b) * ti1j0) +        //
@@ -119,12 +119,12 @@ glm::vec4 Image::SampleUnitLinear(glm::vec2 st) const {
 
 // From 3.7.7 Texture Minification
 // https://registry.khronos.org/OpenGL/specs/es/2.0/es_full_spec_2.0.pdf
-glm::vec4 Image::SampleUnit(glm::vec2 pos) const {
+glm::vec4 Image::SampleUV(glm::vec2 uv) const {
   switch (sampler_.min_mag_filter) {
     case Filter::kNearest:
-      return SampleUnitNearest(pos);
+      return SampleUnitNearest(uv);
     case Filter::kLinear:
-      return SampleUnitLinear(pos);
+      return SampleUnitLinear(uv);
   }
   return kColorBlack;
 }
@@ -133,9 +133,9 @@ const uint8_t* Image::GetBuffer() const {
   return mapping_ ? mapping_->GetBuffer() : nullptr;
 }
 
-glm::vec4 Image::SampleUV(glm::ivec2 uv) const {
-  uv = glm::clamp(uv, {0, 0}, {size_.x - 1, size_.y - 1});
-  auto offset = size_.x * uv.y + uv.x;
+glm::vec4 Image::SampleXY(glm::ivec2 xy) const {
+  xy = glm::clamp(xy, {0, 0}, {size_.x - 1, size_.y - 1});
+  auto offset = size_.x * xy.y + xy.x;
   const Color* icolor = reinterpret_cast<const Color*>(GetBuffer()) + offset;
   return *icolor;
 }

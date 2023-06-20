@@ -31,7 +31,7 @@ class Image final : public std::enable_shared_from_this<Image> {
 
   bool IsValid() const;
 
-  glm::vec4 Sample(glm::vec2 position) const;
+  glm::vec4 Sample(glm::vec2 uv) const;
 
  private:
   std::shared_ptr<Mapping> mapping_;
@@ -43,13 +43,13 @@ class Image final : public std::enable_shared_from_this<Image> {
 
   Image(std::shared_ptr<Mapping> mapping, glm::ivec2 size);
 
-  glm::vec4 SampleUnit(glm::vec2 position) const;
+  glm::vec4 SampleUV(glm::vec2 uv) const;
 
-  glm::vec4 SampleUnitNearest(glm::vec2 pos) const;
+  glm::vec4 SampleXY(glm::ivec2 xy) const;
 
-  glm::vec4 SampleUnitLinear(glm::vec2 pos) const;
+  glm::vec4 SampleUnitNearest(glm::vec2 uv) const;
 
-  glm::vec4 SampleUV(glm::ivec2 uv) const;
+  glm::vec4 SampleUnitLinear(glm::vec2 uv) const;
 
   const uint8_t* GetBuffer() const;
 
