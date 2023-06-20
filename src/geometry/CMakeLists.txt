@@ -3,6 +3,10 @@ sft_library(geometry
   color.h
   geometry.cc
   geometry.h
+  rect.cc
+  rect.h
+  size.cc
+  size.h
   types.cc
   types.h
 )
