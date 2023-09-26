@@ -49,6 +49,7 @@ sft_executable(playground_benchmark
 target_link_libraries(playground_benchmark
   PRIVATE
     benchmark_main
+    rasterizer
 )
 
 get_filename_component(SFT_ASSETS_LOCATION ../../fixtures ABSOLUTE)
