@@ -167,12 +167,12 @@ struct StencilAttachmentDescriptor {
   /// The mask applied to the reference and stencil buffer values before
   /// performing the stencil_compare operation.
   ///
-  uint32_t read_mask = ~0;
+  uint32_t read_mask = ~0u;
   //----------------------------------------------------------------------------
   /// The mask applied to the new stencil value before it is written into the
   /// stencil buffer.
   ///
-  uint32_t write_mask = ~0;
+  uint32_t write_mask = ~0u;
 
   constexpr StencilOperation SelectOperation(bool depth_pass,
                                              bool stencil_pass) const {

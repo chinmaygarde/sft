@@ -51,7 +51,7 @@ Model::Model(std::string path, std::string base_dir)
                            attrib.vertices[3 * idx.vertex_index + 2]);
 
         // Vertex normal
-        glm::vec3 normal;
+        glm::vec3 normal = {};
         if (idx.normal_index >= 0) {
           has_normals |= true;
           normal.x = attrib.normals[3 * idx.normal_index + 0];

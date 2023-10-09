@@ -8,7 +8,7 @@ include(CMakeToolboxInitialize)
 
 CMakeToolboxInitialize()
 
-SetCAndCXXStandard(11 17)
+SetCAndCXXStandard(11 20)
 
 EnableCCache()
 

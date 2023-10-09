@@ -19,7 +19,7 @@ sft_library(playground_lib
 
 target_link_libraries(playground_lib
   PUBLIC
-    SDL2
+    SDL2-static
     canvas
     model
 )

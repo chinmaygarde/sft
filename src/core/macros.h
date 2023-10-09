@@ -7,6 +7,12 @@
 
 #include <iostream>
 
+#ifdef _MSC_VER
+#define SFT_COMPILER_MSVC 1
+#else  // _MSC_VER
+#define SFT_COMPILER_CLANG 1
+#endif  // _MSC_VER
+
 #define SFT_ASSERT(x)                                            \
   {                                                              \
     if (!(x)) {                                                  \
@@ -38,4 +44,8 @@
   TypeName() = delete;                               \
   SFT_DISALLOW_COPY_ASSIGN_AND_MOVE(TypeName)
 
+#if SFT_COMPILER_MSVC
+#define SFT_ALWAYS_INLINE __inline __forceinline
+#else  // SFT_COMPILER_MSVC
 #define SFT_ALWAYS_INLINE inline __attribute__((always_inline))
+#endif  // SFT_COMPILER_MSVC
