@@ -1,6 +1,6 @@
 # A Software Renderer
 
-A software renderer modelled after graphics APIs like Metal and Vulkan. A programmable shader based graphics pipeline, depth & stencil buffers, blending, custom ImGUI integration, etc..
+A software renderer modelled after graphics APIs like Metal and Vulkan. A programmable shader based graphics pipeline, depth & stencil buffers, multi-sampling, tile-based-deferred-rendering, multi-core operation, blending, custom ImGUI integration, etc..
 
 | Depth Buffers            |  Stencil Buffers           |
 :-------------------------:|:---------------------------:
