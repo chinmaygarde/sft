@@ -3,7 +3,7 @@
     {
       "name": "SFT Build All",
       // "shell_cmd": "ninja && ./src/playground/playground_benchmark",
-      "shell_cmd": "ninja && ./src/playground/playground_benchmark --benchmark_time_unit=ms",
+      "shell_cmd": "ninja && ./src/playground/playground",
       "working_dir": "${project_path}/build",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,

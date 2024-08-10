@@ -56,3 +56,5 @@ get_filename_component(SFT_ASSETS_LOCATION ../../fixtures ABSOLUTE)
 configure_file(fixtures_location.h.in fixtures_location.h @ONLY)
 target_include_directories(playground PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(playground_benchmark PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
+gtest_discover_tests(playground)
