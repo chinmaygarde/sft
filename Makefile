@@ -7,7 +7,7 @@ run: build
 	@./build/src/playground/playground
 
 test: build
-	ctest --test-dir build -R $(TEST_FILTER)
+	@ctest --test-dir build -R $(TEST_FILTER)
 
 build: build/build.ninja
 	@cmake --build build

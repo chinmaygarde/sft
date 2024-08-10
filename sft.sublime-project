@@ -2,9 +2,8 @@
   "build_systems": [
     {
       "name": "SFT Build All",
-      // "shell_cmd": "ninja && ./src/playground/playground_benchmark",
-      "shell_cmd": "ninja && ./src/playground/playground",
-      "working_dir": "${project_path}/build",
+      "shell_cmd": "make test TEST_FILTER=CanDrawHelmet",
+      "working_dir": "${project_path}",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,
     }
