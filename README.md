@@ -12,9 +12,15 @@ A software renderer modelled after graphics APIs like Metal and Vulkan. A progra
 | Texture Sampling         |  Blending                  |
 ![](fixtures/demo/demo3.png) | ![](fixtures/demo/demo6.png) |
 
-## Dependencies
+## Prerequisites
 
-This is a very simple CMake project. The Makefile at the project root has tasks to make development easier. The Makefile does assume you have `cmake` and `ninja` installed on your host.
+* CMake (3.22 or above).
+* Git.
+* Ninja.
+* [Just](https://just.systems/), a task runner.
+* A C11 and C++20 compiler.
+* [vcpkg](https://vcpkg.io/en/index.html) for package management.
+  * Ensure that the `VCPKG_ROOT` environment variable is present and valid.
 
 ## Build & Run
 
