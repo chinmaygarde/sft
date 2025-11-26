@@ -15,6 +15,11 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest]
     steps:
+    - name: Install Extra Linux Dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf automake libtool pkg-config libltdl-dev
     - uses: actions/checkout@v4
     - uses: extractions/setup-just@v3
     - name: Setup VCPKG
