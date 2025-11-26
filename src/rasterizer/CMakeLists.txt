@@ -1,3 +1,6 @@
+find_package(marl CONFIG REQUIRED)
+find_package(Stb REQUIRED)
+
 sft_library(rasterizer
   attachment.cc
   attachment.h
@@ -35,11 +38,11 @@ target_link_libraries(rasterizer
   PUBLIC
     core
     geometry
-    marl
+    marl::marl
     superliminal
 )
 
 target_include_directories(rasterizer
   PUBLIC
-    ../../third_party/stb
+    ${Stb_INCLUDE_DIR}
 )

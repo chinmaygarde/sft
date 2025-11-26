@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build with CMake
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: extractions/setup-just@v3
+    - name: Setup VCPKG
+      uses: lukka/run-vcpkg@v11
+    - name: Pull Dependencies
+      run: just sync
+    - name: Build
+      run: just build

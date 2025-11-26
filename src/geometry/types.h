@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
 #include <glm/vec2.hpp>

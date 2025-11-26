@@ -16,5 +16,5 @@ This is a very simple CMake project. The Makefile at the project root has tasks 
 
 ## Build & Run
 
-* `make sync` ensures that the right sub-module dependencies are pulled in.
-* `make run` runs the demo application.
+* `just sync` ensures that the right sub-module dependencies are pulled in.
+* `just run` runs the demo application.

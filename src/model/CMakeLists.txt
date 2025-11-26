@@ -5,8 +5,10 @@ sft_library(model
   model_shader.h
 )
 
+find_package(tinyobjloader CONFIG REQUIRED)
+
 target_link_libraries(model
   PUBLIC
-    tinyobjloader
+    tinyobjloader::tinyobjloader
     rasterizer
 )

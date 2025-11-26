@@ -11,7 +11,9 @@ sft_library(geometry
   types.h
 )
 
+find_package(glm CONFIG REQUIRED)
+
 target_link_libraries(geometry
   PUBLIC
-    glm
+    glm::glm
 )
