@@ -2,7 +2,7 @@
   "build_systems": [
     {
       "name": "SFT Build All",
-      "shell_cmd": "make test TEST_FILTER=CanDrawHelmet",
+      "shell_cmd": "just",
       "working_dir": "${project_path}",
       "file_regex": "(.*):(\\d+):(\\d+)(.*)",
       "shell": true,

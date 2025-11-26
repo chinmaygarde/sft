@@ -1,3 +1,7 @@
+find_package(SDL2 CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
+
 sft_library(playground_lib
   ../../third_party/imgui/backends/imgui_impl_sdl.cpp
   ../../third_party/imgui/backends/imgui_impl_sdl.h
@@ -17,16 +21,16 @@ sft_library(playground_lib
   sdl_utils.h
 )
 
-target_link_libraries(playground_lib
-  PUBLIC
-    SDL2-static
-    canvas
-    model
-)
-
 target_include_directories(playground_lib
   PUBLIC
     ../../third_party/imgui
+)
+
+target_link_libraries(playground_lib
+  PUBLIC
+    SDL2::SDL2-static
+    canvas
+    model
 )
 
 sft_executable(playground
@@ -35,11 +39,14 @@ sft_executable(playground
   playground_test.h
 )
 
+enable_testing()
+
+
 target_link_libraries(playground
   PRIVATE
     playground_lib
-    gtest
-    gtest_main
+    GTest::gtest
+    GTest::gtest_main
 )
 
 sft_executable(playground_benchmark
@@ -48,7 +55,8 @@ sft_executable(playground_benchmark
 
 target_link_libraries(playground_benchmark
   PRIVATE
-    benchmark_main
+    benchmark::benchmark
+    benchmark::benchmark_main
     rasterizer
 )
 
