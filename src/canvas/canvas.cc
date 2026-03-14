@@ -45,7 +45,7 @@ class CanvasShader final : public Shader {
   void SetImage(const Image* texture) { image_ = texture; }
 
  private:
-  const Image* image_;
+  const Image* image_ = nullptr;
 
   SFT_DISALLOW_COPY_AND_ASSIGN(CanvasShader);
 };

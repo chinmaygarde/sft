@@ -37,7 +37,7 @@ class Image final : public std::enable_shared_from_this<Image> {
   std::shared_ptr<Mapping> mapping_;
   glm::ivec2 size_;
   Sampler sampler_;
-  bool is_valid_;
+  bool is_valid_ = false;
 
   Image(const char* file_path);
 
